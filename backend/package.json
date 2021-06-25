@@ -1,0 +1,23 @@
+{
+  "name": "cs446-billify",
+  "version": "1.0.0",
+  "description": "backend for billify project for cs446",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chirag1712/cs446-billify.git"
+  },
+  "author": "alric,chirag,denis,huy,mayank,pranav",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chirag1712/cs446-billify/issues"
+  },
+  "homepage": "https://github.com/chirag1712/cs446-billify#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^4.1.2"
+  }
+}

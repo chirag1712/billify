@@ -1,0 +1,10 @@
+/.env
+
+# dependencies
+/backend/node_modules/
+
+# misc
+/backend/.env
+
+# MacOS
+/**/.DS_Store
