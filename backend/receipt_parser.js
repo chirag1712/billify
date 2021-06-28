@@ -1,6 +1,7 @@
 const aws = require("aws-sdk");
 const awsCreds =  require("./credentials.json");
 const fs = require("fs");
+const util = require("util");
 
 // TODO: Clean up and refactor code
 aws.config.update({
@@ -10,8 +11,8 @@ aws.config.update({
 });
 
 let filePath = "loblaw_receipt.png";
-var data = fs.readFileSync(filePath);
 const textract = new aws.Textract();
+var data = fs.readFileSync(filePath);
 
 const params = {
     Document: {
@@ -50,17 +51,25 @@ function createTable(numRows, numCols) {
     return table;
 }
 
-function extractItemsFromReceipt() {
-    try {
+function extractRawItemsFromReceipt() {
+    return new Promise((resolve, reject) => {
         textract.analyzeDocument(params, (err, data) => {
             if (err) {
-                console.log(err, err.stack);
+                reject(err);
             } else {
                 let blocks = data["Blocks"];
                 var blockMap = {};
                 let [numRows, numCols] = [0, 0];
+
+                // Get the number of rows and columns
                 for (const block of blocks) {
                     blockMap[block.Id] = block;
+
+                    /* 
+                    Textract returns tabularized/structured data of receipt
+                    If BlockType is CELL, then that CELL corresponds to a cell in the 
+                    table extracted by Textract.
+                    */
                     if (block.BlockType === "CELL") {
                         // NOTE: Might not even need max if the cells are ordered by indices
                         numRows = Math.max(numRows, block.RowIndex);
@@ -68,24 +77,27 @@ function extractItemsFromReceipt() {
                     }
                 }
 
-                let table = createTable(numRows, numCols);
+                // itemsTable is a 2D array consisting the rows and columns extracted from Textract
+                let itemsTable = createTable(numRows, numCols);
+
+                // We fill itemsTable with the text of the corresponding cells
                 for (const block of blocks) {
                     if ((block.BlockType === "CELL"))  {
                         cellText = getCellText(block, blockMap);
                         const rowIndex = parseInt(block.RowIndex) - 1;
                         const colIndex = parseInt(block.ColumnIndex) - 1;
-                        table[rowIndex][colIndex] = cellText;
+                        itemsTable[rowIndex][colIndex] = cellText;
                     }
                 }
-                console.log(table);
+                resolve(itemsTable);
             }
         });
-
-    } catch (error) {
-    
-    } finally {
-    
-    }
+    });
 }
 
-extractItemsFromReceipt();
+async function main() {
+    let rawItemsTable = await extractRawItemsFromReceipt();
+    console.log(rawItemsTable);
+}
+
+main();
