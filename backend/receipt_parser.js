@@ -50,7 +50,7 @@ function createTable(numRows, numCols) {
     return table;
 }
 
-async function extractItemsFromReceipt() {
+function extractItemsFromReceipt() {
     try {
         textract.analyzeDocument(params, (err, data) => {
             if (err) {
