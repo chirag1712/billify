@@ -8,3 +8,8 @@
 
 # MacOS
 /**/.DS_Store
+
+/backend/credentials.json
+/backend/*.png
+/backend/*.jpg
+/backend/*.jpeg
