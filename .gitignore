@@ -1,3 +1,18 @@
 /node_modules/
 
 /db/dbCreds.json
+/.env
+
+# dependencies
+/backend/node_modules/
+
+# misc
+/backend/.env
+
+# MacOS
+/**/.DS_Store
+
+/backend/credentials.json
+/backend/*.png
+/backend/*.jpg
+/backend/*.jpeg
