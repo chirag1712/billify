@@ -2,6 +2,7 @@ const aws = require("aws-sdk");
 const awsCreds =  require("./credentials.json");
 const fs = require("fs");
 const util = require("util");
+const sampleReceiptPaths = require("./sample_receipt_paths.json");
 
 // TODO: Clean up and refactor code
 aws.config.update({
@@ -10,16 +11,8 @@ aws.config.update({
     region: awsCreds.region
 });
 
-let filePath = "loblaw_receipt.png";
 const textract = new aws.Textract();
-var data = fs.readFileSync(filePath);
 
-const params = {
-    Document: {
-        Bytes: data
-    },
-    FeatureTypes: ["TABLES"]
-};
 
 function getCellText(blockCell, blockMap) {
     const relationships = blockCell.Relationships;
@@ -51,7 +44,7 @@ function createTable(numRows, numCols) {
     return table;
 }
 
-function extractRawItemsFromReceipt() {
+function extractRawItemsFromReceipt(params) {
     return new Promise((resolve, reject) => {
         textract.analyzeDocument(params, (err, data) => {
             if (err) {
@@ -87,6 +80,8 @@ function extractRawItemsFromReceipt() {
                         const rowIndex = parseInt(block.RowIndex) - 1;
                         const colIndex = parseInt(block.ColumnIndex) - 1;
                         itemsTable[rowIndex][colIndex] = cellText;
+                    } else if (block.BlockType == "LINE") {
+                        // console.log(block);
                     }
                 }
                 resolve(itemsTable);
@@ -95,9 +90,56 @@ function extractRawItemsFromReceipt() {
     });
 }
 
-async function main() {
-    let rawItemsTable = await extractRawItemsFromReceipt();
-    console.log(rawItemsTable);
+
+function processRawItemsTable(rawItemsTable) {
+    /*
+    Currently, this function converts the price strings from the raw
+    table into price floats after removing non-floating point characters. 
+    */
+
+    // NOTE: Assuming that the prices are the last of the item
+
+    let filterNonPriceRows = itemRow => {
+        let priceStr = itemRow[itemRow.length-1];
+        let processedPriceStr = priceStr.replaceAll(/[^0-9\.]/g, "");
+        return (
+            (processedPriceStr !== "") && 
+            (processedPriceStr !== ".") && 
+            (processedPriceStr !== ",")
+            );
+    };
+    
+    let mapPriceStrToFloat = itemRow => {
+        let priceStr = itemRow[itemRow.length-1];
+        // HACK: For European decimals with commas
+        processedPriceStr = priceStr.replaceAll(",", "."); 
+        let parsedPriceFloat = parseFloat(processedPriceStr.replaceAll(/[^0-9\.]/g, ""));
+        itemRow[itemRow.length-1] = parsedPriceFloat;
+        return itemRow;
+    }
+
+    let processedTable = rawItemsTable.filter(filterNonPriceRows).map(mapPriceStrToFloat);
+    return processedTable;
 }
+
+function main() {
+
+    receiptPaths = sampleReceiptPaths["filePaths"];
+    receiptPaths = ["./tesco_receipt.jpeg"];
+    receiptPaths.forEach(async filePath => {
+        var data = fs.readFileSync(filePath);
+        const params = {
+            Document: {
+                Bytes: data
+            },
+            FeatureTypes: ["TABLES"]
+        };    
+        let rawItemsTable = await extractRawItemsFromReceipt(params);
+        console.log(rawItemsTable);
+        let processedTable = processRawItemsTable(rawItemsTable);
+        console.log(processedTable);    
+    });
+}
+
 
 main();
