@@ -4,7 +4,7 @@ const fs = require("fs");
 const util = require("util");
 const sampleReceiptPaths = require("./sample_receipt_paths.json");
 
-// TODO: Clean up and refactor code
+// TODO: Clean up, refactor code and also wrap exception-prone code within try-catch blocks
 aws.config.update({
     accessKeyId: awsCreds.AccessKeyId,
     secretAccessKey: awsCreds.SecretAccessKey,
@@ -13,8 +13,32 @@ aws.config.update({
 
 const textract = new aws.Textract();
 
+// Extending Array Proto by adding a none method
+// Source: https://stackoverflow.com/questions/62906597/is-there-an-equivalent-of-array-none-in-js
+Object.defineProperty(Array.prototype, 'none', {
+    value: function (callback) { return !this.some(callback) }
+});
+
+// createTable and argmax are utility functions
+function createTable(numRows, numCols) {
+    // Creates and returns a 2D array of dimensions (numRows, numCols)
+    let table = new Array(numRows);
+    for (i=0; i<numRows; ++i) {
+        table[i] = new Array(numCols);
+        for (j=0; j<numCols; ++j) {
+            table[i][j] = "";
+        }
+    }
+    return table;
+}
+
+function argmax(arr) {
+    // Returns the index of the max value in the array
+    return arr.reduce((bestIdx, currVal, currIdx, arr) => currVal > arr[bestIdx] ? currIdx : bestIdx, 0);
+}
 
 function getCellText(blockCell, blockMap) {
+    // Returns the text from the blockCell
     const relationships = blockCell.Relationships;
     if (!relationships) {
         return ""
@@ -32,19 +56,13 @@ function getCellText(blockCell, blockMap) {
     }
 }
 
-function createTable(numRows, numCols) {
-    
-    let table = new Array(numRows);
-    for (i=0; i<numRows; ++i) {
-        table[i] = new Array(numCols);
-        for (j=0; j<numCols; ++j) {
-            table[i][j] = "";
-        }
-    }
-    return table;
-}
 
 function extractRawItemsFromReceipt(params) {
+    /*
+    Extracts the raw items from a receipt using Textract.
+    params refers to the parameters needed by textract.analyzeDocument
+    Returns the  
+    */
     return new Promise((resolve, reject) => {
         textract.analyzeDocument(params, (err, data) => {
             if (err) {
@@ -77,11 +95,11 @@ function extractRawItemsFromReceipt(params) {
                 for (const block of blocks) {
                     if ((block.BlockType === "CELL"))  {
                         cellText = getCellText(block, blockMap);
-                        const rowIndex = parseInt(block.RowIndex) - 1;
-                        const colIndex = parseInt(block.ColumnIndex) - 1;
-                        itemsTable[rowIndex][colIndex] = cellText;
+                        const rowIdx = parseInt(block.RowIndex) - 1;
+                        const colIdx = parseInt(block.ColumnIndex) - 1;
+                        itemsTable[rowIdx][colIdx] = cellText;
                     } else if (block.BlockType == "LINE") {
-                        // console.log(block);
+                        // TODO: Optionally, can try to identify merchants using string matching
                     }
                 }
                 resolve(itemsTable);
@@ -91,14 +109,32 @@ function extractRawItemsFromReceipt(params) {
 }
 
 
+function findItemNameColIdx(itemsTable) {
+    numNonPriceCols = itemsTable[0].length - 1;
+    percentOfAlphabetsArr = new Array();
+    for (let colIdx=0; colIdx < numNonPriceCols; ++colIdx) {
+        let col = itemsTable.map(itemRow => itemRow[colIdx]);
+        let percentOfAlphabetsInCol = col.map(
+            item => item.replaceAll(/[0-9\. ]/g, "").length
+            ).reduce((acc, curr) => acc + curr, 0);
+        percentOfAlphabetsArr.push(percentOfAlphabetsInCol);
+    }
+    return argmax(percentOfAlphabetsArr);
+}
+
+function identifyItemPriceColIdx(itemsTable) {
+    return itemsTable[0].length - 1;
+}
+
 function processRawItemsTable(rawItemsTable) {
     /*
-    Currently, this function converts the price strings from the raw
-    table into price floats after removing non-floating point characters. 
+    This function takes in a rawItemsTable and processes it to return 
+    an Object where keys are the item names and values are the prices.
+
+    NOTE: Making assumption that last column will always be prices in receipts.
     */
 
     // NOTE: Assuming that the prices are the last of the item
-
     let filterNonPriceRows = itemRow => {
         let priceStr = itemRow[itemRow.length-1];
         let processedPriceStr = priceStr.replaceAll(/[^0-9\.]/g, "");
@@ -108,6 +144,9 @@ function processRawItemsTable(rawItemsTable) {
             (processedPriceStr !== ",")
             );
     };
+
+    // Removes any row with an empty column
+    let filterEmptyColRows = itemRow => itemRow.none(item => item == "");
     
     let mapPriceStrToFloat = itemRow => {
         let priceStr = itemRow[itemRow.length-1];
@@ -119,13 +158,21 @@ function processRawItemsTable(rawItemsTable) {
     }
 
     let processedTable = rawItemsTable.filter(filterNonPriceRows).map(mapPriceStrToFloat);
-    return processedTable;
+    // NOTE: Don't filter out rows with some empty cols since it fails for some receipts.
+    // processedTable = processedTable.filter(filterEmptyColRows);
+    let itemNameColIdx = findItemNameColIdx(processedTable);
+    let itemPriceColIdx = processedTable[0].length - 1;
+    let processed_items = processedTable.reduce((obj, itemRow) => {
+            obj[itemRow[itemNameColIdx]] = itemRow[itemPriceColIdx];
+            return obj;
+        }, {});
+    return processed_items;
 }
+
 
 function main() {
 
     receiptPaths = sampleReceiptPaths["filePaths"];
-    receiptPaths = ["./tesco_receipt.jpeg"];
     receiptPaths.forEach(async filePath => {
         var data = fs.readFileSync(filePath);
         const params = {
@@ -136,8 +183,8 @@ function main() {
         };    
         let rawItemsTable = await extractRawItemsFromReceipt(params);
         console.log(rawItemsTable);
-        let processedTable = processRawItemsTable(rawItemsTable);
-        console.log(processedTable);    
+        let processed_items = processRawItemsTable(rawItemsTable);
+        console.log(processed_items);    
     });
 }
 
