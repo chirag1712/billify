@@ -111,15 +111,15 @@ function extractRawItemsFromReceipt(params) {
 
 function findItemNameColIdx(itemsTable) {
     numNonPriceCols = itemsTable[0].length - 1;
-    percentOfAlphabetsArr = new Array();
+    numAlphabetsInCols = new Array();
     for (let colIdx=0; colIdx < numNonPriceCols; ++colIdx) {
         let col = itemsTable.map(itemRow => itemRow[colIdx]);
-        let percentOfAlphabetsInCol = col.map(
+        let numAlphabetsInCol = col.map(
             item => item.replaceAll(/[0-9\. ]/g, "").length
             ).reduce((acc, curr) => acc + curr, 0);
-        percentOfAlphabetsArr.push(percentOfAlphabetsInCol);
+            numAlphabetsInCols.push(numAlphabetsInCol);
     }
-    return argmax(percentOfAlphabetsArr);
+    return argmax(numAlphabetsInCols);
 }
 
 function identifyItemPriceColIdx(itemsTable) {
@@ -133,33 +133,33 @@ function processRawItemsTable(rawItemsTable) {
 
     NOTE: Making assumption that last column will always be prices in receipts.
     */
-
-    // NOTE: Assuming that the prices are the last of the item
+    /*
+    NOTE: Also assume price must have a decimal point,
+    e.g. "432.10" is a price and "432" is not a price.
+    TODO: Check above assumption is valid.
+    */
     let filterNonPriceRows = itemRow => {
         let priceStr = itemRow[itemRow.length-1];
-        let processedPriceStr = priceStr.replaceAll(/[^0-9\.]/g, "");
-        return (
-            (processedPriceStr !== "") && 
-            (processedPriceStr !== ".") && 
-            (processedPriceStr !== ",")
-            );
+        let processedPriceStrMatch = priceStr.match(/[\d]*[\.\,][\d]*/);
+        return ((processedPriceStrMatch !== null) &&
+        (processedPriceStrMatch[0] !== ".") &&
+        (processedPriceStrMatch[0] !== ","));
+    
     };
 
-    // Removes any row with an empty column
-    let filterEmptyColRows = itemRow => itemRow.none(item => item == "");
+    // NOTE: filterEmptyColRows might not work when some cols are empty but still have prices
+    // let filterEmptyColRows = itemRow => itemRow.none(item => item == "");
     
     let mapPriceStrToFloat = itemRow => {
         let priceStr = itemRow[itemRow.length-1];
         // HACK: For European decimals with commas
         processedPriceStr = priceStr.replaceAll(",", "."); 
-        let parsedPriceFloat = parseFloat(processedPriceStr.replaceAll(/[^0-9\.]/g, ""));
+        let parsedPriceFloat = parseFloat(processedPriceStr.match(/[\d]*\.[\d]*/)[0]);
         itemRow[itemRow.length-1] = parsedPriceFloat;
         return itemRow;
     }
 
     let processedTable = rawItemsTable.filter(filterNonPriceRows).map(mapPriceStrToFloat);
-    // NOTE: Don't filter out rows with some empty cols since it fails for some receipts.
-    // processedTable = processedTable.filter(filterEmptyColRows);
     let itemNameColIdx = findItemNameColIdx(processedTable);
     let itemPriceColIdx = processedTable[0].length - 1;
     let processed_items = processedTable.reduce((obj, itemRow) => {
@@ -172,7 +172,8 @@ function processRawItemsTable(rawItemsTable) {
 
 function main() {
 
-    receiptPaths = sampleReceiptPaths["filePaths"];
+    let receiptPaths = sampleReceiptPaths["filePaths"];
+    receiptPaths = ["./costco_receipt_1.png"];
     receiptPaths.forEach(async filePath => {
         var data = fs.readFileSync(filePath);
         const params = {
