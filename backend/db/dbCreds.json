@@ -1,0 +1,6 @@
+{
+    "host": "recipe-app.crcpev81qxcu.ca-central-1.rds.amazonaws.com",
+    "user": "admin",
+    "password": "dontcommitthis446",
+    "database_name": "billify"
+}
