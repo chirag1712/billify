@@ -1,7 +1,7 @@
 let mysql = require('mysql')
 let fs = require('fs')
 let path = require('path')
-let dbCred = require('./dbCreds.json')
+let dbCred = require('../dbCreds.json')
 
 function fetchQueries(fileName, delimitter) {
     let queryArr = fs.readFileSync(path.join(__dirname, 'sqlScripts/' + fileName)).toString().split(delimitter);
