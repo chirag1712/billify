@@ -1,30 +1,31 @@
 {
-  "name": "cs446-billify",
-  "version": "1.0.0",
-  "description": "backend for billify project for cs446",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server",
-    "dev-start": "nodemon server"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/chirag1712/cs446-billify.git"
-  },
-  "author": "alric,chirag,denis,huy,mayank,pranav",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/chirag1712/cs446-billify/issues"
-  },
-  "homepage": "https://github.com/chirag1712/cs446-billify#readme",
-  "dependencies": {
-    "aws-sdk": "^2.935.0",
-    "bcrypt": "^5.0.1",
-    "express": "^4.17.1",
-    "express-validator": "^6.12.0",
-    "mysql": "^2.18.1",
-    "nodemon": "^2.0.9",
-    "socket.io": "^4.1.2"
-  }
-}
+   "name": "cs446-billify",
+   "version": "1.0.0",
+   "description": "backend for billify project for cs446",
+   "main": "server.js",
+   "scripts": {
+     "test": "echo \"Error: no test specified\" && exit 1",
+     "start": "node server",
+     "dev-start": "nodemon server"
+   },
+   "repository": {
+     "type": "git",
+     "url": "git+https://github.com/chirag1712/cs446-billify.git"
+   },
+   "author": "alric,chirag,denis,huy,mayank,pranav",
+   "license": "ISC",
+   "bugs": {
+     "url": "https://github.com/chirag1712/cs446-billify/issues"
+   },
+   "homepage": "https://github.com/chirag1712/cs446-billify#readme",
+   "dependencies": {
+     "aws-sdk": "^2.935.0",
+     "bcrypt": "^5.0.1",
+     "express": "^4.17.1",
+     "express-validator": "^6.12.0",
+     "mysql": "^2.18.1",
+     "nodemon": "^2.0.9",
+     "socket.io": "^4.1.2"
+   }
+ }
+ 
