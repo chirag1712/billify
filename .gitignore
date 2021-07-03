@@ -2,6 +2,7 @@
 
 /db/dbCreds.json
 /.env
+/backend/dbCreds.json
 
 # dependencies
 /backend/node_modules/
@@ -16,3 +17,5 @@
 /backend/*.png
 /backend/*.jpg
 /backend/*.jpeg
+
+/db/dbCreds.json
