@@ -1,3 +1,6 @@
+const { } = require("../utils/users");
+
+// handles socket events
 class SocketHandler {
     connection(client) {
         // socket routes go here
