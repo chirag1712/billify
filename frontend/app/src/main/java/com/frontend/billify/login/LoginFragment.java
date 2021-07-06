@@ -31,7 +31,7 @@ public class LoginFragment extends Fragment {
     private final RetrofitService retrofitService = new RetrofitService();
     private final UserService userService = new UserService(retrofitService);
 
-    private final User user = new User("", "", "");
+    private final User user = new User("test@gmail.com", "", "");
 
     @Override
     public View onCreateView(

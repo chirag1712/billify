@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
     private final RetrofitService retrofitService = new RetrofitService();
     private final UserService userService = new UserService(retrofitService);
 
-    private final String validEmail = "anotest@gmail.com";
+    private final String validEmail = "test@gmail.com";
     private final String newEmail = "newEmail@gmail.com";
     private final User user = new User(validEmail, "", "");
 
