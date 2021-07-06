@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const users = require("../controllers/user.controller.js");
 
-// @route  POST api/users/login
+// @route  POST api/users/signup
 router.post("/signup", users.signupValidation, users.signup);
 
 // @route  POST api/users/login
