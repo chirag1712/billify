@@ -42,6 +42,23 @@ public class LoginFragment extends Fragment {
 
     private final User user = new User("test@gmail.com", "", "");
 
+    private Socket mSocket;
+    {
+        try {
+            mSocket = IO.socket("http://10.0.2.2:5000");
+        } catch (URISyntaxException e) {}
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mSocket.connect();
+        Toast.makeText(getActivity().getApplicationContext(),
+                "sending socket message ...", Toast.LENGTH_SHORT).show();
+        mSocket.emit("joinRoom", "hello from android app");
+    }
+
+
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
