@@ -8,10 +8,16 @@ CREATE TABLE IF NOT EXISTS User (
 
 CREATE TABLE IF NOT EXISTS BillifyGroup (
     gid INT NOT NULL AUTO_INCREMENT,
-    uid INT NOT NULL,
     group_name VARCHAR(255) NOT NULL,
     num_members INT,
-    PRIMARY KEY (gid),
+    PRIMARY KEY (gid)
+);
+
+CREATE TABLE IF NOT EXISTS MemberOf (
+    gid INT NOT NULL,
+    uid INT NOT NULL,
+    PRIMARY KEY (uid, gid),
+    FOREIGN KEY (gid) REFERENCES BillifyGroup(gid),
     FOREIGN KEY (uid) REFERENCES User(uid)
 );
 
