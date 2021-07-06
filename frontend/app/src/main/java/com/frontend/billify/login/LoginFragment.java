@@ -29,6 +29,10 @@ import com.frontend.billify.services.RetrofitService;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import org.json.JSONObject;
 
@@ -76,6 +80,24 @@ public class LoginFragment extends Fragment {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Socket mSocket = null;
+                {
+                    try {
+                        mSocket = IO.socket("http://10.0.2.2:5000");
+                    } catch (URISyntaxException e) {}
+                }
+
+                mSocket.connect();
+                Toast.makeText(getActivity().getApplicationContext(),
+                        "sending socket message ...", Toast.LENGTH_SHORT).show();
+                Gson gson = new Gson();
+                try {
+                    JSONObject obj = new JSONObject(gson.toJson(user));
+                    mSocket.emit("joinRoom", obj);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 boolean valid = true;
                 if (!isPasswordValid(passwordEditText.getText())) {
                     passwordTextInput.setError(getString(R.string.error_password));
