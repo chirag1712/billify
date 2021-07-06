@@ -13,6 +13,7 @@ app.get("/", (_, res) => {
 
 // other routes
 app.use("/api/users", require("./app/routes/user.routes.js"));
+app.use("/api/groups", require("./app/routes/group.routes.js"));
 
 // socket setup
 const server = http.createServer(app);

@@ -32,4 +32,18 @@ User.findUser = email => {
     });
 }
 
+User.findUsers = emails => {
+    const searchEmails = "(\"" + emails.join("\",\"") + "\")";
+    
+    return new Promise((resolve, reject) => {
+        sql.query(`SELECT * FROM User WHERE email IN ${searchEmails}`, (err, res) => {
+            if (err) {
+                console.log("error: ", err);
+                reject(err);
+            }
+            resolve(res);
+        });
+    });
+}
+
 module.exports = User;
