@@ -1,7 +1,8 @@
 const aws = require("aws-sdk");
-const awsCreds =  require("../../aws_credentials.json")
+const awsCreds =  require("../../aws_credentials.json");
 const fs = require("fs");
-
+const Transaction = require("../models/transaction.model.js");
+const Item = require("../models/item.model.js");
 
 // createTable and argmax are utility methods
 function createTable(numRows, numCols) {
@@ -24,13 +25,19 @@ function argmax(arr) {
 class ReceiptParser {
     constructor() {
         aws.config.update({
+            accessKeyId: process.env.AWS_AccessKeyId,
+            secretAccessKey: process.env.AWS_SecretAccessKey,
+            region: process.env.AWS_region
+        });
+
+        aws.config.update({
             accessKeyId: awsCreds.AccessKeyId,
             secretAccessKey: awsCreds.SecretAccessKey,
             region: awsCreds.region
         });
+
         
         this.textract = new aws.Textract();
-
         // Extending Array Proto by adding a none method
         // Source: https://stackoverflow.com/questions/62906597/is-there-an-equivalent-of-array-none-in-js
         Object.defineProperty(Array.prototype, 'none', {
@@ -162,17 +169,13 @@ class ReceiptParser {
         let processedTable = rawItemsTable.filter(filterNonPriceRows).map(mapPriceStrToFloat);
         let itemNameColIdx = this.findItemNameColIdx(processedTable);
         let itemPriceColIdx = processedTable[0].length - 1;
-        // let processed_items = processedTable.reduce((obj, itemRow) => {
-        //         obj[itemRow[itemNameColIdx]] = itemRow[itemPriceColIdx];
-        //         return obj;
-        //     }, {});
-        let processed_items = processedTable.map((itemRow) => {
+        let processedItemsJson = processedTable.map((itemRow) => {
             let obj = {};
             obj[itemRow[itemNameColIdx]] = itemRow[itemPriceColIdx];
             return obj;
         }, {});
     
-        return processed_items;
+        return processedItemsJson;
     }
     
     async parseReceiptData(data) {
@@ -189,4 +192,25 @@ class ReceiptParser {
 
 }
 
-module.exports =  ReceiptParser;
+async function insertTransactionsAndItemsToDB(gid, img_data, parsedReceiptJson) {
+    parsedReceiptJson = await insertTransactionToDB(gid, img_data, parsedReceiptJson);
+    await insertItemsToDB(parsedReceiptJson["tid"], parsedReceiptJson["items"]);
+    return parsedReceiptJson;
+}
+
+async function insertTransactionToDB(gid, img_data, parsedReceiptJson) {
+    transaction = new Transaction(gid, img_data);
+    let insertedTid = await transaction.createTransaction();
+    parsedReceiptJson = {"items": parsedReceiptJson, "tid": insertedTid};
+    return parsedReceiptJson;
+}
+
+async function insertItemsToDB(tid, receiptItemsJson) {
+    receiptItemsJson.forEach(async itemObject => {
+        [item_name, item_price] = Object.entries(itemObject)[0];
+        let item = new Item(tid, item_name, item_price);
+        let insertedItemId = await item.createItem();
+    });
+}
+
+module.exports =  {ReceiptParser, insertTransactionsAndItemsToDB};

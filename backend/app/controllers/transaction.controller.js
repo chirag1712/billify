@@ -1,22 +1,22 @@
-const { Group, MemberOf } = require("../models/group.model.js");
-const User = require("../models/user.model.js");
-const ReceiptParser = require("../services/receipt_parser.service.js");
+const TransactionService = require("../services/transaction.service.js");
 
-receiptParser = new ReceiptParser();
+receiptParser = new TransactionService.ReceiptParser();
 
-// parse_receipt_endpoint
-const parse_receipt = async (request, response) => {
+// parse-receipt endpoint
+const parseReceipt = async (request, response) => {
     if (request.files["file"]) {
         try {
             let data = request.files["file"]["data"];
+            let gid = request.body["gid"];
             let parsedReceiptJson = await receiptParser.parseReceiptData(data);
-            return response.send(parsedReceiptJson); 
+            let jsonResponse = await TransactionService.insertTransactionsAndItemsToDB(gid, data, parsedReceiptJson);
+            return response.send(jsonResponse); 
         } catch (err) {
-            return response.status(500).send({ error: "Internal error: Couldn't parse receipt" });
+            return response.status(500).send({ error: "Internal error: Couldn't parse receipt: " + err});
         }
     } else {
         response.status(500).send({ error: "Error: Receipt file" });
     }
 }
 
-module.exports = { parse_receipt };
+module.exports = { parseReceipt };
