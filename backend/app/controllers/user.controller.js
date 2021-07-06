@@ -66,7 +66,7 @@ const login = async (request, response) => {
             return response.status(401).json({ error: "Password is incorrect" });
         }
 
-        return response.status(200).json({ id: user.user_id });
+        return response.status(200).json({ id: user.uid });
     } catch (err) {
         return response.status(500).send({ error: "Internal error: login" });
     }
