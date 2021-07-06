@@ -12,7 +12,7 @@ const parseReceipt = async (request, response) => {
             let jsonResponse = await TransactionService.insertTransactionsAndItemsToDB(gid, data, parsedReceiptJson);
             return response.send(jsonResponse); 
         } catch (err) {
-            return response.status(500).send({ error: "Internal error: Couldn't parse receipt: " + err});
+            return response.status(500).send({ error: "Internal error: Couldn't parse receipt: ", err});
         }
     } else {
         response.status(500).send({ error: "Error: Receipt file" });
