@@ -7,7 +7,7 @@ const create = async (request, response) => {
 
     try {
         // map all emails to user ids
-        const user_ids = [user_id]
+        const user_ids = [user_id];
         User.findUsers(emails).then((users) => {
             users.forEach(user => {
                 user_ids.push(user.uid)
@@ -26,13 +26,13 @@ const create = async (request, response) => {
         });
         const data = await MemberOf.addUsers(newMemberOfs);
         
-        return response.send({ data: data });
+        return response.send({ gid: gid });
     } catch (err) {
         return response.status(500).send({ error: "Internal error: create group" });
     }
 }
 
-// need a function to add users to existing group
+// need a function to add users to existing group -> can use the model's add users function
 // validation -> user shouldn't already exist
 
 const listUserGroups = async (request, response) => {

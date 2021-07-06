@@ -24,14 +24,13 @@ Group.createGroup = newGroup => {
 // TODO: add member of fields here only if don't exist
 // can use: ON DUPLICATE KEY UPDATE uid=uid
 MemberOf.addUsers = (listMemberOf) => {
-    console.log(listMemberOf);
     return new Promise((resolve, reject) => {
         sql.query("INSERT INTO MemberOf (uid, gid) VALUES ?", [listMemberOf], (err, res) => {
             if (err) {
                 console.log("error: ", err);
                 reject(err);
             } else {
-                console.log("users added to group");
+                console.log("users added to group (uid, gid): ", listMemberOf);
                 resolve(res);
             }
         });
