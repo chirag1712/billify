@@ -3,6 +3,7 @@ const awsCreds =  require("../../aws_credentials.json");
 const fs = require("fs");
 const Transaction = require("../models/transaction.model.js");
 const Item = require("../models/item.model.js");
+const multerS3 = require('multer-s3');
 
 // createTable and argmax are utility methods
 function createTable(numRows, numCols) {
@@ -29,13 +30,6 @@ class ReceiptParser {
             secretAccessKey: process.env.AWS_SecretAccessKey,
             region: process.env.AWS_region
         });
-
-        aws.config.update({
-            accessKeyId: awsCreds.AccessKeyId,
-            secretAccessKey: awsCreds.SecretAccessKey,
-            region: awsCreds.region
-        });
-
         
         this.textract = new aws.Textract();
         // Extending Array Proto by adding a none method
