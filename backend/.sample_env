@@ -1,0 +1,10 @@
+# DB CREDS
+db_host=
+db_user=
+db_password=
+db_name=
+
+# AWS CREDS
+AWS_AccessKeyId=
+AWS_SecretAccessKey=
+AWS_region=

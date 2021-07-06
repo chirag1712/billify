@@ -1,7 +1,6 @@
 let mysql = require('mysql')
 let fs = require('fs')
 let path = require('path')
-let dbCred = require('../dbCreds.json')
 
 function fetchQueries(fileName, delimitter) {
     let queryArr = fs.readFileSync(path.join(__dirname, 'sqlScripts/' + fileName)).toString().split(delimitter);
@@ -12,10 +11,10 @@ function fetchQueries(fileName, delimitter) {
 
 function connectDB() {
     const connection = mysql.createConnection({
-        host: dbCred.host,
-        user: dbCred.user,
-        password: dbCred.password,
-        database: dbCred.database_name
+        host: process.env.db_host,
+        user: process.env.db_user,
+        password: process.env.db_password,
+        database: process.env.db_name
     });
     return connection;
 }
