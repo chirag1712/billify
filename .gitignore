@@ -4,6 +4,7 @@
 # creds
 /backend/.env
 /backend/dbCreds.json
+/backend/aws_credentials.json
 
 # dependencies
 /backend/node_modules/
