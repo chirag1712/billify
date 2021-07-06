@@ -1,14 +1,14 @@
 const aws = require("aws-sdk");
-const awsCreds =  require("./credentials.json");
+const awsCreds =  require("./aws_credentials.json");
 const fs = require("fs");
 const util = require("util");
 const sampleReceiptPaths = require("./sample_receipt_paths.json");
 
 // TODO: Clean up, refactor code and also wrap exception-prone code within try-catch blocks
 aws.config.update({
-    accessKeyId: awsCreds.AccessKeyId,
-    secretAccessKey: awsCreds.SecretAccessKey,
-    region: awsCreds.region
+    accessKeyId: process.env.AWS_AccessKeyId,
+    secretAccessKey: process.env.AWS_SecretAccessKey,
+    region: process.env.AWS_region
 });
 
 const textract = new aws.Textract();
@@ -162,10 +162,16 @@ function processRawItemsTable(rawItemsTable) {
     let processedTable = rawItemsTable.filter(filterNonPriceRows).map(mapPriceStrToFloat);
     let itemNameColIdx = findItemNameColIdx(processedTable);
     let itemPriceColIdx = processedTable[0].length - 1;
-    let processed_items = processedTable.reduce((obj, itemRow) => {
-            obj[itemRow[itemNameColIdx]] = itemRow[itemPriceColIdx];
-            return obj;
-        }, {});
+    // let processed_items = processedTable.reduce((obj, itemRow) => {
+    //         obj[itemRow[itemNameColIdx]] = itemRow[itemPriceColIdx];
+    //         return obj;
+    //     }, {});
+    let processed_items = processedTable.map((itemRow) => {
+        obj = {};
+        obj[itemRow[itemNameColIdx]] = itemRow[itemPriceColIdx];
+        return obj;
+    }, {});
+
     return processed_items;
 }
 
@@ -173,7 +179,6 @@ function processRawItemsTable(rawItemsTable) {
 function main() {
 
     let receiptPaths = sampleReceiptPaths["filePaths"];
-    receiptPaths = ["./costco_receipt_1.png"];
     receiptPaths.forEach(async filePath => {
         var data = fs.readFileSync(filePath);
         const params = {
@@ -189,5 +194,18 @@ function main() {
     });
 }
 
+const parse_receipt_data = async(data) => {
+    const params = {
+        Document: {
+            Bytes: data
+        },
+        FeatureTypes: ["TABLES"]
+    };    
+    let rawItemsTable = await extractRawItemsFromReceipt(params);
+    console.log(rawItemsTable);
+    let processed_items = processRawItemsTable(rawItemsTable);
+    console.log(processed_items);    
+    return processed_items;
+}
 
-main();
+module.exports = {parse_receipt_data, extractRawItemsFromReceipt, processRawItemsTable};
