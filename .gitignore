@@ -3,6 +3,7 @@
 
 # creds
 /backend/.env
+/backend/dbCreds.json
 
 # dependencies
 /backend/node_modules/
