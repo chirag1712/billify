@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS BillifyGroup (
     PRIMARY KEY (gid)
 );
 
-CREATE TABLE IF NOT EXISTS UserGroupRelation (
+CREATE TABLE IF NOT EXISTS MemberOf (
     gid INT NOT NULL,
     uid INT NOT NULL,
     PRIMARY KEY (uid, gid),
