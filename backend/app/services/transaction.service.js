@@ -1,5 +1,4 @@
 const aws = require("aws-sdk");
-const awsCreds =  require("../../aws_credentials.json");
 const fs = require("fs");
 const Transaction = require("../models/transaction.model.js");
 const Item = require("../models/item.model.js");
