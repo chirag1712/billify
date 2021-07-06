@@ -7,9 +7,10 @@ public class RetrofitService {
 
     public Retrofit retrofit;
 
+    // change localhost api address here
     public RetrofitService() {
         this.retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.7.2.118:5000/")
+                .baseUrl("http://192.168.1.13:5000/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }

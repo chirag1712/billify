@@ -15,25 +15,29 @@ public class UserService {
     public UserService(RetrofitService retrofitService) {
         this.apiRoutes = retrofitService.retrofit.create(ApiRoutes.class);
     }
-    public void loginUser(User user) {
-        Call<User> call = this.apiRoutes.loginUser(user);
+//    public void loginUser(User user) {
+//        Call<User> call = this.apiRoutes.loginUser(user);
+//
+//        call.enqueue(new Callback<User>() {
+//            @Override
+//            public void onResponse(Call<User> call, Response<User> response) {
+//                if (!response.isSuccessful()) {
+//                    System.out.println("Error code " + response.code() + " " + response.errorBody().toString());
+//                    return;
+//                }
+//                User userResponse = response.body();
+//                System.out.println("Successful request with return value: " + userResponse);
+//            }
+//
+//            @Override
+//            public void onFailure(Call<User> call, Throwable t) {
+//                System.out.println("Error: " + t.getMessage());
+//            }
+//        });
+//    }
 
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if (!response.isSuccessful()) {
-                    System.out.println("Error code " + response.code() + " " + response.errorBody().toString());
-                    return;
-                }
-                User userResponse = response.body();
-                System.out.println("Successful request with return value: " + userResponse);
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                System.out.println("Error: " + t.getMessage());
-            }
-        });
+    public Call<User> loginUser(User user) {
+        return this.apiRoutes.loginUser(user);
     }
 
     public void signupUser(User user) {

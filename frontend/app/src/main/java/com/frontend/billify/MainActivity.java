@@ -1,6 +1,8 @@
 package com.frontend.billify;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.frontend.billify.controllers.UserService;
+import com.frontend.billify.login.LoginFragment;
 import com.frontend.billify.services.ApiRoutes;
 import com.frontend.billify.models.User;
 import com.frontend.billify.services.RetrofitService;
@@ -19,7 +22,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationHost {
 
     Button b1,b2;
     EditText ed1,ed2;
@@ -39,47 +42,31 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        b1 = (Button) findViewById(R.id.button);
-        ed1 = (EditText) findViewById(R.id.editText);
-        ed2 = (EditText) findViewById(R.id.editText2);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.container, new LoginFragment())
+                    .commit();
+        }
+    }
 
-        b2 = (Button) findViewById(R.id.button2);
-        tx1 = (TextView) findViewById(R.id.textView3);
-        tx1.setVisibility(View.GONE);
+    /**
+     * Navigate to the given fragment.
+     *
+     * @param fragment       Fragment to navigate to.
+     * @param addToBackstack Whether or not the current fragment should be added to the backstack.
+     */
+    @Override
+    public void navigateTo(Fragment fragment, boolean addToBackstack) {
+        FragmentTransaction transaction =
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.container, fragment);
 
-        b1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String userName = ed1.getText().toString();
-                String password = ed2.getText().toString();
-                user.setUser_name(userName);
-                user.setPassword(password);
-                user.setEmail(newEmail);
-                userService.loginUser(user);
-                if (ed1.getText().toString().equals("anotest") &&
-                        ed2.getText().toString().equals("Testing123")) {
-                    Toast.makeText(getApplicationContext(),
-                            "Redirecting...", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Wrong Credentials", Toast.LENGTH_SHORT).show();
+        if (addToBackstack) {
+            transaction.addToBackStack(null);
+        }
 
-                    tx1.setVisibility(View.VISIBLE);
-                    tx1.setBackgroundColor(Color.RED);
-                    counter--;
-                    tx1.setText(Integer.toString(counter));
-
-                    if (counter == 0) {
-                        b1.setEnabled(false);
-                    }
-                }
-            }
-        });
-
-        b2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        transaction.commit();
     }
 }
