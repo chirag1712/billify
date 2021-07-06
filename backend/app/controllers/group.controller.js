@@ -24,7 +24,7 @@ const create = async (request, response) => {
             const obj = new MemberOf({ uid, gid });
             newMemberOfs.push(Object.values(obj));    
         });
-        const data = await MemberOf.addUsers(newMemberOfs);
+        await MemberOf.addUsers(newMemberOfs);
         
         return response.send({ gid: gid });
     } catch (err) {
