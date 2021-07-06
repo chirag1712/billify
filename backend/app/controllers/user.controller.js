@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const User = require("../models/user.model.js");
 const { check, validationResult } = require("express-validator");
+const { Group, MemberOf } = require('../models/group.model.js');
 
 const signupValidation = [
     check("email", "Not a valid email").isEmail(),
@@ -37,9 +38,17 @@ const signup = async (request, response) => {
         });
 
         // signup
-        const user_id = await User.createUser(user);
-        return response.send({ id: user_id });
+        const uid = await User.createUser(user);
+
+        // on signup, users are added to a group with a single member 
+        // to manage their individual transactions
+        const gid = await Group.createGroup({ group_name: user_name + "'s personal group" })
+        const newMemberOf = new MemberOf({ uid, gid });
+        await MemberOf.addUsers([Object.values(newMemberOf)]);
+
+        return response.send({ id: uid });
     } catch (err) {
+        console.log(err);
         return response.status(500).send({ error: "Internal error: signup" });
     }
 }
