@@ -1,10 +1,16 @@
 const express = require('express');
 const http = require("http");
 const SocketHandler = require("./app/routes/socket.routes.js");
+const fileUpload = require("express-fileupload");
+
 
 // server setup
 const app = express();
 app.use(express.json({ extended: false }));
+app.use(fileUpload({
+    createParentPath: true
+}))
+
 
 // Welcome backend route
 app.get("/", (_, res) => {
@@ -14,6 +20,7 @@ app.get("/", (_, res) => {
 // other routes
 app.use("/api/users", require("./app/routes/user.routes.js"));
 app.use("/api/groups", require("./app/routes/group.routes.js"));
+app.use("/api/transactions", require("./app/routes/transaction.routes.js"));
 
 // socket setup
 const server = http.createServer(app);
