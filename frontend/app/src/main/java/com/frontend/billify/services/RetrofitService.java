@@ -10,7 +10,7 @@ public class RetrofitService {
     // change localhost api address here
     public RetrofitService() {
         this.retrofit = new Retrofit.Builder()
-                .baseUrl("http://YOUR.IPV4.ADDRESS:5000/")
+                .baseUrl("http://10.0.2.2:5000/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }

@@ -2,7 +2,6 @@ const aws = require("aws-sdk");
 const fs = require("fs");
 const Transaction = require("../models/transaction.model.js");
 const Item = require("../models/item.model.js");
-const multerS3 = require('multer-s3');
 
 // createTable and argmax are utility methods
 function createTable(numRows, numCols) {
