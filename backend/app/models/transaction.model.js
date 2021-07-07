@@ -1,16 +1,19 @@
 const sql = require("./db.js");
 
-class Transaction {
+class TransactionModel {
 
-    constructor(gid, receipt_img_data) {
-        this.gid = gid;
-        this.receipt_img = receipt_img_data;
-        let currDateTime = new Date();
-        this.t_date = currDateTime.toISOString().slice(0, 10);
-        this.t_state = "NOT_STARTED";
+    constructor(gid) {
+        if (gid !== undefined) {
+            this.gid = gid;
+        }
     }
 
-    createTransaction() {
+    createTransaction(gid, receiptImgData) {
+        this.gid = gid;
+        this.receipt_img = receiptImgData;
+        let currDateTime = new Date();
+        this.t_date = currDateTime.toISOString().slice(0, 10);
+        this.t_state = "NOT_STARTED";    
         return new Promise((resolve, reject) => {
             sql.query("INSERT INTO Transaction SET ?", 
             this, (err, res) => {
@@ -25,19 +28,43 @@ class Transaction {
 
     }
 
-    getTransaction() {
-        return new Promise((resolve, reject) => {
-            sql.query("SELECT * FROM Transaction WHERE gid = ?",
-            this.gid, (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    reject(err);
-                }
-                console.log("Transaction entered: ", res);
-                resolve(res);
+    getTransactionsForGroup(gid) {
+        if (gid !== undefined) {
+            return new Promise((resolve, reject) => {
+                sql.query("SELECT * FROM Transaction WHERE gid = ?",
+                gid, (err, res) => {
+                    if (err) {
+                        console.log("error: ", err);
+                        reject(err);
+                    }
+                    res = res.map(elem => {
+                        delete elem["receipt_img"];
+                        return elem;
+                    })
+                    resolve(res);
+                });
             });
-        });
+    } else {
+        throw Error("gid is undefined");
     }
 }
 
-module.exports = Transaction;
+    getTransactionItems(tid) {
+        if (tid !== undefined) {
+            return new Promise((resolve, reject) => {
+                sql.query("SELECT * FROM Item WHERE tid = ?",
+                tid, (err, res) => {
+                    if (err) {
+                        console.log("error: ", err);
+                        reject(err);
+                    }
+                    resolve(res);
+                });
+            });
+        } else {
+            throw Error("tid is undefined");
+        }
+    }
+}
+
+module.exports = TransactionModel;
