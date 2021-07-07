@@ -12,14 +12,16 @@ class Item {
         return new Promise((resolve, reject) => {
             sql.query("INSERT INTO Item SET ?", this, (err, res) => {
                 if (err) {
-                    console.log("error: ", err);
+                    console.log(err);
                     reject(err);
+                } else {
+                    console.log("uids found: ", res);
+                    resolve(res);
                 }
-                // console.log("Item entered: ", res);
-                resolve(res["insertId"]);
             });
-        });
+        })
     }
+
 }
 
 class UserItem {

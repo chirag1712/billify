@@ -1,10 +1,6 @@
-<<<<<<< HEAD
 const Session = require("../utils/session.js");
 const { UserItem } = require("../models/item.model.js");
 const Transaction = require("../models/transaction.model.js");
-=======
-const User = require("../utils/users.js");
->>>>>>> wip
 
 // handles socket events
 class SocketHandler {
