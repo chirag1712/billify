@@ -9,7 +9,7 @@ const signupValidation = [
 ];
 
 // common validation function for all endpoints
-function validate(request) {
+function validate(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) {
         let errorArray = errors.array().map(e => e.msg);
@@ -19,7 +19,7 @@ function validate(request) {
 
 // user signup
 const signup = async (request, response) => {
-    validate(request);
+    validate(request, response);
     const { email, password, user_name } = request.body;
 
     try {
@@ -60,7 +60,7 @@ const loginValidation = [
 
 // user login
 const login = async (request, response) => {
-    validate(request);
+    validate(request, response);
     const { email, password } = request.body;
 
     try {
