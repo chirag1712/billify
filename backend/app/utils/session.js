@@ -55,8 +55,10 @@ class Session {
 
         if (this.tid2num[tid] == 1) {
             // TODO: persist to db latest state
+            // can also clear socket state for this transaction since next fetch would fetch from db
         }
 
+        // update room state
         delete this.tid2num[tid];
         delete this.socketId2uid[socketId];
         delete this.uid2Tid[uid];
