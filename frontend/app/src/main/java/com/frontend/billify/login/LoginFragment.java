@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.frontend.billify.HomepageActivity;
 import com.frontend.billify.NavigationHost;
 import com.frontend.billify.R;
+import com.frontend.billify.models.Message;
 import com.frontend.billify.models.User;
 import com.frontend.billify.controllers.UserService;
 import com.frontend.billify.persistence.Persistence;
@@ -59,7 +60,7 @@ public class LoginFragment extends Fragment {
         mSocket.connect();
         Toast.makeText(getActivity().getApplicationContext(),
                 "sending socket message ...", Toast.LENGTH_SHORT).show();
-        mSocket.emit("joinRoom", "hello from android app");
+        mSocket.emit("testConnection", "hello from android app");
     }
 
 
@@ -92,8 +93,10 @@ public class LoginFragment extends Fragment {
                         "sending socket message ...", Toast.LENGTH_SHORT).show();
                 Gson gson = new Gson();
                 try {
-                    JSONObject obj = new JSONObject(gson.toJson(user));
-                    mSocket.emit("joinRoom", obj);
+                    Message m = new Message(1, 1);
+                    JSONObject obj = new JSONObject(gson.toJson(m));
+//                    mSocket.disconnect(); can be manually emitted to disconnect client from the session
+                    mSocket.emit("startSession", obj);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
