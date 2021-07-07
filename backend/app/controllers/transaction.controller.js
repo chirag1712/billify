@@ -10,6 +10,7 @@ const parseReceipt = async (request, response) => {
             const gid = request.body["gid"];
             const parsedReceiptJson = await receiptParser.parseReceiptData(data);
             const jsonResponse = await TransactionService.insertTransactionsAndItemsToDB(gid, data, parsedReceiptJson);
+            console.log(jsonResponse);
             return response.send(jsonResponse); 
         } catch (err) {
             return response.status(500).send({ error: "Internal error: Couldn't parse receipt: " + err});

@@ -81,5 +81,11 @@
 
         </RelativeLayout>
 
+        <Button
+            android:id="@+id/go_to_upload_screen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Upload Screen" />
+
     </LinearLayout>
 </ScrollView>

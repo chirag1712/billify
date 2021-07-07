@@ -8,7 +8,7 @@ class Item {
         this.price = price;
     }
 
-    createItem() {
+    insertItemToDB() {
         return new Promise((resolve, reject) => {
             sql.query("INSERT INTO Item SET ?", 
             this, (err, res) => {

@@ -163,7 +163,8 @@ class ReceiptParser {
         const itemPriceColIdx = processedTable[0].length - 1;
         const processedItemsJson = processedTable.map((itemRow) => {
             let obj = {};
-            obj[itemRow[itemNameColIdx]] = itemRow[itemPriceColIdx];
+            obj["name"] = itemRow[itemNameColIdx];
+            obj["price"] = itemRow[itemPriceColIdx];
             return obj;
         }, {});
     
@@ -199,9 +200,10 @@ async function insertTransactionToDB(gid, img_data, parsedReceiptJson) {
 
 async function insertItemsToDB(tid, receiptItemsJson) {
     receiptItemsJson.forEach(async itemObject => {
-        [item_name, item_price] = Object.entries(itemObject)[0];
-        const item = new Item(tid, item_name, item_price);
-        const insertedItemId = await item.createItem();
+        const itemName = itemObject["name"];
+        const itemPrice = itemObject["price"];
+        const item = new Item(tid, itemName, itemPrice);
+        const insertedItemId = await item.insertItemToDB();
     });
 }
 

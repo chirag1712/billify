@@ -1,5 +1,6 @@
 package com.frontend.billify.login;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,7 +16,9 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.frontend.billify.MainActivity;
 import com.frontend.billify.R;
+import com.frontend.billify.UploadReceiptActivity;
 import com.frontend.billify.models.User;
 import com.frontend.billify.controllers.UserService;
 import com.frontend.billify.services.RetrofitService;
@@ -44,6 +47,17 @@ public class LoginFragment extends Fragment {
         final TextInputEditText usernameEditText = view.findViewById(R.id.username_edit_text);
         MaterialButton nextButton = view.findViewById(R.id.next_button);
 
+        MaterialButton uploadScreenButton = view.findViewById(R.id.go_to_upload_screen);
+
+        uploadScreenButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(),
+                        UploadReceiptActivity.class);
+                startActivity(intent);
+            }
+        }
+        );
         // Set an error if the password is less than 8 characters.
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,4 +141,5 @@ public class LoginFragment extends Fragment {
     private boolean isUsernameValid(@Nullable Editable text) {
         return text != null && text.length() > 0;
     }
+
 }
