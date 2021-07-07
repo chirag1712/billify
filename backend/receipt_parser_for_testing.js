@@ -160,13 +160,13 @@ function processRawItemsTable(rawItemsTable) {
     }
 
     let processedTable = rawItemsTable.filter(filterNonPriceRows).map(mapPriceStrToFloat);
-    let itemNameColIdx = findItemNameColIdx(processedTable);
-    let itemPriceColIdx = processedTable[0].length - 1;
+    const itemNameColIdx = findItemNameColIdx(processedTable);
+    const itemPriceColIdx = processedTable[0].length - 1;
     // let processed_items = processedTable.reduce((obj, itemRow) => {
     //         obj[itemRow[itemNameColIdx]] = itemRow[itemPriceColIdx];
     //         return obj;
     //     }, {});
-    let processed_items = processedTable.map((itemRow) => {
+    const processed_items = processedTable.map((itemRow) => {
         obj = {};
         obj[itemRow[itemNameColIdx]] = itemRow[itemPriceColIdx];
         return obj;
@@ -187,9 +187,9 @@ function main() {
             },
             FeatureTypes: ["TABLES"]
         };    
-        let rawItemsTable = await extractRawItemsFromReceipt(params);
+        const rawItemsTable = await extractRawItemsFromReceipt(params);
         console.log(rawItemsTable);
-        let processed_items = processRawItemsTable(rawItemsTable);
+        const processed_items = processRawItemsTable(rawItemsTable);
         console.log(processed_items);    
     });
 }

@@ -1,6 +1,6 @@
 const aws = require("aws-sdk");
 const fs = require("fs");
-const Transaction = require("../models/transaction.model.js");
+const TransactionModel = require("../models/transaction.model.js");
 const Item = require("../models/item.model.js");
 
 // createTable and argmax are utility methods
@@ -159,11 +159,12 @@ class ReceiptParser {
         }
     
         let processedTable = rawItemsTable.filter(filterNonPriceRows).map(mapPriceStrToFloat);
-        let itemNameColIdx = this.findItemNameColIdx(processedTable);
-        let itemPriceColIdx = processedTable[0].length - 1;
-        let processedItemsJson = processedTable.map((itemRow) => {
+        const itemNameColIdx = this.findItemNameColIdx(processedTable);
+        const itemPriceColIdx = processedTable[0].length - 1;
+        const processedItemsJson = processedTable.map((itemRow) => {
             let obj = {};
-            obj[itemRow[itemNameColIdx]] = itemRow[itemPriceColIdx];
+            obj["name"] = itemRow[itemNameColIdx];
+            obj["price"] = itemRow[itemPriceColIdx];
             return obj;
         }, {});
     
@@ -178,7 +179,7 @@ class ReceiptParser {
             FeatureTypes: ["TABLES"]
         };    
         let rawItemsTable = await this.extractRawItemsFromReceipt(params);
-        let processed_items = this.processRawItemsTable(rawItemsTable);
+        const processed_items = this.processRawItemsTable(rawItemsTable);
         return processed_items;
     }
 
@@ -191,8 +192,8 @@ async function insertTransactionsAndItemsToDB(gid, img_data, parsedReceiptJson) 
 }
 
 async function insertTransactionToDB(gid, img_data, parsedReceiptJson) {
-    transaction = new Transaction(gid, img_data);
-    let insertedTid = await transaction.createTransaction();
+    const transactionService = new TransactionModel(gid);
+    const insertedTid = await transactionService.createTransaction(gid, img_data);
     parsedReceiptJson = {"items": parsedReceiptJson, "tid": insertedTid};
     return parsedReceiptJson;
 }
@@ -200,9 +201,26 @@ async function insertTransactionToDB(gid, img_data, parsedReceiptJson) {
 async function insertItemsToDB(tid, receiptItemsJson) {
     receiptItemsJson.forEach(async itemObject => {
         [item_name, item_price] = Object.entries(itemObject)[0];
-        let item = new Item(tid, item_name, item_price);
-        let insertedItemId = await item.createItem();
+        const item = new Item(tid, item_name, item_price);
+        const insertedItemId = await item.createItem();
     });
 }
 
-module.exports =  {ReceiptParser, insertTransactionsAndItemsToDB};
+async function getGroupTransactions(gid) {
+    const transactionService = new TransactionModel(gid);
+    const transactionJson = await transactionService.getTransactionsForGroup(gid);
+    return transactionJson;
+}
+
+async function getTransactionItems(tid) {
+    const transactionService = new TransactionModel();
+    const transactionItemsJson = await transactionService.getTransactionItems(tid);
+    return transactionItemsJson;
+}
+
+module.exports =  {
+    ReceiptParser, 
+    insertTransactionsAndItemsToDB, 
+    getGroupTransactions,
+    getTransactionItems
+};
