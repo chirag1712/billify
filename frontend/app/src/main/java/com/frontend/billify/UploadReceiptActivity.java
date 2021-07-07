@@ -121,7 +121,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
     private boolean CameraHasPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
-            System.out.println("PERMISSION Granted!!");
             return true;
         }
         return false;
