@@ -16,9 +16,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.frontend.billify.HomepageActivity;
+import com.frontend.billify.NavigationHost;
 import com.frontend.billify.R;
 import com.frontend.billify.models.User;
 import com.frontend.billify.controllers.UserService;
@@ -49,7 +51,9 @@ public class LoginFragment extends Fragment {
         final TextInputEditText passwordEditText = view.findViewById(R.id.password_edit_text);
         final TextInputLayout emailTextInput = view.findViewById(R.id.email_text_input);
         final TextInputEditText emailEditText = view.findViewById(R.id.email_edit_text);
+        final ProgressBar loginProgress = view.findViewById(R.id.loginProgressBar);
         MaterialButton nextButton = view.findViewById(R.id.next_button);
+        MaterialButton signupButton = view.findViewById(R.id.signup_button);
 
         // Set an error if the password is less than 8 characters.
         nextButton.setOnClickListener(new View.OnClickListener() {
@@ -67,6 +71,7 @@ public class LoginFragment extends Fragment {
                 }
 
                 if (valid) {
+                    loginProgress.setVisibility(View.VISIBLE);
                     passwordTextInput.setError(null); // Clear the error
                     //((NavigationHost) getActivity()).navigateTo(new ProductGridFragment(), false); // Navigate to the next Fragment
                     String email = emailEditText.getText().toString();
@@ -82,6 +87,7 @@ public class LoginFragment extends Fragment {
                         new Callback<User>() {
                             @Override
                             public void onResponse(Call<User> call, Response<User> response) {
+                                loginProgress.setVisibility(View.GONE);
                                 loginToast.cancel();
                                 if (!response.isSuccessful()) {
                                     try {
@@ -105,6 +111,7 @@ public class LoginFragment extends Fragment {
 
                             @Override
                             public void onFailure(Call<User> call, Throwable t) {
+                                loginProgress.setVisibility(View.GONE);
                                 loginToast.cancel();
                                 System.out.println("Error: " + t.getMessage());
                                 Toast.makeText(getActivity().getApplicationContext(),
@@ -112,6 +119,13 @@ public class LoginFragment extends Fragment {
                             }
                     });
                 }
+            }
+        });
+
+        signupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((NavigationHost) getActivity()).navigateTo(new RegisterFragment(), true);
             }
         });
 
