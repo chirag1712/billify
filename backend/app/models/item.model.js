@@ -10,17 +10,35 @@ class Item {
 
     createItem() {
         return new Promise((resolve, reject) => {
-            sql.query("INSERT INTO Item SET ?", 
-            this, (err, res) => {
-                if (err) {
-                    console.log("error: ", err);
-                    reject(err);
-                }
-                // console.log("Item entered: ", res);
-                resolve(res["insertId"]);
-            });
+            sql.query("INSERT INTO Item SET ?",
+                this, (err, res) => {
+                    if (err) {
+                        console.log("error: ", err);
+                        reject(err);
+                    }
+                    // console.log("Item entered: ", res);
+                    resolve(res["insertId"]);
+                });
         });
     }
 }
 
-module.exports = Item;
+class UserItem {
+
+    static getUidsForItem(itemId) {
+        return new Promise((resolve, reject) => {
+            sql.query("SELECT uid FROM UserItem where item_id = ?", itemId, (err, res) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                } else {
+                    console.log("uids found: ", res);
+                    resolve(res);
+                }
+            });
+        })
+    }
+
+}
+
+module.exports = { Item, UserItem };
