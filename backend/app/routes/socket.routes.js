@@ -25,12 +25,13 @@ class SocketHandler {
                 try {
                     const itemId2uids = {};
                     const items = await Transaction.getTransactionItems(tid);
-                    items.map(async (item) => {
+                    const fetchPromises = items.map(async (item) => {
                         const uids = await UserItem.getUidsForItem(item.item_id);
                         itemId2uids[item.item_id] = uids;
                     });
 
                     // update current socket state
+                    await Promise.all([...fetchPromises]);
                     state = Session.setState(tid, itemId2uids);
                 } catch (err) {
                     console.log("Internal error: Couldn't fetch transaction state: " + err);
@@ -47,7 +48,6 @@ class SocketHandler {
         // (uid and item_id in json message), update socket state, and reemit for other users
         // of the room - current uids of the item_id
         client.on("selectItem", ({ uid, tid, item_id }) => {
-            console.log(uid, tid, item_id);
             const obj = Session.userSelect(tid, item_id, uid);
             console.log("selected. for ", item_id, " uids: ", obj.uids);
             // emit {item_id, uids}
@@ -55,8 +55,7 @@ class SocketHandler {
 
         // event listener: "deselectItem"
         client.on("deselectItem", ({ uid, item_id, tid }) => {
-            console.log(uid, item_id, tid);
-            const obj = Session.userDeselect(item_id, uid);
+            const obj = Session.userDeselect(tid, item_id, uid);
             console.log("deselected. for ", item_id, " uids: ", obj.uids);
             // emit {item_id, uids}
         });

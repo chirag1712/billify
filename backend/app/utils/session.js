@@ -82,13 +82,13 @@ class Session {
     // todo: deal with prices later
     setState(tid, itemId2uids) {
         const state = { items: [] };
-        for ([item_id, uids] in Object.entries(itemId2uids)) {
+        Object.entries(itemId2uids).forEach(([item_id, uids]) => {
             state.items.push({ item_id, uids });
             if (!this.tid2itemId2uids[tid]) {
                 this.tid2itemId2uids[tid] = {};
             }
             this.tid2itemId2uids[tid][item_id] = new Set(uids);
-        }
+        });
         return state;
     }
 }
