@@ -59,9 +59,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
                 try {
                     if (CameraHasPermission()) {
                         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        System.out.println("AFter permission granted!");
                         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                            System.out.println("IN not null takePictureIntent!");
                             // Create the File where the photo should go
                             File photoFile = null;
                             try {
