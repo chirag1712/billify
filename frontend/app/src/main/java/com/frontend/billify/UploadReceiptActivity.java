@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -21,7 +22,9 @@ import com.frontend.billify.models.Transaction;
 import com.frontend.billify.services.RetrofitService;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -30,9 +33,17 @@ public class UploadReceiptActivity extends AppCompatActivity {
     private File currPhotoFile;
     private static final int CAMERA_PIC_REQUEST = 1;
     private static final int IMAGE_PICKER_CODE = 2;
+    private static final String TAG = UploadReceiptActivity.class.getName();
     private final RetrofitService retrofitService = new RetrofitService();
     private final TransactionController transactionController = new TransactionController(retrofitService);
-    private final Transaction transaction = new Transaction(0, 0, null, null);
+    private final Transaction transaction = new Transaction(
+            0,
+            0,
+            null,
+            null,
+            null,
+            null
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +59,9 @@ public class UploadReceiptActivity extends AppCompatActivity {
                 try {
                     if (CameraHasPermission()) {
                         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        System.out.println("AFter permission granted!");
                         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                            System.out.println("IN not null takePictureIntent!");
                             // Create the File where the photo should go
                             File photoFile = null;
                             try {
@@ -84,11 +97,16 @@ public class UploadReceiptActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     Intent imagePickerIntent = new Intent(Intent.ACTION_PICK,
-                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            MediaStore.Images.Media.INTERNAL_CONTENT_URI);
 
                     if (imagePickerIntent.resolveActivity(getPackageManager()) != null) {
                         startActivityForResult(imagePickerIntent, IMAGE_PICKER_CODE);
                     }
+//                    Intent imagePickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                    imagePickerIntent.setType("image/*");
+//
+//                    startActivityForResult(Intent.createChooser(imagePickerIntent, "Select Picture"),
+//                            IMAGE_PICKER_CODE);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -105,12 +123,14 @@ public class UploadReceiptActivity extends AppCompatActivity {
     private boolean CameraHasPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
+            System.out.println("PERMISSION Granted!!");
             return true;
         }
         return false;
     }
 
     private void requestCameraPermission() {
+        System.out.println("Ask permission!");
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.CAMERA},
                 CAMERA_PIC_REQUEST);
@@ -135,18 +155,52 @@ public class UploadReceiptActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         try {
-            super.onActivityResult(requestCode, resultCode, data);
-            if (requestCode == CAMERA_PIC_REQUEST  && resultCode  == RESULT_OK) {
+            if ((requestCode == CAMERA_PIC_REQUEST) && (resultCode == RESULT_OK)) {
                 transactionController.createTransaction(
                         4,
-                        UploadReceiptActivity.this.currPhotoFile);
+                        this.currPhotoFile
+                );
+            } else if ((requestCode == IMAGE_PICKER_CODE) && (resultCode == RESULT_OK)) {
+                try {
+                    // Creating file
+                    this.currPhotoFile = null;
+                    try {
+                        this.currPhotoFile = createImageFile();
+                    } catch (IOException ex) {
+                        Log.d(TAG, "Error occurred while creating the file");
+                    }
+
+                    InputStream inputStream = getContentResolver().openInputStream(data.getData());
+                    FileOutputStream outputStream = new FileOutputStream(this.currPhotoFile);
+                    // Copying
+                    copyStream(inputStream, outputStream);
+                    outputStream.close();
+                    inputStream.close();
+                    transactionController.createTransaction(
+                            4,
+                            this.currPhotoFile
+                    );
+
+                } catch (Exception e) {
+                    Log.d(TAG, "onActivityResult: " + e.toString());
+                }
+
             }
         } catch (Exception ex) {
             Toast.makeText(this, ex.toString(),
                     Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private void copyStream(InputStream inputStream, FileOutputStream outputStream) throws IOException {
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, bytesRead);
+        }
     }
 
 }
