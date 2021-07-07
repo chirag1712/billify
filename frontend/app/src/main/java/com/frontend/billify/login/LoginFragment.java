@@ -1,5 +1,6 @@
 package com.frontend.billify.login;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.frontend.billify.Homepage_activity;
 import com.frontend.billify.R;
 import com.frontend.billify.models.User;
 import com.frontend.billify.controllers.UserService;
@@ -84,6 +86,7 @@ public class LoginFragment extends Fragment {
                                 User userResponse = response.body();
                                 Toast.makeText(getActivity().getApplicationContext(),
                                         "Successfully logged in", Toast.LENGTH_SHORT).show();
+                                openHomepage();
                             }
 
                             @Override
@@ -94,6 +97,12 @@ public class LoginFragment extends Fragment {
                             }
                     });
                 }
+            }
+
+            public void openHomepage(){
+                Intent intent = new Intent(getActivity(),Homepage_activity.class);
+                startActivity(intent);
+
             }
         });
 

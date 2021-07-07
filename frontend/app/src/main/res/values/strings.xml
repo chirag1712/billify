@@ -7,4 +7,6 @@
     <string name="button_cancel">Cancel</string>
     <string name="error_password">Password must contain at least 8 characters.</string>
     <string name="error_username">Username must not be empty.</string>
+    <string name="view_all_group">  + View Groups</string>
+
 </resources>
