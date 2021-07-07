@@ -8,4 +8,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="loginPageBackgroundColor">#FFFDD0</color>
+    <color name="cyan_button">#33b5e5</color>
 </resources>
