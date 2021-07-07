@@ -24,19 +24,6 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements NavigationHost {
 
-    Button b1,b2;
-    EditText ed1,ed2;
-
-    TextView tx1;
-    int counter = 3;
-
-    private final RetrofitService retrofitService = new RetrofitService();
-    private final UserService userService = new UserService(retrofitService);
-
-    private final String validEmail = "test@gmail.com";
-    private final String newEmail = "newEmail@gmail.com";
-    private final User user = new User(validEmail, "", "");
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
