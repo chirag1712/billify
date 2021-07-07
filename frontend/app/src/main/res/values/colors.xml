@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="loginPageBackgroundColor">#FFFDD0</color>
     <color name="cyan_button">#33b5e5</color>
+    <color name="group_popup">#FDFD96</color>
+
 </resources>

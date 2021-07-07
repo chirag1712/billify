@@ -14,7 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Billify"
         tools:targetApi="n">
-        <activity android:name=".Homepage_activity"></activity>
+        <activity android:name=".groupPop"
+            android:theme="@style/Theme.Billify.group_popup">
+        </activity>
+        <activity android:name=".HomepageActivity"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
