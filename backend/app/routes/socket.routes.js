@@ -21,12 +21,13 @@ class SocketHandler {
             if (isFirst) {
                 // fetch state from db
                 try {
-                // const itemIds = .....
-                const uids = await UserItem.getUidsForItem(itemId);
-                
-                // update current socket state
-                state = Session.setState(tid, itemId, price, uids)
-                } catch(err) {
+                    // const itemIds = .....
+                    // for each item
+                    const uids = await UserItem.getUidsForItem(itemId);
+
+                    // update current socket state
+                    state = Session.setState(tid, itemId2uids, price, uids)
+                } catch (err) {
                     console.log("Internal error: Couldn't fetch transaction state: " + err);
                 }
             } else {

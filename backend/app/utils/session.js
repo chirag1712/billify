@@ -57,8 +57,8 @@ class Session {
 
     // STATE MANAGEMENT
     // STATE: {
-    //      user_prices: [{username, price}], 
-    //      items: [{item_id, itemname, price, users: [username]}]
+    //      user_prices: [{uid, price}], 
+    //      items: [{item_id, price, users: [uid]}]
     // }
     getState(tid) {
         // should return uids mapped to {price: price, items: [{itemId, itemNames}]}
