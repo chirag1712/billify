@@ -36,7 +36,7 @@ class Session {
         if(!this.tid2itemId2uids[tid][item_id]) {
             this.tid2itemId2uids[tid][item_id] = new Set();
         }
-        this.tid2itemId2uids[tid][item_id].add(uid));
+        this.tid2itemId2uids[tid][item_id].add(uid);
         const uids = Array.from(this.tid2itemId2uids[tid][item_id]);
         return {item_id, uids};
     }
@@ -54,7 +54,7 @@ class Session {
         const tid = this.uid2Tid[uid];
 
         if (this.tid2num[tid] == 1) {
-            // TODO: persist to db latest state
+            // TODO: persist to db latest state - flush userItems for this tid and push server state
             // can also clear socket state for this transaction since next fetch would fetch from db
             // might not need to clear it as it can save db trip
         }
@@ -71,7 +71,7 @@ class Session {
     //      items: [{item_id, price, uids: [uid]}]
     // }
     getState(tid) {
-        const state = {items = []};
+        const state = {items: []};
         for ([item_id, uids] in Object.entries(this.tid2itemId2uids[tid])) {
             state.items.push({ item_id, uids: Array.from(uids) });
         }
@@ -80,7 +80,7 @@ class Session {
 
     // returns new state
     // todo: deal with prices later
-    setState(tid, itemId2uids, uids) {
+    setState(tid, itemId2uids) {
         const state = { items: [] };
         for ([item_id, uids] in Object.entries(itemId2uids)) {
             state.items.push({ item_id, uids });

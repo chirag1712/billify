@@ -14,7 +14,7 @@ class SocketHandler {
         // takes (tid), joins room for that tid, update socket state accordingly
         // if first user, fetch from db those tid details (update session state) 
         // else fetch from current socket state of transaction
-        client.on("startSession", ({ uid, tid }) => {
+        client.on("startSession", async ({ uid, tid }) => {
             console.log("startSession from uid=", uid, ", tid=", tid);
             const isFirst = Session.userJoin(client.id, uid, tid);
             client.join(tid); // socket room identified by tid
@@ -23,15 +23,15 @@ class SocketHandler {
             if (isFirst) {
                 // fetch state from db
                 try {
-                    const item_id2uids = {};
+                    const itemId2uids = {};
                     const items = await Transaction.getTransactionItems(tid);
-                    items.map((item) => {
+                    items.map(async (item) => {
                         const uids = await UserItem.getUidsForItem(item.item_id);
-                        item_id2uids[item_id] = uids;
+                        itemId2uids[item.item_id] = uids;
                     });
 
                     // update current socket state
-                    state = Session.setState(tid, itemId2uids, uids);
+                    state = Session.setState(tid, itemId2uids);
                 } catch (err) {
                     console.log("Internal error: Couldn't fetch transaction state: " + err);
                 }
@@ -58,6 +58,7 @@ class SocketHandler {
             console.log(uid, item_id, tid);
             const obj = Session.userDeselect(item_id, uid);
             console.log("deselected. for ", item_id, " uids: ", obj.uids);
+            // emit {item_id, uids}
         });
 
         // event listener: "disconnect"

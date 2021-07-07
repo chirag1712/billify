@@ -32,7 +32,7 @@ class UserItem {
                     console.log(err);
                     reject(err);
                 } else {
-                    console.log("uids found: ", res);
+                    console.log("uids found for itemId=", itemId, ": ", res);
                     resolve(res);
                 }
             });
