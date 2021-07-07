@@ -163,7 +163,8 @@ class ReceiptParser {
         const itemPriceColIdx = processedTable[0].length - 1;
         const processedItemsJson = processedTable.map((itemRow) => {
             let obj = {};
-            obj[itemRow[itemNameColIdx]] = itemRow[itemPriceColIdx];
+            obj["name"] = itemRow[itemNameColIdx];
+            obj["price"] = itemRow[itemPriceColIdx];
             return obj;
         }, {});
     

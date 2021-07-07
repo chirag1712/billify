@@ -21,7 +21,7 @@ const parseReceipt = async (request, response) => {
 
 const getGroupTransactions = async (request, response) => {
     try {
-        const gid = request.body["gid"];
+        const gid = request.params.gid;
         const groupTransactionsJson = await TransactionService.getGroupTransactions(gid);
         return response.send(groupTransactionsJson);
     } catch (err) {
@@ -31,7 +31,7 @@ const getGroupTransactions = async (request, response) => {
 
 const getTransactionItems = async (request, response) => {
     try {
-        const tid = request.body["tid"];
+        const tid = request.params.tid;
         const transactionItemsJson = await TransactionService.getTransactionItems(tid);
         return response.send(transactionItemsJson);
     } catch (err) {

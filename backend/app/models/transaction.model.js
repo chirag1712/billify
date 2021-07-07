@@ -21,7 +21,6 @@ class TransactionModel {
                     console.log("error: ", err);
                     reject(err);
                 }
-                console.log("Transaction entered: ", res);
                 resolve(res["insertId"]);
             });
         });
