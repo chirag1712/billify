@@ -13,10 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.Toast;
 
-import com.frontend.billify.Homepage_activity;
+import com.frontend.billify.HomepageActivity;
 import com.frontend.billify.R;
 import com.frontend.billify.models.User;
 import com.frontend.billify.controllers.UserService;
@@ -100,7 +99,7 @@ public class LoginFragment extends Fragment {
             }
 
             public void openHomepage(){
-                Intent intent = new Intent(getActivity(),Homepage_activity.class);
+                Intent intent = new Intent(getActivity(), HomepageActivity.class);
                 startActivity(intent);
 
             }
