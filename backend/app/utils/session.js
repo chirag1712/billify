@@ -1,11 +1,11 @@
 class Session {
     constructor() {
         // TRANSACTION STATE
-        // stores tid to itemid to list of users - state of transaction items
-        this.tid2itemId2uid = {};
+        // stores tid to itemid to set of uids - state of transaction items
+        this.tid2itemId2uids = {};
 
         // stores tid to uid to price owed for that transaction - state of user prices
-        this.tid2uid2price = {}; // if we want running totals even when transaction not final
+        // this.tid2uid2price = {}; // if we want running totals even when transaction not final
 
         // SOCKET ROOM STATE
         // socket id to uid (since disconnect only sends socket id)
@@ -32,12 +32,21 @@ class Session {
         return true;
     }
 
-    userSelect(item_id, uid) {
-        
+    userSelect(tid, item_id, uid) {
+        if(!this.tid2itemId2uids[tid][item_id]) {
+            this.tid2itemId2uids[tid][item_id] = new Set();
+        }
+        this.tid2itemId2uids[tid][item_id].add(uid));
+        const uids = Array.from(this.tid2itemId2uids[tid][item_id]);
+        return {item_id, uids};
     }
 
-    userDeselect(item_id, uid) {
-
+    userDeselect(tid, item_id, uid) {
+        if(!this.tid2itemId2uids[tid][item_id].delete(uid)) {
+            throw Error(uid + " didnt select " + item_id + " to begin with");
+        }
+        const uids = Array.from(this.tid2itemId2uids[tid][item_id]);
+        return {item_id, uids};
     }
 
     userLeave(socketId) {
@@ -45,9 +54,7 @@ class Session {
         const tid = this.uid2Tid[uid];
 
         if (this.tid2num[tid] == 1) {
-            // persist to db latest state from these:
-            // this.tid2itemId2uid
-            // this.tid2uid2price
+            // TODO: persist to db latest state
         }
 
         delete this.tid2num[tid];
@@ -58,14 +65,28 @@ class Session {
     // STATE MANAGEMENT
     // STATE: {
     //      user_prices: [{uid, price}], 
-    //      items: [{item_id, price, users: [uid]}]
+    //      items: [{item_id, price, uids: [uid]}]
     // }
     getState(tid) {
-        // should return uids mapped to {price: price, items: [{itemId, itemNames}]}
+        const state = {items = []};
+        for ([item_id, uids] in Object.entries(this.tid2itemId2uids[tid])) {
+            state.items.push({ item_id, uids: Array.from(uids) });
+        }
+        return state;
     }
 
-    setState(tid, itemId, price, uids) {
-        // should return new state as well
+    // returns new state
+    // todo: deal with prices later
+    setState(tid, itemId2uids, uids) {
+        const state = { items: [] };
+        for ([item_id, uids] in Object.entries(itemId2uids)) {
+            state.items.push({ item_id, uids });
+            if (!this.tid2itemId2uids[tid]) {
+                this.tid2itemId2uids[tid] = {};
+            }
+            this.tid2itemId2uids[tid][item_id] = new Set(uids);
+        }
+        return state;
     }
 }
 
