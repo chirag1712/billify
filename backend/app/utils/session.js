@@ -56,6 +56,7 @@ class Session {
         if (this.tid2num[tid] == 1) {
             // TODO: persist to db latest state
             // can also clear socket state for this transaction since next fetch would fetch from db
+            // might not need to clear it as it can save db trip
         }
 
         // update room state
