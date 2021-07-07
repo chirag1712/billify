@@ -20,7 +20,9 @@ public class UserService {
         return this.apiRoutes.loginUser(user);
     }
 
-    public void signupUser(User user) {
+    public Call<User>  signupUser(User user) {
+        return this.apiRoutes.signupUser(user);
+        /*
         Call<User> call = this.apiRoutes.signupUser(user);
 
         call.enqueue(new Callback<User>() {
@@ -39,5 +41,6 @@ public class UserService {
                 System.out.println("Error: " + t.getMessage());
             }
         });
+         */
     }
 }

@@ -7,4 +7,8 @@
     <string name="button_cancel">Cancel</string>
     <string name="error_password">Password must contain at least 8 characters.</string>
     <string name="error_username">Username must not be empty.</string>
+    <string name="error_email">Email must not be empty.</string>
+    <string name="button_signup">Sign Up</string>
+    <string name="welcome">Welcome</string>
+    <string name="hint_email">Email</string>
 </resources>
