@@ -46,6 +46,7 @@ public class TransactionController {
                 Transaction transactionResponse = response.body();
                 System.out.println("Successful request with return value: " + transactionResponse);
                 transactionResponse.printItems();
+                System.out.println(transactionResponse.getTid());
             }
 
             @Override
