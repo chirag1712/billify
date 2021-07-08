@@ -14,13 +14,16 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.models.Item;
 import com.frontend.billify.models.Transaction;
+import com.frontend.billify.persistence.Persistence;
 import com.frontend.billify.services.RetrofitService;
 
 import java.io.File;
@@ -64,6 +67,19 @@ public class UploadReceiptActivity extends AppCompatActivity {
         final Button showGalleryButton = (Button) findViewById(R.id.show_gallery);
         final ProgressBar uploadProgress = findViewById(R.id.uploadProgressBar);
         this.uploadProgress = uploadProgress;
+
+        final Spinner mySpinner = (Spinner) findViewById(R.id.choose_group);
+
+        // fetch the records from the endpoints
+//        uids in persistence
+//      just fetch all groups here for this user and get names
+        int uid = Persistence.getUserId(this); // -1 means no userId
+        String groups[] = {"hello", "bye"};
+
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+                this, android.R.layout.simple_spinner_item, groups);
+        mySpinner.setAdapter(spinnerArrayAdapter);
+
         takePhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
