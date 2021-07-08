@@ -6,10 +6,10 @@ import com.frontend.billify.services.RetrofitService;
 
 import retrofit2.Call;
 
-public class ListGroupService {
+public class GroupService {
     private final ApiRoutes apiRoutes;
 
-    public ListGroupService(RetrofitService retrofitService) {
+    public GroupService(RetrofitService retrofitService) {
         this.apiRoutes = retrofitService.retrofit.create(ApiRoutes.class);
     }
 

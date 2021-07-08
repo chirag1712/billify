@@ -105,7 +105,6 @@ public class LoginFragment extends Fragment {
                                 }
                                 User user = response.body(); // only userId is returned
                                 Persistence.saveUserId(getActivity(), user.getId());
-                                System.out.println("userId" + Persistence.getUserId(getActivity()));
                                 openHomepage();
                             }
 
@@ -113,7 +112,6 @@ public class LoginFragment extends Fragment {
                             public void onFailure(Call<User> call, Throwable t) {
                                 loginProgress.setVisibility(View.GONE);
                                 loginToast.cancel();
-                                System.out.println("Error: " + t.getMessage());
                                 Toast.makeText(getActivity().getApplicationContext(),
                                         "Cannot connect to login server", Toast.LENGTH_LONG).show();
                             }

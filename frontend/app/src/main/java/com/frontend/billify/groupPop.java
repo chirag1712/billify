@@ -9,10 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-
-import com.frontend.billify.controllers.ListGroupService;
-import com.frontend.billify.controllers.UserService;
+import com.frontend.billify.controllers.GroupService;
 import com.frontend.billify.models.Group;
 import com.frontend.billify.models.GroupListAdapter;
 import com.frontend.billify.models.User;
@@ -30,7 +27,10 @@ import retrofit2.Response;
 public class groupPop extends Activity {
 
     private final RetrofitService retrofitService = new RetrofitService();
-    private final ListGroupService groupService = new ListGroupService(retrofitService);
+    private final GroupService groupService = new GroupService(retrofitService);
+
+    //create an array list of the groups a user belongs to
+    ArrayList<Group> groups = new ArrayList<Group>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +44,9 @@ public class groupPop extends Activity {
         int screen_height = dm.heightPixels;
         getWindow().setLayout((int)(screen_width*0.8),(int) (screen_height*0.8));
 
-        //create an array list of the groups a user belongs to
-        ArrayList<Group> groups = new ArrayList<Group>();
 
         int uid = Persistence.getUserId(this);
-
+        System.out.println("UID " + uid);
 
         groupService.getGroups(uid).enqueue(
                 new Callback<User>() {
@@ -70,21 +68,20 @@ public class groupPop extends Activity {
                         }
                         User user = response.body(); // only userId is returned
                         groups.addAll(user.getGroups());
+                        PopulateGroups();
                     }
 
                     @Override
                     public void onFailure(Call<User> call, Throwable t) {
 
-                        System.out.println("Error: " + t.getMessage());
                         Toast.makeText(groupPop.this.getApplicationContext(),
                                 "Cannot connect to login server", Toast.LENGTH_LONG).show();
                     }
                 });
+    }
 
-//        groups.add(new Group(1,"cs446 group"));
-//        groups.add(new Group(2,"apartment group"));
-//        groups.add(new Group(3,"work group"));
-//        groups.add(new Group(4,"gym group"));
+    public void PopulateGroups() {
+        System.out.println("Group name " + groups.get(0).getGroup_name());
 
         //Create an adapter that generates list views for the group list and adds it to group popup window
         GroupListAdapter grouplistadapter = new GroupListAdapter (this, groups);
@@ -100,6 +97,5 @@ public class groupPop extends Activity {
                 startActivity(new Intent(groupPop.this, GroupTransaction.class));
             }
         });
-
     }
 }
