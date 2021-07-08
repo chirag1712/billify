@@ -31,7 +31,7 @@ class SocketHandler {
                     });
 
                     // update current socket state
-                    await Promise.all([...fetchPromises]);
+                    await Promise.all(fetchPromises);
                     state = Session.setState(tid, itemId2uids);
                 } catch (err) {
                     console.log("Internal error: Couldn't fetch transaction state: " + err);
