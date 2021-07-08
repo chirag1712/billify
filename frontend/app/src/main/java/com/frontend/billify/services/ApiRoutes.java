@@ -16,6 +16,7 @@ import retrofit2.http.Part;
 
 public interface ApiRoutes {
 
+    // User routes
     @POST("api/users/login/")
     Call<User> loginUser(@Body User user);
 

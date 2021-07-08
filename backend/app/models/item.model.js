@@ -10,8 +10,7 @@ class Item {
 
     insertItemToDB() {
         return new Promise((resolve, reject) => {
-            sql.query("INSERT INTO Item SET ?", 
-            this, (err, res) => {
+            sql.query("INSERT INTO Item SET ?", this, (err, res) => {
                 if (err) {
                     console.log("error: ", err);
                     reject(err);
@@ -23,4 +22,22 @@ class Item {
     }
 }
 
-module.exports = Item;
+class UserItem {
+
+    static getUidsForItem(itemId) {
+        return new Promise((resolve, reject) => {
+            sql.query("SELECT uid FROM UserItem where item_id = ?", itemId, (err, res) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                } else {
+                    console.log("uids found for itemId=", itemId, ": ", res);
+                    resolve(res);
+                }
+            });
+        })
+    }
+
+}
+
+module.exports = { Item, UserItem };
