@@ -34,7 +34,7 @@ class UserItem {
 
     createUserItem() {
         return new Promise((resolve, reject) => {
-            sql.query("INSERT INTO Item SET ?", this, (err, res) => {
+            sql.query("INSERT INTO UserItem SET ?", this, (err, res) => {
                 if (err) {
                     console.log("error: ", err);
                     reject(err);
