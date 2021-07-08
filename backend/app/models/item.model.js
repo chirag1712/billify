@@ -10,15 +10,14 @@ class Item {
 
     createItem() {
         return new Promise((resolve, reject) => {
-            sql.query("INSERT INTO Item SET ?",
-                this, (err, res) => {
-                    if (err) {
-                        console.log("error: ", err);
-                        reject(err);
-                    }
-                    // console.log("Item entered: ", res);
-                    resolve(res["insertId"]);
-                });
+            sql.query("INSERT INTO Item SET ?", this, (err, res) => {
+                if (err) {
+                    console.log("error: ", err);
+                    reject(err);
+                }
+                // console.log("Item entered: ", res);
+                resolve(res["insertId"]);
+            });
         });
     }
 }
