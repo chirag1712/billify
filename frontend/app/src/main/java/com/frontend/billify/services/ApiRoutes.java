@@ -12,7 +12,10 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 import retrofit2.http.Part;
+
 
 public interface ApiRoutes {
 
@@ -23,10 +26,14 @@ public interface ApiRoutes {
     @POST("api/users/signup/")
     Call<User> signupUser(@Body User user);
 
+
+    @GET("api/groups/user/{uid}")
+    Call<User> getGroups(@Path("uid") int uid);
+
     // NOTE: parse-receipt endpoint creates transaction
     @Multipart
     @POST("api/transactions/parse-receipt")
     Call<Transaction> createTransaction(
             @Part("gid") RequestBody gid,
-            @Part MultipartBody.Part file);
+            @Part MultipartBody.Part file)
 }

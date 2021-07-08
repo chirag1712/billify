@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GroupTransaction"
+    android:background="@color/general_background"
+>
+
+    <Button
+        android:id="@+id/add_group_receipt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="+ Add Receipt"
+        android:backgroundTint="@color/cyan_button"
+        android:layout_marginTop="30dp"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/total_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/add_group_receipt"
+        android:layout_alignLeft="@id/add_group_receipt"
+        android:text= "Total Spent:"
+        android:textColor="@color/black"
+        android:textSize="20sp"/>
+
+    <TextView
+        android:id="@+id/total_amount_int"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/total_amount"
+        android:layout_alignLeft="@id/total_amount"
+        android:text= "300.00 $"
+        android:textColor="@color/black"
+        android:textSize="50sp"/>
+
+    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/group_popup"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/total_amount_int"
+        android:background="@color/group_popup">
+
+    </ListView>
+
+
+</RelativeLayout>

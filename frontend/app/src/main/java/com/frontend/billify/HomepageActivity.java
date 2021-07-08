@@ -28,7 +28,9 @@ public class HomepageActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
+
                 startActivity(new Intent(HomepageActivity.this, groupPop.class));
+
             }
         });
 
