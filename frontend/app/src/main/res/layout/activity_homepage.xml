@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/view_all_group"
             android:layout_marginBottom="40dp"
-            android:text="+CREATE GROUP"
+            android:text="@string/create_group"
             app:backgroundTint="@color/cyan_button" />
 
         <Button
@@ -54,12 +54,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="40dp"
-            android:text="+ADD RECEIPT"
+            android:text="@string/add_receipt"
             app:backgroundTint="@color/cyan_button"
             android:layout_below="@id/create_group_button"/>
 
     </RelativeLayout>
-
-
 
 </RelativeLayout>
