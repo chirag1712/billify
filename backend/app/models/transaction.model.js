@@ -13,10 +13,13 @@ class TransactionModel {
         this.receipt_img = receiptImgData;
         let currDateTime = new Date();
         this.t_date = currDateTime.toISOString().slice(0, 10);
+        const currDateTimeStr = currDateTime.toISOString().slice(0, 16).split("T").join(" ");
         this.t_state = "NOT_STARTED";
         const groupDetails = await Group.getGroupDetails(gid);
+        const groupName = groupDetails[0].group_name;
         // TODO: Get better default transaction Name
-        this.transaction_name = (transaction_name !== undefined) ? transaction_name : this.t_date + " " + groupDetails[0].group_name;
+        // TODO: Default Transaction name is the String concatenation of group name and DateTime.
+        this.transaction_name = transaction_name ? transaction_name : groupName + " " + currDateTimeStr;
         console.log(this.transaction_name);
         return new Promise((resolve, reject) => {
             sql.query("INSERT INTO Transaction SET ?", 
