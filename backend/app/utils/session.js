@@ -55,6 +55,7 @@ class Session {
         const uid = this.socketId2uid[socketId];
         const tid = this.uid2Tid[uid];
         if (this.tid2num[tid] == 1) {
+            console.log("last user leaving");
             // TODO: persist to db latest state
             // option 1: flush userItems for tid and push server state
             // option 2: search if useritem exists in db and not in state: delete 
@@ -70,12 +71,12 @@ class Session {
             });
 
             // clearing socket state
-            // might not need to clear it as it can save db trip
+            // might not need to clear it as it can save db trip later
             delete this.tid2itemId2uids[tid];
         }
 
         // update room state
-        delete this.tid2num[tid];
+        this.tid2num[tid]--;
         delete this.socketId2uid[socketId];
         delete this.uid2Tid[uid];
     }
