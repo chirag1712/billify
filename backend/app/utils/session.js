@@ -1,3 +1,5 @@
+const { UserItem } = require("../models/item.model");
+
 class Session {
     constructor() {
         // TRANSACTION STATE
@@ -52,11 +54,13 @@ class Session {
     userLeave(socketId) {
         const uid = this.socketId2uid[socketId];
         const tid = this.uid2Tid[uid];
-
         if (this.tid2num[tid] == 1) {
             // TODO: persist to db latest state - flush userItems for this tid and push server state
-            // can also clear socket state for this transaction since next fetch would fetch from db
+            UserItem.createOrUpdate(tid, this.tid2itemId2uids[tid]);
+
+            // clearing socket state
             // might not need to clear it as it can save db trip
+            delete this.tid2itemId2uids[tid];
         }
 
         // update room state
@@ -72,6 +76,7 @@ class Session {
     // }
     getState(tid) {
         const state = {items: []};
+        // todo: fix this
         for ([item_id, uids] in Object.entries(this.tid2itemId2uids[tid])) {
             state.items.push({ item_id, uids: Array.from(uids) });
         }

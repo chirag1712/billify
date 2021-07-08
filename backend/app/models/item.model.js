@@ -40,6 +40,11 @@ class UserItem {
         })
     }
 
+    static createOrUpdate(tid, itemId2Uids) {
+        // one way, delete all records for that tid
+        Object.entries(itemId2uids).forEach(([item_id, uids]) => {
+        }
+    }
 }
 
 module.exports = { Item, UserItem };

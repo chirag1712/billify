@@ -19,6 +19,7 @@ class SocketHandler {
             const isFirst = Session.userJoin(client.id, uid, tid);
             client.join(tid); // socket room identified by tid
 
+            // optional todo: modify s.t. fetch from session when available
             var state;
             if (isFirst) {
                 // fetch state from db
