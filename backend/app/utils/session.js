@@ -87,10 +87,9 @@ class Session {
     // }
     getState(tid) {
         const state = {items: []};
-        // todo: fix this
-        for ([item_id, uids] in Object.entries(this.tid2itemId2uids[tid])) {
+        Object.entries(this.tid2itemId2uids[tid]).forEach(([item_id, uids]) => {
             state.items.push({ item_id, uids: Array.from(uids) });
-        }
+        });
         return state;
     }
 
