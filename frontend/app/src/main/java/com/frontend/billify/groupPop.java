@@ -57,7 +57,7 @@ public class groupPop extends Activity {
                         if (!response.isSuccessful()) {
                             try {
                                 JSONObject error = new JSONObject(response.errorBody().string());
-                     git            Toast.makeText(groupPop.this.getApplicationContext(),
+                                 Toast.makeText(groupPop.this.getApplicationContext(),
                                         error.getString("error"),
                                         Toast.LENGTH_LONG).show();
                             } catch (Exception e) {
