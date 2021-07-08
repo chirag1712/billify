@@ -19,6 +19,7 @@ class SocketHandler {
             const isFirst = Session.userJoin(client.id, uid, tid);
             client.join(tid); // socket room identified by tid
 
+            // optional todo: modify s.t. fetch from session when available
             var state;
             if (isFirst) {
                 // fetch state from db
@@ -65,9 +66,9 @@ class SocketHandler {
         // update counts for billify session
         // if last user to leave
         // persist changes to db
-        client.on("disconnect", (reason) => {
+        client.on("disconnect", async (reason) => {
             console.log(reason);
-            Session.userLeave(client.id);
+            await Session.userLeave(client.id);
         });
     }
 }

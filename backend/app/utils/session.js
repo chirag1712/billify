@@ -1,3 +1,5 @@
+const { UserItem } = require("../models/item.model");
+
 class Session {
     constructor() {
         // TRANSACTION STATE
@@ -49,18 +51,32 @@ class Session {
         return {item_id, uids};
     }
 
-    userLeave(socketId) {
+    async userLeave(socketId) {
         const uid = this.socketId2uid[socketId];
         const tid = this.uid2Tid[uid];
-
         if (this.tid2num[tid] == 1) {
-            // TODO: persist to db latest state - flush userItems for this tid and push server state
-            // can also clear socket state for this transaction since next fetch would fetch from db
-            // might not need to clear it as it can save db trip
+            console.log("last user leaving");
+            // TODO: persist to db latest state
+            // option 1: flush userItems for tid and push server state
+            // option 2: search if useritem exists in db and not in state: delete 
+            //      and if useritem does not exist in db but in state: insert
+
+            // using option 1 for now
+            await UserItem.deleteAll(tid);
+            Object.entries(this.tid2itemId2uids[tid]).forEach(([item_id, uids]) => {
+                uids.forEach((uid) => {
+                    const userItem = new UserItem(tid, uid, item_id);
+                    userItem.createUserItem();
+                });
+            });
+
+            // clearing socket state
+            // might not need to clear it as it can save db trip later
+            delete this.tid2itemId2uids[tid];
         }
 
         // update room state
-        delete this.tid2num[tid];
+        this.tid2num[tid]--;
         delete this.socketId2uid[socketId];
         delete this.uid2Tid[uid];
     }
@@ -72,9 +88,9 @@ class Session {
     // }
     getState(tid) {
         const state = {items: []};
-        for ([item_id, uids] in Object.entries(this.tid2itemId2uids[tid])) {
+        Object.entries(this.tid2itemId2uids[tid]).forEach(([item_id, uids]) => {
             state.items.push({ item_id, uids: Array.from(uids) });
-        }
+        });
         return state;
     }
 

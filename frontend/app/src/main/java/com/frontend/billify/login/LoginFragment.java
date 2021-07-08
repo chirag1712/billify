@@ -39,7 +39,6 @@ public class LoginFragment extends Fragment {
 
     private final User user = new User("test@gmail.com", "", "");
 
-
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
