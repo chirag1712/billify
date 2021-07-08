@@ -7,15 +7,31 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.frontend.billify.controllers.ListGroupService;
+import com.frontend.billify.controllers.UserService;
 import com.frontend.billify.models.Group;
 import com.frontend.billify.models.GroupListAdapter;
+import com.frontend.billify.models.User;
+import com.frontend.billify.persistence.Persistence;
+import com.frontend.billify.services.RetrofitService;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class groupPop extends Activity {
+
+    private final RetrofitService retrofitService = new RetrofitService();
+    private final ListGroupService groupService = new ListGroupService(retrofitService);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,10 +46,45 @@ public class groupPop extends Activity {
 
         //create an array list of the groups a user belongs to
         ArrayList<Group> groups = new ArrayList<Group>();
-        groups.add(new Group(1,"cs446 group"));
-        groups.add(new Group(2,"apartment group"));
-        groups.add(new Group(3,"work group"));
-        groups.add(new Group(4,"gym group"));
+
+        int uid = Persistence.getUserId(this);
+
+
+        groupService.getGroups(uid).enqueue(
+                new Callback<User>() {
+                    @Override
+                    public void onResponse(Call<User> call, Response<User> response) {
+                        if (!response.isSuccessful()) {
+                            try {
+                                JSONObject error = new JSONObject(response.errorBody().string());
+                     git            Toast.makeText(groupPop.this.getApplicationContext(),
+                                        error.getString("error"),
+                                        Toast.LENGTH_LONG).show();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Toast.makeText(groupPop.this.getApplicationContext(),
+                                        "Sorry :( Something went wrong.",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                            return;
+                        }
+                        User user = response.body(); // only userId is returned
+                        groups.addAll(user.getGroups());
+                    }
+
+                    @Override
+                    public void onFailure(Call<User> call, Throwable t) {
+
+                        System.out.println("Error: " + t.getMessage());
+                        Toast.makeText(groupPop.this.getApplicationContext(),
+                                "Cannot connect to login server", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+//        groups.add(new Group(1,"cs446 group"));
+//        groups.add(new Group(2,"apartment group"));
+//        groups.add(new Group(3,"work group"));
+//        groups.add(new Group(4,"gym group"));
 
         //Create an adapter that generates list views for the group list and adds it to group popup window
         GroupListAdapter grouplistadapter = new GroupListAdapter (this, groups);

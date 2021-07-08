@@ -7,6 +7,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public interface ApiRoutes {
 
@@ -15,4 +16,7 @@ public interface ApiRoutes {
 
     @POST("api/users/signup/")
     Call<User> signupUser(@Body User user);
+
+    @GET("api/groups/user/:uid")
+    Call<User> getGroups(@Query("uid") int uid);
 }
