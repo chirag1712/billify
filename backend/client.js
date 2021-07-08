@@ -1,8 +1,7 @@
 // Client
-var io2 = require('socket.io-client');
-var socket2 = io2.connect('http://localhost:5000');
-
 const repl = require('repl');
+const io2 = require('socket.io-client');
+var socket2 = io2.connect('http://localhost:5000');
 
 repl.start({
     prompt: 'command = ',

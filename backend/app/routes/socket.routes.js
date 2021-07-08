@@ -66,9 +66,9 @@ class SocketHandler {
         // update counts for billify session
         // if last user to leave
         // persist changes to db
-        client.on("disconnect", (reason) => {
+        client.on("disconnect", async (reason) => {
             console.log(reason);
-            Session.userLeave(client.id);
+            await Session.userLeave(client.id);
         });
     }
 }

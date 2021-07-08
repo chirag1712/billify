@@ -51,7 +51,7 @@ class Session {
         return {item_id, uids};
     }
 
-    userLeave(socketId) {
+    async userLeave(socketId) {
         const uid = this.socketId2uid[socketId];
         const tid = this.uid2Tid[uid];
         if (this.tid2num[tid] == 1) {

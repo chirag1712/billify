@@ -47,13 +47,17 @@ class UserItem {
 
     static getUidsForItem(itemId) {
         return new Promise((resolve, reject) => {
-            sql.query("SELECT uid FROM UserItem where item_id = ?", itemId, (err, res) => {
+            sql.query("SELECT * FROM UserItem where item_id = ?", itemId, (err, res) => {
                 if (err) {
                     console.log(err);
                     reject(err);
                 } else {
-                    console.log("uids found for itemId=", itemId, ": ", res);
-                    resolve(res);
+                    const uids = [];
+                    res.map((userItem) => {
+                        uids.push(userItem.uid);
+                    });
+                    console.log("uids found for itemId=", itemId, ": ", uids);
+                    resolve(uids);
                 }
             });
         })
