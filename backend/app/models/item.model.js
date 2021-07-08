@@ -15,7 +15,6 @@ class Item {
                     console.log(err);
                     reject(err);
                 } else {
-                    console.log("uids found: ", res);
                     resolve(res);
                 }
             });

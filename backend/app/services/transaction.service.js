@@ -1,7 +1,6 @@
 const aws = require("aws-sdk");
-const fs = require("fs");
 const TransactionModel = require("../models/transaction.model.js");
-const Item = require("../models/item.model.js");
+const { Item } = require("../models/item.model.js");
 
 // createTable and argmax are utility methods
 function createTable(numRows, numCols) {
