@@ -35,6 +35,8 @@ public class Transaction {
         return this.gid;
     }
 
+    public String getName() { return this.transaction_name; }
+
     public ArrayList<Item> getItems() {
         return this.items;
     }

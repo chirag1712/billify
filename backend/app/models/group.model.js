@@ -68,4 +68,21 @@ Group.getUsersForGroup = (gid) => {
     });
 }
 
+Group.getGroupDetails = (gid) => {
+    return new Promise((resolve, reject) => {
+        sql.query(
+            "SELECT * FROM BillifyGroup WHERE gid = ?",
+            gid,
+            (err, res) => {
+                if (err) {
+                    console.log("error: ", err);
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            }
+         )
+    })
+}
+
 module.exports = { Group, MemberOf };

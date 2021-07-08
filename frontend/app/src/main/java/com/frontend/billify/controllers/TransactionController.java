@@ -44,7 +44,9 @@ public class TransactionController {
                     return;
                 }
                 Transaction transactionResponse = response.body();
-                System.out.println("Successful request with return value: " + transactionResponse);
+                System.out.println("Successful request with return value: "
+                        + transactionResponse.getName()
+                );
                 transactionResponse.printItems();
                 System.out.println(transactionResponse.getTid());
             }
