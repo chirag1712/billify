@@ -21,7 +21,7 @@ public class TransactionController {
         this.apiRoutes = retrofitService.retrofit.create(ApiRoutes.class);
     }
 
-    public void createTransaction(int gid, File img) {
+    public Call<Transaction> createTransaction(int gid, File img) {
         RequestBody requestGid = RequestBody.create(
                 MediaType.parse("multipart/form-data"),
                 Integer.toString(gid)
@@ -36,26 +36,8 @@ public class TransactionController {
                 requestImg
         );
         Call<Transaction> call = this.apiRoutes.createTransaction(requestGid, body);
-        call.enqueue(new Callback<Transaction>() {
-            @Override
-            public void onResponse(Call<Transaction> call, Response<Transaction> response) {
-                if (!response.isSuccessful()) {
-                    System.out.println("Error code onResponse " + response.code() + " " + response.errorBody().toString());
-                    return;
-                }
-                Transaction transactionResponse = response.body();
-                System.out.println("Successful request with return value: "
-                        + transactionResponse.getName()
-                );
-                transactionResponse.printItems();
-                System.out.println(transactionResponse.getTid());
-            }
+        return call;
 
-            @Override
-            public void onFailure(Call<Transaction> call, Throwable t) {
-                System.out.println("Error: " + t.getMessage());
-            }
-        });
     }
 
 
