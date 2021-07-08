@@ -9,17 +9,17 @@ public class Transaction {
     private String t_state;
     // TODO: Let DB Schema be fixed and cross-reference names with DB
     private String receipt_img; // NOTE: This is a URL
-    private String transactionName;
+    private String transaction_name;
     private ArrayList<Item> items;
 
     public Transaction(int tid, int gid, String t_date, String t_state,
-                       String transactionName, String receipt_img) {
+                       String transaction_name, String receipt_img) {
         this.tid = tid;
         this.gid = gid;
         this.t_date = t_date;
         this.t_state = t_state;
         this.items = new ArrayList<Item>();
-        this.transactionName = transactionName;
+        this.transaction_name = transaction_name;
         this.receipt_img = receipt_img;
     }
 

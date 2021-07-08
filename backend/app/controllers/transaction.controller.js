@@ -8,8 +8,13 @@ const parseReceipt = async (request, response) => {
         try {
             const data = request.files["file"]["data"];
             const gid = request.body["gid"];
+            const transaction_name = request.body["transaction_name"];
             const parsedReceiptJson = await receiptParser.parseReceiptData(data);
-            const jsonResponse = await TransactionService.insertTransactionsAndItemsToDB(gid, data, parsedReceiptJson);
+            const jsonResponse = await TransactionService.insertTransactionsAndItemsToDB(
+                gid, 
+                transaction_name,
+                data, 
+                parsedReceiptJson);
             console.log(jsonResponse);
             return response.send(jsonResponse); 
         } catch (err) {

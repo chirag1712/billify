@@ -8,12 +8,13 @@ class TransactionModel {
         }
     }
 
-    createTransaction(gid, receiptImgData) {
+    createTransaction(gid, transaction_name, receiptImgData) {
         this.gid = gid;
         this.receipt_img = receiptImgData;
         let currDateTime = new Date();
         this.t_date = currDateTime.toISOString().slice(0, 10);
-        this.t_state = "NOT_STARTED";    
+        this.t_state = "NOT_STARTED";
+        this.transaction_name = transaction_name;
         return new Promise((resolve, reject) => {
             sql.query("INSERT INTO Transaction SET ?", 
             this, (err, res) => {
