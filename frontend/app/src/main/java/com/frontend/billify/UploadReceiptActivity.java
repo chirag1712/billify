@@ -15,6 +15,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.frontend.billify.controllers.TransactionController;
@@ -27,6 +28,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class UploadReceiptActivity extends AppCompatActivity {
     String currentPhotoPath;
@@ -45,6 +50,8 @@ public class UploadReceiptActivity extends AppCompatActivity {
             null
     );
 
+    private ProgressBar uploadProgress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -53,6 +60,8 @@ public class UploadReceiptActivity extends AppCompatActivity {
 
         final Button takePhotoButton = (Button) findViewById(R.id.take_photo);
         final Button showGalleryButton = (Button) findViewById(R.id.show_gallery);
+        final ProgressBar uploadProgress = findViewById(R.id.uploadProgressBar);
+        this.uploadProgress = uploadProgress;
         takePhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,6 +135,35 @@ public class UploadReceiptActivity extends AppCompatActivity {
         return false;
     }
 
+    private void createTransaction(
+            int gid,
+            TransactionController transactionController
+    ) {
+        transactionController.createTransaction(
+                gid,
+                this.currPhotoFile
+        ).enqueue(new Callback<Transaction>() {
+            @Override
+            public void onResponse(Call<Transaction> call, Response<Transaction> response) {
+                if (!response.isSuccessful()) {
+                    System.out.println("Error code onResponse " + response.code() + " " + response.errorBody().toString());
+                    return;
+                }
+                Transaction transactionResponse = response.body();
+                uploadProgress.setVisibility(View.GONE);
+                System.out.println("Successful request with return value: "
+                        + transactionResponse.getName()
+                );
+                transactionResponse.printItems();
+                System.out.println(transactionResponse.getTid());
+            }
+
+            @Override
+            public void onFailure(Call<Transaction> call, Throwable t) {
+                System.out.println("Error: " + t.getMessage());
+            }
+        });
+    }
     private void requestCameraPermission() {
         System.out.println("Ask permission!");
         ActivityCompat.requestPermissions(this,
@@ -155,10 +193,12 @@ public class UploadReceiptActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         try {
             if ((requestCode == CAMERA_PIC_REQUEST) && (resultCode == RESULT_OK)) {
-                transactionController.createTransaction(
-                        4,
-                        this.currPhotoFile
-                );
+                this.uploadProgress.setVisibility(View.VISIBLE);
+                this.createTransaction(4, transactionController);
+//                transactionController.createTransaction(
+//                        4,
+//                        this.currPhotoFile
+//                );
             } else if ((requestCode == IMAGE_PICKER_CODE) && (resultCode == RESULT_OK)) {
                 try {
                     // Creating file
@@ -175,10 +215,12 @@ public class UploadReceiptActivity extends AppCompatActivity {
                     copyStream(inputStream, outputStream);
                     outputStream.close();
                     inputStream.close();
-                    transactionController.createTransaction(
-                            4,
-                            this.currPhotoFile
-                    );
+                    this.uploadProgress.setVisibility(View.VISIBLE);
+                    this.createTransaction(4, transactionController);
+//                    transactionController.createTransaction(
+//                            4,
+//                            this.currPhotoFile
+//                    );
 
                 } catch (Exception e) {
                     Log.d(TAG, "onActivityResult: " + e.toString());
