@@ -185,24 +185,25 @@ class ReceiptParser {
 
 }
 
-async function insertTransactionsAndItemsToDB(gid, img_data, parsedReceiptJson) {
-    parsedReceiptJson = await insertTransactionToDB(gid, img_data, parsedReceiptJson);
+async function insertTransactionsAndItemsToDB(gid, transaction_name, img_data, parsedReceiptJson) {
+    parsedReceiptJson = await insertTransactionToDB(gid, transaction_name, img_data, parsedReceiptJson);
     await insertItemsToDB(parsedReceiptJson["tid"], parsedReceiptJson["items"]);
     return parsedReceiptJson;
 }
 
-async function insertTransactionToDB(gid, img_data, parsedReceiptJson) {
+async function insertTransactionToDB(gid, transaction_name, img_data, parsedReceiptJson) {
     const transactionService = new TransactionModel(gid);
-    const insertedTid = await transactionService.createTransaction(gid, img_data);
+    const insertedTid = await transactionService.createTransaction(gid, transaction_name, img_data);
     parsedReceiptJson = {"items": parsedReceiptJson, "tid": insertedTid};
     return parsedReceiptJson;
 }
 
 async function insertItemsToDB(tid, receiptItemsJson) {
     receiptItemsJson.forEach(async itemObject => {
-        [item_name, item_price] = Object.entries(itemObject)[0];
-        const item = new Item(tid, item_name, item_price);
-        const insertedItemId = await item.createItem();
+        const itemName = itemObject["name"];
+        const itemPrice = itemObject["price"];
+        const item = new Item(tid, itemName, itemPrice);
+        const insertedItemId = await item.insertItemToDB();
     });
 }
 

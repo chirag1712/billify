@@ -22,11 +22,23 @@ public class HomepageActivity extends AppCompatActivity {
         System.out.println("userId" + Persistence.getUserId(this)); // -1 means no userId
 
         Button view_group_button = (Button) findViewById(R.id.view_all_group);
+        Button add_receipt_button = (Button) findViewById(R.id.add_receipt_button);
+
         view_group_button.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(HomepageActivity.this, groupPop.class));
+            }
+        });
+
+        add_receipt_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(
+                        HomepageActivity.this,
+                        UploadReceiptActivity.class)
+                );
             }
         });
 
