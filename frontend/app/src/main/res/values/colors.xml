@@ -10,5 +10,6 @@
     <color name="loginPageBackgroundColor">#FFFDD0</color>
     <color name="cyan_button">#00c4cc</color>
     <color name="group_popup">#ffd93b</color>
+    <color name="general_background">#fffbe8</color>
 
 </resources>
