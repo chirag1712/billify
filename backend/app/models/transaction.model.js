@@ -1,5 +1,5 @@
 const sql = require("./db.js");
-
+const {Group, MemberOf} = require("./group.model.js");
 class TransactionModel {
 
     constructor(gid) {
@@ -8,13 +8,16 @@ class TransactionModel {
         }
     }
 
-    createTransaction(gid, transaction_name, receiptImgData) {
+    async createTransaction(gid, transaction_name, receiptImgData) {
         this.gid = gid;
         this.receipt_img = receiptImgData;
         let currDateTime = new Date();
         this.t_date = currDateTime.toISOString().slice(0, 10);
         this.t_state = "NOT_STARTED";
-        this.transaction_name = transaction_name;
+        const groupDetails = await Group.getGroupDetails(gid);
+        // TODO: Get better default transaction Name
+        this.transaction_name = (transaction_name !== undefined) ? transaction_name : this.t_date + " " + groupDetails[0].group_name;
+        console.log(this.transaction_name);
         return new Promise((resolve, reject) => {
             sql.query("INSERT INTO Transaction SET ?", 
             this, (err, res) => {
@@ -22,11 +25,17 @@ class TransactionModel {
                     console.log("error: ", err);
                     reject(err);
                 }
-                resolve(res["insertId"]);
+                resolve(
+                    {
+                        "transaction_name": this.transaction_name, 
+                        "tid": res["insertId"]
+                    });
             });
         });
 
     }
+
+    
 
     getTransactionsForGroup(gid) {
         if (gid !== undefined) {

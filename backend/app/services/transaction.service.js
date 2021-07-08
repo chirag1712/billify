@@ -193,8 +193,13 @@ async function insertTransactionsAndItemsToDB(gid, transaction_name, img_data, p
 
 async function insertTransactionToDB(gid, transaction_name, img_data, parsedReceiptJson) {
     const transactionService = new TransactionModel(gid);
-    const insertedTid = await transactionService.createTransaction(gid, transaction_name, img_data);
-    parsedReceiptJson = {"items": parsedReceiptJson, "tid": insertedTid};
+    const transactionObj = await transactionService.createTransaction(gid, transaction_name, img_data);
+
+    parsedReceiptJson = {
+        "items": parsedReceiptJson,  
+        "tid": transactionObj["tid"], 
+        "transaction_name": transactionObj["transaction_name"]
+    };
     return parsedReceiptJson;
 }
 
