@@ -27,4 +27,8 @@
     <string name="hint_member_email">Member Email</string>
     <string name="button_create">Create</string>
 
+    <!-- Upload Receipt -->
+    <string name="take_photo">Take Photo</string>
+    <string name="gallery">Gallery</string>
+
 </resources>
