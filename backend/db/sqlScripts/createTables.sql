@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS MemberOf (
 CREATE TABLE IF NOT EXISTS Transaction (
     tid INT NOT NULL AUTO_INCREMENT,
     gid INT NOT NULL,
-    transaction_name VARCHAR(100) NOT NULL,
+    transaction_name VARCHAR(200) NOT NULL,
     receipt_img BLOB NOT NULL,
     t_date DATE NOT NULL,
     t_state ENUM('NOT_STARTED', 'IN_PROGRESS', 'APPROVED'),
