@@ -1,15 +1,7 @@
 package com.frontend.billify.login;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.preference.PreferenceManager;
-
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -19,21 +11,20 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.frontend.billify.HomepageActivity;
 import com.frontend.billify.NavigationHost;
 import com.frontend.billify.R;
-import com.frontend.billify.models.Message;
-import com.frontend.billify.models.User;
 import com.frontend.billify.controllers.UserService;
+import com.frontend.billify.models.User;
 import com.frontend.billify.persistence.Persistence;
 import com.frontend.billify.services.RetrofitService;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.gson.Gson;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import org.json.JSONObject;
 
@@ -47,20 +38,10 @@ public class LoginFragment extends Fragment {
 
     private final User user = new User("test@gmail.com", "", "");
 
-    private Socket mSocket;
-    {
-        try {
-            mSocket = IO.socket("http://10.0.2.2:5000");
-        } catch (URISyntaxException e) {}
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSocket.connect();
-        Toast.makeText(getActivity().getApplicationContext(),
-                "sending socket message ...", Toast.LENGTH_SHORT).show();
-        mSocket.emit("testConnection", "hello from android app");
     }
 
 
@@ -81,25 +62,6 @@ public class LoginFragment extends Fragment {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Socket mSocket = null;
-                {
-                    try {
-                        mSocket = IO.socket("http://10.0.2.2:5000");
-                    } catch (URISyntaxException e) {}
-                }
-
-                mSocket.connect();
-                Toast.makeText(getActivity().getApplicationContext(),
-                        "sending socket message ...", Toast.LENGTH_SHORT).show();
-                Gson gson = new Gson();
-                try {
-                    Message m = new Message(1, 1);
-                    JSONObject obj = new JSONObject(gson.toJson(m));
-//                    mSocket.disconnect(); can be manually emitted to disconnect client from the session
-                    mSocket.emit("startSession", obj);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
 
                 boolean valid = true;
                 if (!isPasswordValid(passwordEditText.getText())) {
