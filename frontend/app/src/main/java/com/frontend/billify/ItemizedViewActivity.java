@@ -30,7 +30,7 @@ public class ItemizedViewActivity extends Activity {
         items.add(new ReceiptItem("Strawberry Banana Smoothie [130.0 Cals] Select Size Medium 250.0 Cals] CA$1.60", 4.09));
         items.add(new ReceiptItem("Double Big Mac [730.0 Cals]", 8.29));
         items.add(new ReceiptItem("Chocolate Triple Thick Milkshake [500.0 Cals]", 4.09));
-        ReceiptsItemsRecViewAdapter adapter = new ReceiptsItemsRecViewAdapter();
+        ReceiptsItemsRecViewAdapter adapter = new ReceiptsItemsRecViewAdapter(this);
         adapter.setItems(items);
         itemsRecView.setAdapter(adapter);
         itemsRecView.setLayoutManager(new LinearLayoutManager(this));
