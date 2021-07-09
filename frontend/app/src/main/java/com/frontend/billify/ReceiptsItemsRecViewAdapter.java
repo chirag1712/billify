@@ -1,11 +1,15 @@
 package com.frontend.billify;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
@@ -15,9 +19,10 @@ import java.util.ArrayList;
 public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsItemsRecViewAdapter.ViewHolder>{
 
     private ArrayList<ReceiptItem> items = new ArrayList<>();
+    private Context context;
 
-    public ReceiptsItemsRecViewAdapter() {
-
+    public ReceiptsItemsRecViewAdapter(Context context) {
+        this.context = context;
     }
 
     @NonNull
@@ -31,7 +36,14 @@ public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsIt
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
-        holder.txt.setText(items.get(position).getName());
+        holder.item_name.setText(items.get(position).getName());
+        holder.price.setText(items.get(position).getPrice());
+        holder.parent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, items.get(position).getName() + " Selected", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -45,10 +57,13 @@ public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsIt
     }
 
     public class ViewHolder  extends  RecyclerView.ViewHolder{
-        private TextView txt;
+        private TextView item_name, price;
+        private CardView parent;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            txt = itemView.findViewById(R.id.receiptItem);
+            item_name = itemView.findViewById(R.id.receiptItem);
+            price = itemView.findViewById(R.id.itemPrice);
+            parent = itemView.findViewById(R.id.receiptItemsParent);
         }
     }
 }
