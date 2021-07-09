@@ -1,10 +1,5 @@
 package com.frontend.billify;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -18,8 +13,12 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+
 import com.frontend.billify.controllers.TransactionController;
-import com.frontend.billify.models.Item;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.services.RetrofitService;
 
@@ -27,7 +26,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -64,6 +62,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
         final Button showGalleryButton = (Button) findViewById(R.id.show_gallery);
         final ProgressBar uploadProgress = findViewById(R.id.uploadProgressBar);
         this.uploadProgress = uploadProgress;
+
         takePhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -208,7 +207,8 @@ public class UploadReceiptActivity extends AppCompatActivity {
         try {
             if ((requestCode == CAMERA_PIC_REQUEST) && (resultCode == RESULT_OK)) {
                 this.uploadProgress.setVisibility(View.VISIBLE);
-                this.createTransaction(4, transactionController);
+                System.out.println("In upload image " + getIntent().getStringExtra("gid"));
+                this.createTransaction(Integer.parseInt(getIntent().getStringExtra("gid")), transactionController);
             } else if ((requestCode == IMAGE_PICKER_CODE) && (resultCode == RESULT_OK)) {
                 try {
                     // Creating file
@@ -226,8 +226,8 @@ public class UploadReceiptActivity extends AppCompatActivity {
                     outputStream.close();
                     inputStream.close();
                     this.uploadProgress.setVisibility(View.VISIBLE);
-                    this.createTransaction(4, transactionController);
-
+                    System.out.println("In upload image " + getIntent().getStringExtra("gid"));
+                    this.createTransaction(Integer.parseInt(getIntent().getStringExtra("gid")), transactionController);
                 } catch (Exception e) {
                     Log.d(TAG, "onActivityResult: " + e.toString());
                 }

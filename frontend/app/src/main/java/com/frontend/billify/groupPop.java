@@ -91,10 +91,12 @@ public class groupPop extends Activity {
 
         // make items clickable and transition to group transaction history pages
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                startActivity(new Intent(groupPop.this, GroupTransaction.class));
+                Intent intent = new Intent(groupPop.this, GroupTransaction.class);
+                System.out.println("In grouppop " + groups.get(i).getGid());
+                intent.putExtra("gid", String.valueOf(groups.get(i).getGid()));
+                startActivity(intent);
             }
         });
     }
