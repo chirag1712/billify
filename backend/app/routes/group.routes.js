@@ -11,8 +11,9 @@ router.post("/create", group.create);
 // dealing with individual group - either not returning it or just letting it be there as a feature
 router.get("/user/:uid", group.listUserGroups);
 
-// @route  GET api/groups/:gid/user/:uid
+// @route  GET api/groups/get-users/:gid
 // route for fetching details (like list of transactions etc) for a single group
 // need uid to fetch labels for the user transactions
+router.get("/get-users/:gid", group.getUsersOfGroup);
 
 module.exports = router;

@@ -51,4 +51,38 @@ MemberOf.listGroupsForUser = (uid) => {
     });
 }
 
+Group.getUsersForGroup = (gid) => {
+    return new Promise((resolve, reject) => {
+        sql.query(
+            "SELECT u.uid, u.user_name, u.email FROM MemberOf mo, User u WHERE (mo.gid = ?) AND (mo.uid = u.uid)", 
+            gid,
+            (err, res) => {
+                if (err) {
+                    console.log("error: ", err);
+                    reject(err);
+                } else {
+                    console.log("Users of group: ", res);
+                    resolve(res);
+                }
+            });
+    });
+}
+
+Group.getGroupDetails = (gid) => {
+    return new Promise((resolve, reject) => {
+        sql.query(
+            "SELECT * FROM BillifyGroup WHERE gid = ?",
+            gid,
+            (err, res) => {
+                if (err) {
+                    console.log("error: ", err);
+                    reject(err);
+                } else {
+                    resolve(res);
+                }
+            }
+         )
+    })
+}
+
 module.exports = { Group, MemberOf };

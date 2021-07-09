@@ -45,4 +45,14 @@ const listUserGroups = async (request, response) => {
     }
 }
 
-module.exports = { create, listUserGroups }
+const getUsersOfGroup = async (request, response) => {
+    const gid = request.params.gid;
+    try {
+        const UsersData = await Group.getUsersForGroup(gid);
+        return response.send({users: UsersData});
+    } catch (err) {
+        return response.status(500).send({ error: "Internal error: : Failed getting users of the group" + err});
+    }
+}
+
+module.exports = { create, listUserGroups, getUsersOfGroup};

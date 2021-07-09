@@ -1,15 +1,7 @@
 package com.frontend.billify.login;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.preference.PreferenceManager;
-
 import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -19,11 +11,16 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.frontend.billify.HomepageActivity;
 import com.frontend.billify.NavigationHost;
+import com.frontend.billify.MainActivity;
 import com.frontend.billify.R;
-import com.frontend.billify.models.User;
 import com.frontend.billify.controllers.UserService;
+import com.frontend.billify.models.User;
 import com.frontend.billify.persistence.Persistence;
 import com.frontend.billify.services.RetrofitService;
 import com.google.android.material.button.MaterialButton;
@@ -162,4 +159,5 @@ public class LoginFragment extends Fragment {
     private boolean isEmailValid(@Nullable Editable text) {
         return text != null && text.length() > 0;
     }
+
 }

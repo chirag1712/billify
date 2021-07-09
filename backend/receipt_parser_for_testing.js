@@ -115,7 +115,7 @@ function findItemNameColIdx(itemsTable) {
     for (let colIdx=0; colIdx < numNonPriceCols; ++colIdx) {
         let col = itemsTable.map(itemRow => itemRow[colIdx]);
         let numAlphabetsInCol = col.map(
-            item => item.replaceAll(/[0-9\. ]/g, "").length
+            item => item.replace(/[0-9\. ]/g, "").length
             ).reduce((acc, curr) => acc + curr, 0);
             numAlphabetsInCols.push(numAlphabetsInCol);
     }
@@ -153,7 +153,7 @@ function processRawItemsTable(rawItemsTable) {
     let mapPriceStrToFloat = itemRow => {
         let priceStr = itemRow[itemRow.length-1];
         // HACK: For European decimals with commas
-        processedPriceStr = priceStr.replaceAll(",", "."); 
+        processedPriceStr = priceStr.replace(",", "."); 
         let parsedPriceFloat = parseFloat(processedPriceStr.match(/[\d]*\.[\d]*/)[0]);
         itemRow[itemRow.length-1] = parsedPriceFloat;
         return itemRow;

@@ -17,7 +17,9 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true">
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="102dp">
 
 
         <TextView
@@ -34,11 +36,10 @@
             android:id="@+id/view_all_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/view_all_group"
-            android:layout_marginBottom="40dp"
-            app:backgroundTint="@color/cyan_button"
             android:layout_below="@id/textView"
-            />
+            android:layout_marginBottom="40dp"
+            android:text="@string/view_all_group"
+            app:backgroundTint="@color/cyan_button" />
 
         <Button
             android:id="@+id/create_group_button"
@@ -53,11 +54,10 @@
             android:id="@+id/add_receipt_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/create_group_button"
             android:layout_marginBottom="40dp"
             android:text="@string/add_receipt"
-            app:backgroundTint="@color/cyan_button"
-            android:layout_below="@id/create_group_button"/>
+            app:backgroundTint="@color/cyan_button" />
 
     </RelativeLayout>
-
 </RelativeLayout>
