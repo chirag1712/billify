@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.frontend.billify.controllers.TransactionController;
+import com.frontend.billify.models.Item;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.services.RetrofitService;
 
@@ -26,6 +27,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -149,13 +151,25 @@ public class UploadReceiptActivity extends AppCompatActivity {
                     System.out.println("Error code onResponse " + response.code() + " " + response.errorBody().toString());
                     return;
                 }
-                Transaction transactionResponse = response.body();
+                Transaction currTransaction = response.body();
                 uploadProgress.setVisibility(View.GONE);
                 System.out.println("Successful request with return value: "
-                        + transactionResponse.getName()
+                        + currTransaction.getName()
                 );
-                transactionResponse.printItems();
-                System.out.println(transactionResponse.getTid());
+                currTransaction.printItems();
+                System.out.println(currTransaction.getTid());
+                Intent moveToItemizedScreenIntent = new Intent(
+                        UploadReceiptActivity.this,
+                        ItemizedViewActivity.class
+                );
+                Bundle b = new Bundle();
+                b.putSerializable("S", currTransaction);
+                moveToItemizedScreenIntent.putExtra(
+                        "B",
+                        b
+                        );
+                startActivity(moveToItemizedScreenIntent);
+
             }
 
             @Override

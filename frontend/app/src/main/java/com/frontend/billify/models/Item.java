@@ -1,6 +1,8 @@
 package com.frontend.billify.models;
 
-public class Item {
+import java.io.Serializable;
+
+public class Item implements Serializable {
     private int item_id;
     private int tid;
     private String name;
@@ -13,6 +15,12 @@ public class Item {
         this.price = price;
     }
 
+    public Item(String name, float price) {
+        this.name = name;
+        this.price = price;
+    }
+
+
     public int getItem_id() {
         return this.item_id;
     }
@@ -23,6 +31,9 @@ public class Item {
 
     public float getPrice() {
         return this.price;
+    }
+    public String getStrPrice() {
+        return Float.toString(this.price);
     }
 
 }

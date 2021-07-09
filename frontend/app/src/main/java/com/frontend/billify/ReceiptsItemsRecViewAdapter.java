@@ -12,13 +12,15 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.frontend.billify.models.Item;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
 public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsItemsRecViewAdapter.ViewHolder>{
 
-    private ArrayList<ReceiptItem> items = new ArrayList<>();
+    private ArrayList<Item> items = new ArrayList<>();
     private Context context;
 
     public ReceiptsItemsRecViewAdapter(Context context) {
@@ -37,7 +39,7 @@ public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsIt
     @Override
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
         holder.item_name.setText(items.get(position).getName());
-        holder.price.setText(items.get(position).getPrice());
+        holder.price.setText(items.get(position).getStrPrice());
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,7 +53,7 @@ public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsIt
         return items.size();
     }
 
-    public void setItems(ArrayList<ReceiptItem> items) {
+    public void setItems(ArrayList<Item> items) {
         this.items = items;
         notifyDataSetChanged();
     }
