@@ -9,11 +9,13 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.frontend.billify.persistence.Persistence;
 
 public class HomepageActivity extends AppCompatActivity {
     Button view_group_button;
+    Button view_receipt_items_button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

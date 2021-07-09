@@ -1,8 +1,9 @@
 package com.frontend.billify.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Transaction {
+public class Transaction implements Serializable {
     private int tid;
     private int gid;
     private String t_date;

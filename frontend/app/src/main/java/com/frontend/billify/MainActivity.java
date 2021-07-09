@@ -7,6 +7,8 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 
 import android.widget.Button;
@@ -19,6 +21,8 @@ import com.frontend.billify.login.LoginFragment;
 import com.frontend.billify.services.ApiRoutes;
 import com.frontend.billify.models.User;
 import com.frontend.billify.services.RetrofitService;
+
+import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -57,5 +61,12 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
         }
 
         transaction.commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
     }
 }
