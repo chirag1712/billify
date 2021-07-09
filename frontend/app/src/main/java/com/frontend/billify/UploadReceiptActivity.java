@@ -162,11 +162,11 @@ public class UploadReceiptActivity extends AppCompatActivity {
                         UploadReceiptActivity.this,
                         ItemizedViewActivity.class
                 );
-                Bundle b = new Bundle();
-                b.putSerializable("S", currTransaction);
+                Bundle transactionBundle = new Bundle();
+                transactionBundle.putSerializable("SerializedTransaction", currTransaction);
                 moveToItemizedScreenIntent.putExtra(
-                        "B",
-                        b
+                        "TransactionBundle",
+                        transactionBundle
                         );
                 startActivity(moveToItemizedScreenIntent);
 
@@ -209,10 +209,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
             if ((requestCode == CAMERA_PIC_REQUEST) && (resultCode == RESULT_OK)) {
                 this.uploadProgress.setVisibility(View.VISIBLE);
                 this.createTransaction(4, transactionController);
-//                transactionController.createTransaction(
-//                        4,
-//                        this.currPhotoFile
-//                );
             } else if ((requestCode == IMAGE_PICKER_CODE) && (resultCode == RESULT_OK)) {
                 try {
                     // Creating file
@@ -231,10 +227,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
                     inputStream.close();
                     this.uploadProgress.setVisibility(View.VISIBLE);
                     this.createTransaction(4, transactionController);
-//                    transactionController.createTransaction(
-//                            4,
-//                            this.currPhotoFile
-//                    );
 
                 } catch (Exception e) {
                     Log.d(TAG, "onActivityResult: " + e.toString());
