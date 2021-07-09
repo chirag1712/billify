@@ -19,8 +19,6 @@ public class HomepageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
 
-        System.out.println("userId" + Persistence.getUserId(this)); // -1 means no userId
-
         Button view_group_button = (Button) findViewById(R.id.view_all_group);
         view_group_button.setOnClickListener(new View.OnClickListener(){
 
@@ -29,6 +27,14 @@ public class HomepageActivity extends AppCompatActivity {
 
                 startActivity(new Intent(HomepageActivity.this, groupPop.class));
 
+            }
+        });
+
+        Button create_group_button = (Button) findViewById(R.id.create_group_button);
+        create_group_button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(HomepageActivity.this, CreateGroupActivity.class));
             }
         });
 

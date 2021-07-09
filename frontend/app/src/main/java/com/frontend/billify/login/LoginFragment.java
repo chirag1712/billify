@@ -66,7 +66,7 @@ public class LoginFragment extends Fragment {
                 }
 
                 if (!isEmailValid(emailEditText.getText())) {
-                    emailTextInput.setError(getString(R.string.error_username));
+                    emailTextInput.setError(getString(R.string.error_email));
                     valid = false;
                 }
 
