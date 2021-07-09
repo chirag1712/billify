@@ -39,10 +39,9 @@ public class HomepageActivity extends AppCompatActivity {
         add_receipt_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(
-                        HomepageActivity.this,
-                        UploadReceiptActivity.class)
-                );
+                Intent intent = new Intent(HomepageActivity.this, UploadReceiptActivity.class);
+                intent.putExtra("gid", "4");
+                startActivity(intent);
             }
         });
 
