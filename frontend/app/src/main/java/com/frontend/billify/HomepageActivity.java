@@ -23,8 +23,9 @@ public class HomepageActivity extends AppCompatActivity {
 
         Button view_group_button = (Button) findViewById(R.id.view_all_group);
         Button add_receipt_button = (Button) findViewById(R.id.add_receipt_button);
+        Button create_group_button = (Button) findViewById(R.id.create_group_button);
 
-        view_group_button.setOnClickListener(new View.OnClickListener(){
+        view_group_button.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -34,11 +35,13 @@ public class HomepageActivity extends AppCompatActivity {
             }
         });
 
-        Button create_group_button = (Button) findViewById(R.id.create_group_button);
-        create_group_button.setOnClickListener(new View.OnClickListener(){
+        create_group_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(HomepageActivity.this, CreateGroupActivity.class));
+            }
+        });
+
         add_receipt_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -47,6 +50,5 @@ public class HomepageActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
     }
 }
