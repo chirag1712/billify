@@ -1,8 +1,11 @@
 package com.frontend.billify.services;
 
 import com.frontend.billify.models.Transaction;
+import com.frontend.billify.models.CreateGroupModel;
+import com.frontend.billify.models.Group;
 import com.frontend.billify.models.User;
 
+import java.util.ArrayList;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -29,6 +32,9 @@ public interface ApiRoutes {
 
     @GET("api/groups/user/{uid}")
     Call<User> getGroups(@Path("uid") int uid);
+
+    @POST("api/groups/create")
+    Call<Group> createGroup(@Body CreateGroupModel createGroupModel);
 
     // NOTE: parse-receipt endpoint creates transaction
     @Multipart

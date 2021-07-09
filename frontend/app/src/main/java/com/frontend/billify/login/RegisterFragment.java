@@ -88,7 +88,6 @@ public class RegisterFragment extends Fragment {
                             new Callback<User>() {
                                 @Override
                                 public void onResponse(Call<User> call, Response<User> response) {
-                                    System.out.println("response reached");
                                     registerProgress.setVisibility(View.GONE);
                                     if (!response.isSuccessful()) {
                                         Toast.makeText(getActivity().getApplicationContext(),
@@ -104,7 +103,6 @@ public class RegisterFragment extends Fragment {
                                 @Override
                                 public void onFailure(Call<User> call, Throwable t) {
                                     registerProgress.setVisibility(View.GONE);
-                                    System.out.println("failure message: " + t.getMessage());
                                     Toast.makeText(getActivity().getApplicationContext(),
                                             t.getMessage(), Toast.LENGTH_LONG).show();
                                 }
