@@ -68,18 +68,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
         final ProgressBar uploadProgress = findViewById(R.id.uploadProgressBar);
         this.uploadProgress = uploadProgress;
 
-        final Spinner mySpinner = (Spinner) findViewById(R.id.choose_group);
-
-        // fetch the records from the endpoints
-//        uids in persistence
-//      just fetch all groups here for this user and get names
-        int uid = Persistence.getUserId(this); // -1 means no userId
-        String groups[] = {"hello", "bye"};
-
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
-                this, android.R.layout.simple_spinner_item, groups);
-        mySpinner.setAdapter(spinnerArrayAdapter);
-
         takePhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -224,7 +212,8 @@ public class UploadReceiptActivity extends AppCompatActivity {
         try {
             if ((requestCode == CAMERA_PIC_REQUEST) && (resultCode == RESULT_OK)) {
                 this.uploadProgress.setVisibility(View.VISIBLE);
-                this.createTransaction(4, transactionController);
+                System.out.println("In upload image " + getIntent().getStringExtra("gid"));
+                this.createTransaction(Integer.parseInt(getIntent().getStringExtra("gid")), transactionController);
             } else if ((requestCode == IMAGE_PICKER_CODE) && (resultCode == RESULT_OK)) {
                 try {
                     // Creating file
@@ -242,8 +231,8 @@ public class UploadReceiptActivity extends AppCompatActivity {
                     outputStream.close();
                     inputStream.close();
                     this.uploadProgress.setVisibility(View.VISIBLE);
-                    this.createTransaction(4, transactionController);
-
+                    System.out.println("In upload image " + getIntent().getStringExtra("gid"));
+                    this.createTransaction(Integer.parseInt(getIntent().getStringExtra("gid")), transactionController);
                 } catch (Exception e) {
                     Log.d(TAG, "onActivityResult: " + e.toString());
                 }
