@@ -60,18 +60,4 @@
             app:backgroundTint="@color/cyan_button" />
 
     </RelativeLayout>
-
-    <Button
-        android:id="@+id/receipt_items_button"
-        android:layout_width="202dp"
-        android:layout_height="45dp"
-        android:layout_marginBottom="116dp"
-        android:text="+VIEW ITEMS"
-        app:backgroundTint="@color/cyan_button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/add_receipt_button" />
-
 </RelativeLayout>

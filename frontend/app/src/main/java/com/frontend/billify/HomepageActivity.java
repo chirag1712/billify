@@ -46,13 +46,5 @@ public class HomepageActivity extends AppCompatActivity {
             }
         });
 
-        Button view_receipt_items_button = (Button) findViewById(R.id.receipt_items_button);
-        view_receipt_items_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(HomepageActivity.this, ItemizedViewActivity.class));
-            }
-        });
-
     }
 }
