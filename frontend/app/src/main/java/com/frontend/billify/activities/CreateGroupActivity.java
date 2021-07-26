@@ -1,4 +1,4 @@
-package com.frontend.billify;
+package com.frontend.billify.activities;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,10 +14,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.frontend.billify.R;
 import com.frontend.billify.controllers.GroupService;
-import com.frontend.billify.controllers.UserService;
 import com.frontend.billify.models.Group;
-import com.frontend.billify.models.User;
 import com.frontend.billify.persistence.Persistence;
 import com.frontend.billify.services.RetrofitService;
 import com.google.android.material.textfield.TextInputEditText;

@@ -1,4 +1,4 @@
-package com.frontend.billify;
+package com.frontend.billify.models;
 
 public class ReceiptItem {
     private String name;

@@ -1,4 +1,4 @@
-package com.frontend.billify.models;
+package com.frontend.billify.adapters;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.frontend.billify.R;
+import com.frontend.billify.models.Group;
 
 import java.util.ArrayList;
 

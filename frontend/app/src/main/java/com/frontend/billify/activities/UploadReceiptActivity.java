@@ -1,4 +1,4 @@
-package com.frontend.billify;
+package com.frontend.billify.activities;
 
 import android.Manifest;
 import android.content.Intent;
@@ -18,6 +18,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.frontend.billify.R;
 import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.services.RetrofitService;

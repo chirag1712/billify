@@ -1,17 +1,13 @@
-package com.frontend.billify;
+package com.frontend.billify.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.frontend.billify.persistence.Persistence;
+import com.frontend.billify.R;
 
 public class HomepageActivity extends AppCompatActivity {
     Button view_group_button;

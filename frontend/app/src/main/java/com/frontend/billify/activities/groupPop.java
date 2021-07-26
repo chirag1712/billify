@@ -1,4 +1,4 @@
-package com.frontend.billify;
+package com.frontend.billify.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -9,9 +9,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.frontend.billify.R;
 import com.frontend.billify.controllers.GroupService;
 import com.frontend.billify.models.Group;
-import com.frontend.billify.models.GroupListAdapter;
+import com.frontend.billify.adapters.GroupListAdapter;
 import com.frontend.billify.models.User;
 import com.frontend.billify.persistence.Persistence;
 import com.frontend.billify.services.RetrofitService;

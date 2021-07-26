@@ -1,19 +1,18 @@
-package com.frontend.billify;
+package com.frontend.billify.activities;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.frontend.billify.R;
+import com.frontend.billify.adapters.ReceiptsItemsRecViewAdapter;
 import com.frontend.billify.models.Item;
 import com.frontend.billify.models.Transaction;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class ItemizedViewActivity extends Activity {
