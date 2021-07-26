@@ -16,7 +16,7 @@ public class GroupTransaction extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_transaction);
 
-        final Button add_group_receipt = (Button) findViewById(R.id.add_group_receipt);
+        final Button add_group_receipt = findViewById(R.id.add_group_receipt);
         add_group_receipt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

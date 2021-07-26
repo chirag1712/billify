@@ -56,7 +56,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         groupNameTextInput = findViewById(R.id.group_name_text_input);
         groupNameEditText = findViewById(R.id.group_name_edit_text);
 
-        parentLinearLayout = (LinearLayout) findViewById(R.id.parent_linear_layout);
+        parentLinearLayout = findViewById(R.id.parent_linear_layout);
     }
 
     public void onAddField(View v) {

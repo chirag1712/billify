@@ -17,9 +17,9 @@ public class HomepageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
 
-        Button view_group_button = (Button) findViewById(R.id.view_all_group);
-        Button add_receipt_button = (Button) findViewById(R.id.add_receipt_button);
-        Button create_group_button = (Button) findViewById(R.id.create_group_button);
+        Button view_group_button = findViewById(R.id.view_all_group);
+        Button add_receipt_button = findViewById(R.id.add_receipt_button);
+        Button create_group_button = findViewById(R.id.create_group_button);
 
         view_group_button.setOnClickListener(new View.OnClickListener() {
 
