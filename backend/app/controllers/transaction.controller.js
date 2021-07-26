@@ -6,17 +6,19 @@ receiptParser = new TransactionService.ReceiptParser();
 const parseReceipt = async (request, response) => {
     if ((request.files) && (request.files["file"])) {
         try {
-            const data = request.files["file"]["data"];
+            // console.log(request.files["file"].name);
+            const imgData = request.files["file"]["data"];
             const gid = request.body["gid"];
             if (gid === undefined) {
                 return response.status(500).send({error: "Error: gid (Group ID) has not been provided in POST request"})
             }
-            const transaction_name = request.body["transaction_name"];
-            const parsedReceiptJson = await receiptParser.parseReceiptData(data);
+            const transactionName = request.body["transaction_name"];
+            const parsedReceiptJson = await receiptParser.parseReceiptData(imgData);
             const jsonResponse = await TransactionService.insertTransactionsAndItemsToDB(
                 gid, 
-                transaction_name,
-                data, 
+                transactionName,
+                imgData,
+                request.files["file"].name,
                 parsedReceiptJson);
             console.log(jsonResponse);
             return response.send(jsonResponse); 

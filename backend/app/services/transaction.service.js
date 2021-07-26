@@ -1,6 +1,17 @@
 const aws = require("aws-sdk");
 const TransactionModel = require("../models/transaction.model.js");
 const { Item } = require("../models/item.model.js");
+const {Group, MemberOf} = require("../models/group.model.js");
+const multer = require('multer')
+const multerS3 = require('multer-s3')
+
+aws.config.update({
+    accessKeyId: process.env.AWS_AccessKeyId,
+    secretAccessKey: process.env.AWS_SecretAccessKey,
+    region: process.env.AWS_region
+});
+
+const s3 = new aws.S3();
 
 // createTable and argmax are utility methods
 function createTable(numRows, numCols) {
@@ -22,11 +33,6 @@ function argmax(arr) {
 
 class ReceiptParser {
     constructor() {
-        aws.config.update({
-            accessKeyId: process.env.AWS_AccessKeyId,
-            secretAccessKey: process.env.AWS_SecretAccessKey,
-            region: process.env.AWS_region
-        });
 
         this.textract = new aws.Textract();
         // Extending Array Proto by adding a none method
@@ -188,9 +194,9 @@ class ReceiptParser {
 
 }
 
-async function insertTransactionsAndItemsToDB(gid, transaction_name, img_data, parsedReceiptJson) {
+async function insertTransactionsAndItemsToDB(gid, transactionName, imgData, imgFileName, parsedReceiptJson) {
     try {
-        parsedReceiptJson = await insertTransactionToDB(gid, transaction_name, img_data, parsedReceiptJson);
+        parsedReceiptJson = await insertTransactionToDB(gid, transactionName, imgData, imgFileName, parsedReceiptJson);
     } catch(err) {
         console.log("Couldn't insert expense into DB");
         throw new Error("Couldn't insert expense into DB, could be that provided gid value was invalid");
@@ -199,14 +205,51 @@ async function insertTransactionsAndItemsToDB(gid, transaction_name, img_data, p
     return parsedReceiptJson;
 }
 
-async function insertTransactionToDB(gid, transaction_name, img_data, parsedReceiptJson) {
+
+function uploadReceiptImgToS3(params) {
+    /*
+    Uploads receipt image in params to S3
+    */
+    return new Promise((resolve, reject) => {
+        s3.upload(params, (err, data) => {
+            if (err) {
+                console.log("Error uploading image to S3 bucket");
+                reject(err);
+            } else {
+                if (data) {
+                    console.log(data);
+                }
+                resolve(data.Location);
+            }
+        });
+    });
+}
+
+async function insertTransactionToDB(gid, transactionName, imgData, imgFileName, parsedReceiptJson) {
     const transactionService = new TransactionModel(gid);
-    const transactionObj = await transactionService.createTransaction(gid, transaction_name, img_data);
+    const imgFileExtension = imgFileName.split(".")[1];
+    const groupDetails = await Group.getGroupDetails(gid);
+    const groupName = groupDetails[0].group_name;
+    let currDateTime = new Date();
+    const currDateTimeStr = currDateTime.toISOString().slice(0, 16).split("T").join(" ");
+    transactionName = transactionName ? transactionName : groupName + " " + currDateTimeStr;
+    const params = {
+        ACL: 'public-read',
+        Bucket: 'billify',
+        Body: imgData,
+        Key: transactionName + "-" + Date.now().toString() +  "." + imgFileExtension
+    }
+    
+    // NOTE: Goal is to add transaction during receipt parsing stage, but we only add items after
+    // user edits items on their mobile app and confirms right set of items to add.
+    const receiptImgS3URI = await uploadReceiptImgToS3(params);
+    const transactionObj = await transactionService.createTransaction(gid, transactionName, receiptImgS3URI);
 
     parsedReceiptJson = {
         "items": parsedReceiptJson,
         "tid": transactionObj["tid"],
-        "transaction_name": transactionObj["transaction_name"]
+        "transaction_name": transactionObj["transaction_name"],
+        "receipt_img": receiptImgS3URI
     };
     return parsedReceiptJson;
 }
