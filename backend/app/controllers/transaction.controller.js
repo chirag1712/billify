@@ -11,7 +11,6 @@ const parseReceipt = async (request, response) => {
             if (gid === undefined) {
                 return response.status(500).send({error: "Error: gid (Group ID) has not been provided in POST request"})
             }
-
             const transaction_name = request.body["transaction_name"];
             const parsedReceiptJson = await receiptParser.parseReceiptData(data);
             const jsonResponse = await TransactionService.insertTransactionsAndItemsToDB(

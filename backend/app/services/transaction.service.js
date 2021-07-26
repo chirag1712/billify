@@ -189,7 +189,12 @@ class ReceiptParser {
 }
 
 async function insertTransactionsAndItemsToDB(gid, transaction_name, img_data, parsedReceiptJson) {
-    parsedReceiptJson = await insertTransactionToDB(gid, transaction_name, img_data, parsedReceiptJson);
+    try {
+        parsedReceiptJson = await insertTransactionToDB(gid, transaction_name, img_data, parsedReceiptJson);
+    } catch(err) {
+        console.log("Couldn't insert expense into DB");
+        throw new Error("Couldn't insert expense into DB, could be that provided gid value was invalid");
+    }
     await insertItemsToDB(parsedReceiptJson["tid"], parsedReceiptJson["items"]);
     return parsedReceiptJson;
 }
