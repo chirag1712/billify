@@ -178,6 +178,10 @@ class ReceiptParser {
             FeatureTypes: ["TABLES"]
         };
         let rawItemsTable = await this.extractRawItemsFromReceipt(params);
+        if (rawItemsTable.length === 0) {
+            console.log("Couldn't parse receipt, no items found.");
+            throw new Error("Couldn't parse receipt, no items found.");
+        }
         const processed_items = this.processRawItemsTable(rawItemsTable);
         return processed_items;
     }
