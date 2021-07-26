@@ -2,8 +2,6 @@ const aws = require("aws-sdk");
 const TransactionModel = require("../models/transaction.model.js");
 const { Item } = require("../models/item.model.js");
 const {Group, MemberOf} = require("../models/group.model.js");
-const multer = require('multer')
-const multerS3 = require('multer-s3')
 
 aws.config.update({
     accessKeyId: process.env.AWS_AccessKeyId,
@@ -217,9 +215,10 @@ function uploadReceiptImgToS3(params) {
                 reject(err);
             } else {
                 if (data) {
-                    console.log(data);
+                    resolve(data.Location);
+                } else {
+                    throw new Error("S3 didn't return data");
                 }
-                resolve(data.Location);
             }
         });
     });
