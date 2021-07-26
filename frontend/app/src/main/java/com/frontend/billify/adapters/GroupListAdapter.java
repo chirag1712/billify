@@ -28,7 +28,7 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
                     R.layout.list_of_groups, parent, false);
         }
         Group current_group = getItem(position);
-        TextView nameTextView = (TextView) listItemView.findViewById(R.id.group_name);
+        TextView nameTextView = listItemView.findViewById(R.id.group_name);
         nameTextView.setText(current_group.getGroup_name());
 
         return listItemView;
