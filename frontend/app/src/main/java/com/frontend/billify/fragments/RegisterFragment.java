@@ -149,7 +149,6 @@ public class RegisterFragment extends Fragment {
                 ((NavigationHost) getActivity()).navigateTo(new LoginFragment(), true);
             }
         });
-
         return view;
     }
 
