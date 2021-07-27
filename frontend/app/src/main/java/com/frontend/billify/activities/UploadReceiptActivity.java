@@ -28,6 +28,8 @@ import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.services.RetrofitService;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -166,12 +168,18 @@ public class UploadReceiptActivity extends AppCompatActivity {
     }
 
     private Uri getPhotoURI(File photoFile) {
+        /*
+        Gets PhotoURI for a given File
+         */
         return FileProvider.getUriForFile(this,
                 "com.example.android.fileprovider",
                 photoFile);
     }
 
     private boolean CameraHasPermission() {
+        /*
+        Returns True if Camera permission is granted and false otherwise
+         */
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED) {
             return true;
@@ -183,18 +191,36 @@ public class UploadReceiptActivity extends AppCompatActivity {
             int gid,
             TransactionController transactionController
     ) {
+        /*
+        Creates a new Group Transaction by making a call to the API, can specify a callback.
+         */
         transactionController.createTransaction(
                 gid,
                 this.currPhotoFile
         ).enqueue(new Callback<Transaction>() {
             @Override
             public void onResponse(Call<Transaction> call, Response<Transaction> response) {
+                uploadProgress.setVisibility(View.GONE);
                 if (!response.isSuccessful()) {
-                    System.out.println("Error code onResponse " + response.code() + " " + response.errorBody().toString());
+                    try {
+                        Toast parseReceiptErrorToast = Toast.makeText(
+                                UploadReceiptActivity.this,
+                                "Couldn't Parse Receipt",
+                                Toast.LENGTH_SHORT
+                        );
+                        parseReceiptErrorToast.show();
+                        System.out.println("Error code onResponse "
+                                + response.code()
+                                + " "
+                                + response.errorBody().string());
+                    } catch (Exception e) {
+                        System.out.println(
+                                "Exception occurred during response callback from receipt parser API: "
+                                        + e);
+                    }
                     return;
                 }
                 Transaction currTransaction = response.body();
-                uploadProgress.setVisibility(View.GONE);
                 System.out.println("Successful request with return value: "
                         + currTransaction.getName()
                 );
@@ -222,6 +248,9 @@ public class UploadReceiptActivity extends AppCompatActivity {
     }
 
     private void requestCameraPermission() {
+        /*
+        Request camera for permission
+         */
         System.out.println("Ask permission!");
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.CAMERA},
@@ -229,6 +258,9 @@ public class UploadReceiptActivity extends AppCompatActivity {
     }
 
     private File createImageFile() throws IOException {
+        /*
+        Create a Temporary file to store an image in
+         */
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "jpg_" + timeStamp + "_";
@@ -249,6 +281,10 @@ public class UploadReceiptActivity extends AppCompatActivity {
 
 
     private void copyStream(InputStream inputStream, FileOutputStream outputStream) throws IOException {
+        /*
+        A method to copy data from an input stream to a file output stream
+         */
+
         byte[] buffer = new byte[1024];
         int bytesRead;
         while ((bytesRead = inputStream.read(buffer)) != -1) {
