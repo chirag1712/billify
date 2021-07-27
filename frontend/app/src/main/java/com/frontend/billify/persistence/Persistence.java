@@ -19,4 +19,11 @@ public class Persistence {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         return settings.getInt(PERS_USER_ID, -1); // -1 means no userId
     }
+
+    public static void clearLoginDetails(Context context) {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.clear();
+        editor.apply();
+    }
 }
