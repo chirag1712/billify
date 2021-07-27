@@ -73,7 +73,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
             }
         });
 
-
         takePhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
