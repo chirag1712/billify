@@ -6,13 +6,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ItemSelecter {
+    private String userName;
     // Can be used to fire events for selecting and deselecting items
     private int uid;
     private int tid;
     private int item_id;
 
-    public ItemSelecter(int uid, int tid, int item_id) {
-        this.uid = uid;
+    public ItemSelecter(User u, int tid, int item_id) {
+        this.uid = u.getId();
+        this.userName = u.getUserName();
         this.tid = tid;
         this.item_id = item_id;
     }

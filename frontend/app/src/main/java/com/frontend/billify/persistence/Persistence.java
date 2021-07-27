@@ -37,6 +37,6 @@ public class Persistence {
 
     public static String getUserName(Context context) {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-        return settings.getInt(PERS_USER_NAME, "NO USER"); // -1 means no userId
+        return settings.getString(PERS_USER_NAME, "NO_USER"); // NO_USER means no userName
     }
 }

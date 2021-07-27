@@ -15,6 +15,7 @@ import com.frontend.billify.R;
 import com.frontend.billify.models.Item;
 import com.frontend.billify.models.ItemSelecter;
 import com.frontend.billify.models.StartSession;
+import com.frontend.billify.models.User;
 import com.frontend.billify.persistence.Persistence;
 
 import org.jetbrains.annotations.NotNull;
@@ -25,16 +26,18 @@ import io.socket.client.Socket;
 
 public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsItemsRecViewAdapter.ViewHolder>{
 
+    private String userName;
     private int tid;
     private int uid;
     private Socket mSocket;
     private ArrayList<Item> items = new ArrayList<>();
     private Context context;
 
-    public ReceiptsItemsRecViewAdapter(Context context, Socket mSocket, int uid, int tid) {
+    public ReceiptsItemsRecViewAdapter(Context context, Socket mSocket, User u, int tid) {
         this.context = context;
         this.mSocket = mSocket;
-        this.uid = uid;
+        this.uid = u.getId();
+        this.userName = u.getUserName();
         this.tid = tid;
     }
 
@@ -56,18 +59,17 @@ public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsIt
             public void onClick(View v) {
                 // fire socket event to select/deselect item based on whether
                 // the uid was present in hashmap or not
-                ItemSelecter request = new ItemSelecter(uid, tid, items.get(position).getItem_id());
+                ItemSelecter request = new ItemSelecter(new User(uid, userName), tid, items.get(position).getItem_id());
 
                 if (items.get(position).isSelectedBy(uid)) {
-                    // remove uid from hashmap
                     items.get(position).deselect(uid);
                     mSocket.emit("deselectItem", request.getJson());
                 } else {
-                    // add uid to hashmap
-                    items.get(position).select(uid);
+                    items.get(position).select(uid, userName);
                     mSocket.emit("selectItem", request.getJson());
                 }
 
+                // can remove this toast once sockets start working properly
                 Toast.makeText(context, items.get(position).getName() + " Selected", Toast.LENGTH_SHORT).show();
             }
         });

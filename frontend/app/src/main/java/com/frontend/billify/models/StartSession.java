@@ -12,7 +12,7 @@ public class StartSession {
 
     public StartSession(User u, int tid) {
         this.uid = u.getId();
-        this.username = u.getUser_name();
+        this.username = u.getUserName();
         this.tid = tid;
     }
 
