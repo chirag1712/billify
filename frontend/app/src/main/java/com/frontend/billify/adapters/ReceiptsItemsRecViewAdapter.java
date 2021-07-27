@@ -13,18 +13,29 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.frontend.billify.R;
 import com.frontend.billify.models.Item;
+import com.frontend.billify.models.ItemSelecter;
+import com.frontend.billify.models.StartSession;
+import com.frontend.billify.persistence.Persistence;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
+import io.socket.client.Socket;
+
 public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsItemsRecViewAdapter.ViewHolder>{
 
+    private int tid;
+    private int uid;
+    private Socket mSocket;
     private ArrayList<Item> items = new ArrayList<>();
     private Context context;
 
-    public ReceiptsItemsRecViewAdapter(Context context) {
+    public ReceiptsItemsRecViewAdapter(Context context, Socket mSocket, int uid, int tid) {
         this.context = context;
+        this.mSocket = mSocket;
+        this.uid = uid;
+        this.tid = tid;
     }
 
     @NonNull
@@ -43,6 +54,20 @@ public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsIt
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // fire socket event to select/deselect item based on whether
+                // the uid was present in hashmap or not
+                ItemSelecter request = new ItemSelecter(uid, tid, items.get(position).getItem_id());
+
+                if (items.get(position).isSelectedBy(uid)) {
+                    // remove uid from hashmap
+                    items.get(position).deselect(uid);
+                    mSocket.emit("deselectItem", request.getJson());
+                } else {
+                    // add uid to hashmap
+                    items.get(position).select(uid);
+                    mSocket.emit("selectItem", request.getJson());
+                }
+
                 Toast.makeText(context, items.get(position).getName() + " Selected", Toast.LENGTH_SHORT).show();
             }
         });
