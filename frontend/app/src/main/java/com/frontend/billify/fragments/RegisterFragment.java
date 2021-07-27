@@ -49,6 +49,7 @@ public class RegisterFragment extends Fragment {
         final TextInputEditText usernameEditText = view.findViewById(R.id.username_register_edit_text);
         final ProgressBar registerProgress = view.findViewById(R.id.registerProgressBar);
         MaterialButton registerBtn = view.findViewById(R.id.register_button);
+        MaterialButton cancelButton = view.findViewById(R.id.cancel_button);
 
         // Set an error if the password is less than 8 characters.
         registerBtn.setOnClickListener(new View.OnClickListener() {
@@ -139,6 +140,13 @@ public class RegisterFragment extends Fragment {
                     usernameTextInput.setError(null); //Clear the error
                 }
                 return false;
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((NavigationHost) getActivity()).navigateTo(new LoginFragment(), true);
             }
         });
         return view;
