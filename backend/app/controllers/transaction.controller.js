@@ -4,24 +4,29 @@ receiptParser = new TransactionService.ReceiptParser();
 
 // parse-receipt endpoint
 const parseReceipt = async (request, response) => {
-    if (request.files["file"]) {
+    if ((request.files) && (request.files["file"])) {
         try {
-            const data = request.files["file"]["data"];
+            // console.log(request.files["file"].name);
+            const imgData = request.files["file"]["data"];
             const gid = request.body["gid"];
-            const transaction_name = request.body["transaction_name"];
-            const parsedReceiptJson = await receiptParser.parseReceiptData(data);
+            if (gid === undefined) {
+                return response.status(500).send({error: "Error: gid (Group ID) has not been provided in POST request"})
+            }
+            const transactionName = request.body["transaction_name"];
+            const parsedReceiptJson = await receiptParser.parseReceiptData(imgData);
             const jsonResponse = await TransactionService.insertTransactionsAndItemsToDB(
                 gid, 
-                transaction_name,
-                data, 
+                transactionName,
+                imgData,
+                request.files["file"].name,
                 parsedReceiptJson);
             console.log(jsonResponse);
             return response.send(jsonResponse); 
         } catch (err) {
-            return response.status(500).send({ error: "Internal error: Couldn't parse receipt: " + err});
+            return response.status(500).send({ error: "Internal error: " + err});
         }
     } else {
-        response.status(500).send({ error: "Error: Receipt file" });
+        response.status(500).send({ error: "Error: Receipt file was not attached"});
     }
 }
 
