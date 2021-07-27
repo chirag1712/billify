@@ -44,19 +44,16 @@ class UserItem {
         });
     }
 
-    static getUidsForItem(itemId) {
+    // returns user information for users who have selected this item
+    static getUserInfoForItem(itemId) {
         return new Promise((resolve, reject) => {
-            sql.query("SELECT * FROM UserItem where item_id = ?", itemId, (err, res) => {
+            sql.query("SELECT u.uid, u.user_name FROM UserItem ui, User u WHERE u.uid = ui.uid and ui.item_id = ?", itemId, (err, res) => {
                 if (err) {
                     console.log(err);
                     reject(err);
                 } else {
-                    const uids = [];
-                    res.map((userItem) => {
-                        uids.push(userItem.uid);
-                    });
-                    console.log("uids found for itemId=", itemId, ": ", uids);
-                    resolve(uids);
+                    console.log("users found for itemId=", itemId, ": ", res);
+                    resolve(res);
                 }
             });
         })
