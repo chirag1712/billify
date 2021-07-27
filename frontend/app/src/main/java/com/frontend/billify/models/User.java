@@ -23,6 +23,12 @@ public class User {
         this.groups = groups;
     }
 
+    // third constructor for use in itemized view
+    public User(int uid, String user_name) {
+        this.id = uid;
+        this.user_name = user_name;
+    }
+
     public String getEmail() {
         return email;
     }

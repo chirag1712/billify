@@ -1,12 +1,17 @@
 package com.frontend.billify.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Item implements Serializable {
     private int item_id;
     private int tid;
     private String name;
     private float price;
+
+    // maps uid to user for all users who have selected this item
+    private HashMap<Integer, String> selectedBy;
 
     public Item(int item_id, int tid, String name, float price) {
         this.item_id = item_id;
@@ -36,4 +41,15 @@ public class Item implements Serializable {
         return Float.toString(this.price);
     }
 
+    public Boolean isSelectedBy(int uid) {
+        return this.selectedBy.containsKey(uid);
+    }
+    public void select(int uid, String username) {
+        this.selectedBy.put(uid, username);
+    }
+    public void deselect(int uid) {
+        this.selectedBy.remove(uid);
+    }
+
+    // helper for returning all user names who have selected the item
 }
