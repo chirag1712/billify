@@ -1,4 +1,4 @@
-package com.frontend.billify;
+package com.frontend.billify.activities;
 
 import android.Manifest;
 import android.content.Intent;
@@ -18,6 +18,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import com.frontend.billify.R;
 import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.services.RetrofitService;
@@ -41,14 +42,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
     private static final String TAG = UploadReceiptActivity.class.getName();
     private final RetrofitService retrofitService = new RetrofitService();
     private final TransactionController transactionController = new TransactionController(retrofitService);
-    private final Transaction transaction = new Transaction(
-            0,
-            0,
-            null,
-            null,
-            null,
-            null
-    );
 
     private ProgressBar uploadProgress;
 
@@ -58,8 +51,8 @@ public class UploadReceiptActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_receipt);
 
-        final Button takePhotoButton = (Button) findViewById(R.id.take_photo);
-        final Button showGalleryButton = (Button) findViewById(R.id.show_gallery);
+        final Button takePhotoButton = findViewById(R.id.take_photo);
+        final Button showGalleryButton = findViewById(R.id.show_gallery);
         final ProgressBar uploadProgress = findViewById(R.id.uploadProgressBar);
         this.uploadProgress = uploadProgress;
 

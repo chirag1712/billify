@@ -1,4 +1,4 @@
-package com.frontend.billify.models;
+package com.frontend.billify.adapters;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.frontend.billify.R;
+import com.frontend.billify.models.Group;
 
 import java.util.ArrayList;
 
@@ -27,7 +28,7 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
                     R.layout.list_of_groups, parent, false);
         }
         Group current_group = getItem(position);
-        TextView nameTextView = (TextView) listItemView.findViewById(R.id.group_name);
+        TextView nameTextView = listItemView.findViewById(R.id.group_name);
         nameTextView.setText(current_group.getGroup_name());
 
         return listItemView;

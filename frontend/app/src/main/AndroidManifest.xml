@@ -17,17 +17,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Billify"
         tools:targetApi="n">
-        <activity android:name=".CreateGroupActivity"></activity>
-        <activity android:name=".GroupTransaction"></activity>
+        <activity android:name=".activities.CreateGroupActivity"></activity>
+        <activity android:name=".activities.GroupTransaction"></activity>
         <activity
-            android:name=".groupPop"
+            android:name=".activities.groupPop"
             android:theme="@style/Theme.Billify.group_popup"></activity>
-        <activity android:name=".HomepageActivity" />
+        <activity android:name=".activities.HomepageActivity" />
 
-        <activity android:name=".UploadReceiptActivity"></activity>
+        <activity android:name=".activities.UploadReceiptActivity"></activity>
 
-        <activity android:name=".ItemizedViewActivity"></activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.ItemizedViewActivity"></activity>
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
