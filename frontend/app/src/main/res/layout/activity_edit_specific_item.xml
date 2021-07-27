@@ -21,14 +21,6 @@
             android:layout_height="58dp"
             android:orientation="horizontal">
 
-            <!--            <TextView-->
-            <!--                android:layout_width="0dp"-->
-            <!--                android:layout_height="match_parent"-->
-            <!--                android:layout_weight="1"-->
-            <!--                android:gravity="center"-->
-            <!--                android:text="@string/item_name_key"-->
-            <!--                android:textSize="16sp"-->
-            <!--                android:textStyle="bold" />-->
 
             <TextView
                 android:id="@+id/item_name_textview"
@@ -40,14 +32,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
-
-            <!--            <com.google.android.material.textfield.TextInputLayout-->
-            <!--                android:id="@+id/item_name_text_input_layout"-->
-            <!--                android:layout_width="128dp"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_gravity="right"-->
-            <!--                >-->
-
+            <!-- TODO: Check if need to wrap TextInputEditText within TextInputLayour -->
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_specific_item_name"
@@ -59,7 +44,6 @@
                 android:text="@string/item_name_value"
                 android:textSize="16sp" />
 
-            <!--            </com.google.android.material.textfield.TextInputLayout>-->
         </LinearLayout>
 
         <LinearLayout
