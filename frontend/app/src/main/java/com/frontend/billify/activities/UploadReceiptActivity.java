@@ -51,7 +51,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
     private ProgressBar uploadProgress;
 
     ActivityResultLauncher<Intent> cameraResultLauncher;
-
     ActivityResultLauncher<Intent> galleryResultLauncher;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
