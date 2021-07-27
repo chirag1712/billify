@@ -35,7 +35,7 @@ public class Persistence {
         editor.apply();
     }
 
-    public static int getUserName(Context context) {
+    public static String getUserName(Context context) {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
         return settings.getInt(PERS_USER_NAME, "NO USER"); // -1 means no userId
     }
