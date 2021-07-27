@@ -35,4 +35,29 @@
     <string name="take_photo">Take Photo</string>
     <string name="gallery">Gallery</string>
 
+    <!--  Edit Screens  -->
+    <string-array name="items">
+        <item>Chana</item>
+        <item>Kurkure</item>
+        <item>Sprite</item>
+        <item>Fried Rice</item>
+        <item>Mcdonalds Burger</item>
+        <item>Pizza</item>
+
+    </string-array>
+    <string-array name="prices">
+        <item>200.00</item>
+        <item>150.00</item>
+        <item>30.00</item>
+        <item>45.00</item>
+        <item>15.00</item>
+        <item>20.00</item>
+    </string-array>
+
+    <string name="item_name_key">Item Name:</string>
+    <string name="item_name_value">Example Item Name</string>
+    <string name="item_price_key">Item Price:</string>
+    <string name="item_price_value">Example Item Price</string>
+    <string name="save">Save</string>
+
 </resources>
