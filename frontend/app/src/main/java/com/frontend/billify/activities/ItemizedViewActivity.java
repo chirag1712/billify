@@ -44,15 +44,15 @@ public class ItemizedViewActivity extends Activity {
         // fire socket event to join billify session with uid and tid
         mSocket.connect();
         int uid = Persistence.getUserId(this);
-        String username = Persistence.getUserName(this);
-        StartSession request = new StartSession(new User(uid, username), currTransaction.getTid());
+        String userName = Persistence.getUserName(this);
+        StartSession request = new StartSession(new User(uid, userName), currTransaction.getTid());
         mSocket.emit("startSession", request.getJson());
 
         // set listener for "currentItems" (emitted by server when you join)
         // here or item level: set listeners for "itemSelected" and "itemDeselected" (emitted by server when anyone updates the item)
 
         ArrayList<Item> items = currTransaction.getItems();
-        ReceiptsItemsRecViewAdapter adapter = new ReceiptsItemsRecViewAdapter(this, mSocket, uid, currTransaction.getTid());
+        ReceiptsItemsRecViewAdapter adapter = new ReceiptsItemsRecViewAdapter(this, mSocket, new User(uid, userName), currTransaction.getTid());
         adapter.setItems(items);
         itemsRecView.setAdapter(adapter);
         itemsRecView.setLayoutManager(new LinearLayoutManager(this));
