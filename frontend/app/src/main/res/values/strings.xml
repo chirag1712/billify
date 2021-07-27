@@ -58,6 +58,6 @@
     <string name="item_name_value">Example Item Name</string>
     <string name="item_price_key">Item Price:</string>
     <string name="item_price_value">Example Item Price</string>
-    <string name="save">Save</string>
-
+    <string name="save_progress">Save</string>
+    <string name="swipe_to_delete_item">Swipe to Delete item</string>
 </resources>

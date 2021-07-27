@@ -49,6 +49,7 @@ public class EditItemsRecViewAdapter extends RecyclerView.Adapter<EditItemsRecVi
                 Intent intent = new Intent(context, EditSpecificItemActivity.class);
                 intent.putExtra("item_name", items.get(position));
                 intent.putExtra("item_price", prices.get(position));
+                intent.putExtra("item_index", position);
                 context.startActivity(intent);
             }
         });
