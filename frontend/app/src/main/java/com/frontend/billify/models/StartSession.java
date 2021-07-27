@@ -6,11 +6,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class StartSession {
+    private String username;
     private int uid;
     private int tid;
 
-    public StartSession(int uid, int tid) {
-        this.uid = uid;
+    public StartSession(User u, int tid) {
+        this.uid = u.getId();
+        this.username = u.getUser_name();
         this.tid = tid;
     }
 

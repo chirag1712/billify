@@ -13,6 +13,7 @@ import com.frontend.billify.adapters.ReceiptsItemsRecViewAdapter;
 import com.frontend.billify.models.Item;
 import com.frontend.billify.models.StartSession;
 import com.frontend.billify.models.Transaction;
+import com.frontend.billify.models.User;
 import com.frontend.billify.persistence.Persistence;
 
 import java.net.URISyntaxException;
@@ -43,7 +44,8 @@ public class ItemizedViewActivity extends Activity {
         // fire socket event to join billify session with uid and tid
         mSocket.connect();
         int uid = Persistence.getUserId(this);
-        StartSession request =          new StartSession(uid, currTransaction.getTid());
+        String username = Persistence.getUserName(this);
+        StartSession request = new StartSession(new User(uid, username), currTransaction.getTid());
         mSocket.emit("startSession", request.getJson());
 
         // set listener for "currentItems" (emitted by server when you join)
