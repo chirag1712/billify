@@ -48,8 +48,9 @@ public class ItemizedViewActivity extends Activity {
         StartSession request = new StartSession(new User(uid, userName), currTransaction.getTid());
         mSocket.emit("startSession", request.getJson());
 
-        // set listener for "currentItems" (emitted by server when you join)
+        // set listener for "currentState" (emitted by server when you join)
         // here or item level: set listeners for "itemSelected" and "itemDeselected" (emitted by server when anyone updates the item)
+        // also look into UI things for implementing decorator pattern
 
         ArrayList<Item> items = currTransaction.getItems();
         ReceiptsItemsRecViewAdapter adapter = new ReceiptsItemsRecViewAdapter(this, mSocket, new User(uid, userName), currTransaction.getTid());
