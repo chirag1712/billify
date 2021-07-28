@@ -46,7 +46,7 @@ const signup = async (request, response) => {
         const newMemberOf = new MemberOf({ uid, gid });
         await MemberOf.addUsers([Object.values(newMemberOf)]);
 
-        return response.send({ id: uid });
+        return response.send({ id: uid, userName: user_name });
     } catch (err) {
         console.log(err);
         return response.status(500).send({ error: "Internal error: signup" });
@@ -75,7 +75,7 @@ const login = async (request, response) => {
             return response.status(401).json({ error: "Password is incorrect" });
         }
 
-        return response.status(200).json({ id: user.uid });
+        return response.status(200).json({ id: user.uid, userName: user.user_name });
     } catch (err) {
         return response.status(500).send({ error: "Internal error: login" });
     }

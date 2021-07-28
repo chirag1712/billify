@@ -52,7 +52,7 @@ class SocketHandler {
         // event listener: "selectItem"
         // (uid and item_id in json message), update socket state, and reemit for other users
         // of the room - current uids of the item_id
-        client.on("selectItem", ({ uid: uid, username: username, tid: tid, item_id: item_id }) => {
+        client.on("selectItem", ({ uid: uid, userName: username, tid: tid, item_id: item_id }) => {
             // add validation s.t. user not in session cant do this
             const obj = Session.userSelect(uid, username, tid, item_id);
             console.log("selected ", item_id, " userInfos: ", obj.userInfos);
@@ -60,7 +60,7 @@ class SocketHandler {
         });
 
         // event listener: "deselectItem"
-        client.on("deselectItem", ({ uid: uid, username: username, tid: tid, item_id: item_id }) => {
+        client.on("deselectItem", ({ uid: uid, userName: username, tid: tid, item_id: item_id }) => {
             // add validation s.t. user not in session cant do this
             const obj = Session.userDeselect(uid, username, tid, item_id);
             console.log("deselected ", item_id, " userInfos: ", obj.userInfos);

@@ -15,7 +15,7 @@ class Item {
                     console.log(err);
                     reject(err);
                 } else {
-                    resolve(res);
+                    resolve(res.insertId);
                 }
             });
         })
