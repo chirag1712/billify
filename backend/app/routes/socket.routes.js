@@ -56,7 +56,7 @@ class SocketHandler {
             // add validation s.t. user not in session cant do this
             const obj = Session.userSelect(uid, username, tid, item_id);
             console.log("selected ", item_id, " userInfos: ", obj.userInfos);
-            // emit {item_id, uids}
+            // broadcast {item_id, userInfos}
         });
 
         // event listener: "deselectItem"
@@ -64,7 +64,7 @@ class SocketHandler {
             // add validation s.t. user not in session cant do this
             const obj = Session.userDeselect(uid, username, tid, item_id);
             console.log("deselected ", item_id, " userInfos: ", obj.userInfos);
-            // emit {item_id, uids}
+            // broadcast {item_id, userInfos}
         });
 
         // event listener: "disconnect"
