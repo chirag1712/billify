@@ -53,7 +53,9 @@ public class ItemizedViewActivity extends Activity {
         // also look into UI things for implementing decorator pattern
 
         ArrayList<Item> items = currTransaction.getItems();
-        ReceiptsItemsRecViewAdapter adapter = new ReceiptsItemsRecViewAdapter(this, mSocket, new User(uid, userName), currTransaction.getTid());
+        ReceiptsItemsRecViewAdapter adapter = new ReceiptsItemsRecViewAdapter(
+                this, mSocket, new User(uid, userName), currTransaction.getTid()
+        );
         adapter.setItems(items);
         itemsRecView.setAdapter(adapter);
         itemsRecView.setLayoutManager(new LinearLayoutManager(this));

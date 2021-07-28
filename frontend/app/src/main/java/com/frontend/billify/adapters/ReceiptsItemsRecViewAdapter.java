@@ -64,13 +64,13 @@ public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsIt
                 if (items.get(position).isSelectedBy(uid)) {
                     items.get(position).deselect(uid);
                     mSocket.emit("deselectItem", request.getJson());
+                    Toast.makeText(context, items.get(position).getName() + " Deselected", Toast.LENGTH_SHORT).show();
                 } else {
                     items.get(position).select(uid, userName);
                     mSocket.emit("selectItem", request.getJson());
+                    // can remove this toast once sockets start working properly
+                    Toast.makeText(context, items.get(position).getName() + " Selected", Toast.LENGTH_SHORT).show();
                 }
-
-                // can remove this toast once sockets start working properly
-                Toast.makeText(context, items.get(position).getName() + " Selected", Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -11,7 +11,7 @@ public class RetrofitService {
     public Retrofit retrofit;
 
     OkHttpClient okHttpClient = new OkHttpClient.Builder()
-            .readTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
             .build();
 
     // change localhost api address here
