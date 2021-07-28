@@ -220,7 +220,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
                     }
                     return;
                 }
-                Transaction currTransaction = response.body();
+                Transaction currTransaction = new Transaction(response.body());
                 System.out.println("Successful request with return value: "
                         + currTransaction.getName()
                 );

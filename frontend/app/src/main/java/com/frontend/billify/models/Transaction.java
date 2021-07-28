@@ -24,6 +24,22 @@ public class Transaction implements Serializable {
         this.receipt_img = receipt_img;
     }
 
+    public Transaction(Transaction t) {
+        this.tid = t.tid;
+        this.gid = t.gid;
+        this.t_date = t.t_date;
+        this.t_state = t.t_state;
+        this.transaction_name = t.transaction_name;
+        this.receipt_img = t.receipt_img;
+
+        // deep copy
+        this.items = new ArrayList<Item>();
+        for (Item item: t.items) {
+            System.out.println(item.getItem_id());
+            this.items.add(new Item(item.getItem_id(), item.getTid(), item.getName(), item.getPrice()));
+        }
+    }
+
     public void addItem(Item item) {
         this.items.add(item);
     }
