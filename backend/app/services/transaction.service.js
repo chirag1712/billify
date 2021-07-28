@@ -199,7 +199,7 @@ async function insertTransactionsAndItemsToDB(gid, transactionName, imgData, img
         console.log("Couldn't insert expense into DB");
         throw new Error("Couldn't insert expense into DB, could be that provided gid value was invalid");
     }
-    await insertItemsToDB(parsedReceiptJson["tid"], parsedReceiptJson["items"]);
+    parsedReceiptJson["items"] = await insertItemsToDB(parsedReceiptJson["tid"], parsedReceiptJson["items"]);
     return parsedReceiptJson;
 }
 
@@ -254,12 +254,16 @@ async function insertTransactionToDB(gid, transactionName, imgData, imgFileName,
 }
 
 async function insertItemsToDB(tid, receiptItemsJson) {
-    receiptItemsJson.forEach(async itemObject => {
+    const createPromises = receiptItemsJson.map(async itemObject => {
         const itemName = itemObject["name"];
         const itemPrice = itemObject["price"];
         const item = new Item(tid, itemName, itemPrice);
         const insertedItemId = await item.insertItemToDB();
+        itemObject["item_id"] = insertedItemId;
     });
+    await Promise.all(createPromises);
+    console.log("here:", receiptItemsJson);
+    return receiptItemsJson;
 }
 
 async function getGroupTransactions(gid) {
