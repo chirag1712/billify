@@ -18,13 +18,18 @@ public class Item implements Serializable {
         this.tid = tid;
         this.name = name;
         this.price = price;
+        this.selectedBy = new HashMap<Integer,String>();
     }
 
     public Item(String name, float price) {
         this.name = name;
         this.price = price;
+        this.selectedBy = new HashMap<Integer,String>();
     }
 
+    public int getTid() {
+        return tid;
+    }
 
     public int getItem_id() {
         return this.item_id;
