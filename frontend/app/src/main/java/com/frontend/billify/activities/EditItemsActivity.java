@@ -211,14 +211,16 @@ public class EditItemsActivity extends AppCompatActivity {
                         );
                         Intent moveToEditAndConfirmItemsActivityIntent = new Intent(
                                 EditItemsActivity.this,
-                                ItemizedViewActivity.class
+                                HomepageActivity.class
                         );
-                        Bundle transactionBundle = new Bundle();
-                        transactionBundle.putSerializable("SerializedTransaction", currTransaction);
-                        moveToEditAndConfirmItemsActivityIntent.putExtra(
-                                "TransactionBundle",
-                                transactionBundle
-                        );
+                        /* Commenting out this code for now since we go back to homepage and not start billify
+                         session for now. */
+//                        Bundle transactionBundle = new Bundle();
+//                        transactionBundle.putSerializable("SerializedTransaction", currTransaction);
+//                        moveToEditAndConfirmItemsActivityIntent.putExtra(
+//                                "TransactionBundle",
+//                                transactionBundle
+//                        );
                         startActivity(moveToEditAndConfirmItemsActivityIntent);
 
                     }

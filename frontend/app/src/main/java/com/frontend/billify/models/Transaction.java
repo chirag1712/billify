@@ -14,7 +14,9 @@ public class Transaction implements Serializable {
     private String transaction_name;
     private ArrayList<Item> items;
 
-    // currPhotoF
+    /* currPhotoFile is used to store the chosen picture and send it to backend for parsing receipt
+    or creating a new transaction
+    */
     private File currPhotoFile;
     public Transaction(int tid, int gid, String t_date, String t_state,
                        String transaction_name, String receipt_img) {
