@@ -282,6 +282,14 @@ public class EditItemsActivity extends AppCompatActivity {
                                 "TransactionBundle",
                                 transactionBundle
                         );
+                        /* Commenting out this code for now since we go back to homepage and not start billify
+                         session for now. */
+//                        Bundle transactionBundle = new Bundle();
+//                        transactionBundle.putSerializable("SerializedTransaction", currTransaction);
+//                        moveToEditAndConfirmItemsActivityIntent.putExtra(
+//                                "TransactionBundle",
+//                                transactionBundle
+//                        );
                         startActivity(moveToEditAndConfirmItemsActivityIntent);
 
                     }

@@ -81,7 +81,6 @@ const getTransactionItems = async (request, response) => {
     }
 }
 
-<<<<<<< HEAD
 const getTransaction = async (request, response) => {
     try {
         const tid = request.params.tid;
@@ -99,6 +98,4 @@ const getTransaction = async (request, response) => {
     }
 }
 
-=======
->>>>>>> Modify and added Frontend and backend logic to separate parsing of receipt and creation of transaction
 module.exports = { parseReceipt, getGroupTransactions, getTransactionItems, createNewTransaction};
