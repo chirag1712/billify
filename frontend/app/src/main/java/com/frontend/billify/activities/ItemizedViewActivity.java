@@ -61,29 +61,37 @@ public class ItemizedViewActivity extends Activity {
                 this, mSocket, new User(uid, userName), currTransaction.getTid()
         );
         ArrayList<Item> items = currTransaction.getItems();
-        mSocket.emit("startSession", request.getJson()).on("currentState", new Emitter.Listener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void call(Object... args) {
-                try {
-                    JSONArray data = (JSONArray) ((JSONObject) args[0]).get("items");
-                    for(int k = 0; k < data.length(); k++) {
-                        JSONObject j = (JSONObject) data.get(k);
-                        int item_id = Integer.parseInt((String) j.get("item_id"));
-                        Item i = items.stream().filter(item -> item.getItem_id() == item_id).findFirst().get();
-                        i.updateSelectedBy((JSONArray) j.get("userInfos"));
-                    }
-                    System.out.println(args[0]);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        // also look into UI things for implementing decorator pattern
+        // TODO: also look into UI things for implementing decorator pattern
         adapter.setItems(items);
         itemsRecView.setAdapter(adapter);
         itemsRecView.setLayoutManager(new LinearLayoutManager(this));
+
+        mSocket.emit("startSession", request.getJson()).on("currentState", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                runOnUiThread(new Runnable() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
+                    @Override
+                    public void run() {
+                        try {
+                            JSONArray data = (JSONArray) ((JSONObject) args[0]).get("items");
+                            for (int k = 0; k < data.length(); k++) {
+                                JSONObject j = (JSONObject) data.get(k);
+                                int item_id = Integer.parseInt((String) j.get("item_id"));
+                                Item i = items.stream().filter(item -> item.getItem_id() == item_id).findFirst().get();
+                                i.updateSelectedBy((JSONArray) j.get("userInfos"));
+                            }
+                            System.out.println(args[0]);
+                            System.out.println(items.get(0).getSelectedUsers());
+                            adapter.notifyDataSetChanged();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+
 
         // listener for items being modified
         // here or item level: set listeners for "itemSelected" and "itemDeselected" (emitted by server when anyone updates the item)
@@ -96,7 +104,7 @@ public class ItemizedViewActivity extends Activity {
                     public void run() {
                         try {
                             JSONObject data = (JSONObject) args[0];
-                            int item_id = Integer.parseInt((String) data.get("item_id"));
+                            int item_id = (int) data.get("item_id");
                             for (int i = 0; i < items.size(); i++) {
                                 Item item = items.get(i);
                                 if (item.getItem_id() == item_id) {

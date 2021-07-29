@@ -74,7 +74,7 @@ public class Item implements Serializable {
         for(int i = 0; i < userInfos.length(); i++) {
             try {
                 JSONObject userInfo = (JSONObject) userInfos.get(i);
-                int uid = Integer.parseInt((String) userInfo.get("uid"));
+                int uid = (int) userInfo.get("uid");
                 String username = (String) userInfo.get("username");
                 this.selectedBy.put(uid, username);
             } catch (JSONException e) {
