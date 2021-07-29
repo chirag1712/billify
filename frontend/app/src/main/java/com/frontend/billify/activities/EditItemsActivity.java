@@ -6,8 +6,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.view.menu.MenuView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -119,6 +117,13 @@ public class EditItemsActivity extends AppCompatActivity {
         if (i.hasExtra("TransactionBundle")) {
             Bundle b = i.getBundleExtra("TransactionBundle");
             currTransaction = (Transaction) b.getSerializable("SerializedTransaction");
+        }
+
+        itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
+        itemPrices = new ArrayList<>();
+        ArrayList<String> strPrices = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.prices)));
+        for (String price: strPrices) {
+            itemPrices.add(Float.valueOf(price));
         }
 
         addNewItemButton = findViewById(R.id.add_new_item_button);
