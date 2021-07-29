@@ -56,7 +56,9 @@
             android:name=".activities.groupPop"
             android:theme="@style/Theme.Billify.group_popup" />
         <activity android:name=".activities.HomepageActivity" />
-        <activity android:name=".activities.UploadReceiptActivity" />
+        <activity android:name=".activities.UploadReceiptActivity"
+            android:label="Upload a New Receipt"
+            />
         <activity android:name=".activities.ItemizedViewActivity" />
         <activity android:name=".activities.MainActivity">
             <intent-filter>
