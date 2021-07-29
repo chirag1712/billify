@@ -119,7 +119,10 @@ public class EditItemsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (currTransaction.getCurrPhotoFile() != null) {
+                    createTransactionRequestProgressBar.setVisibility(View.VISIBLE);
+                    confirmButton.setVisibility(View.INVISIBLE);
                     createTransaction();
+
                 } else {
                     Toast.makeText(EditItemsActivity.this, "Can't Confirm since there's no Receipt selected to upload", Toast.LENGTH_SHORT).show();
                 }
