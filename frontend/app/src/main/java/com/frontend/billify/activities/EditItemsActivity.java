@@ -115,13 +115,68 @@ public class EditItemsActivity extends AppCompatActivity {
 
         confirmButton = findViewById(R.id.confirm_items_button);
 
-//        confirmButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//            }
-//        });
+        confirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (currTransaction.getCurrPhotoFile() != null) {
+                    transactionController.createActualTransaction(
+                            currTransaction.getTransactionJSONString(),
+                            currTransaction.getCurrPhotoFile()).enqueue(
+                            new Callback<Transaction>() {
+                                @Override
+                                public void onResponse(Call<Transaction> call, Response<Transaction> response) {
+                                    if (!response.isSuccessful()) {
+                                        try {
+                                            Toast parseReceiptErrorToast = Toast.makeText(
+                                                    EditItemsActivity.this,
+                                                    "Couldn't Parse Receipt",
+                                                    Toast.LENGTH_SHORT
+                                            );
+                                            parseReceiptErrorToast.show();
+                                            System.out.println("Error code onResponse "
+                                                    + response.code()
+                                                    + " "
+                                                    + response.errorBody().string());
+                                        } catch (Exception e) {
+                                            System.out.println(
+                                                    "Exception occurred during response callback from receipt parser API: "
+                                                            + e);
+                                        }
+                                        return;
+                                    }
+                                    Transaction currTransaction = response.body();
+                                    System.out.println("Successful item confirm and create transaction request with return value: "
+                                            + currTransaction.getName()
+                                    );
+                                    Intent moveToEditAndConfirmItemsActivityIntent = new Intent(
+                                            EditItemsActivity.this,
+                                            ItemizedViewActivity.class
+                                    );
+                                    Bundle transactionBundle = new Bundle();
+                                    transactionBundle.putSerializable("SerializedTransaction", currTransaction);
+                                    moveToEditAndConfirmItemsActivityIntent.putExtra(
+                                            "TransactionBundle",
+                                            transactionBundle
+                                    );
+                                    startActivity(moveToEditAndConfirmItemsActivityIntent);
 
+                                }
+
+                                @Override
+                                public void onFailure(Call<Transaction> call, Throwable t) {
+                                    Toast.makeText(EditItemsActivity.this, "Failed creating transaction since API request failed", Toast.LENGTH_SHORT).show();
+                                    t.printStackTrace();
+                                }
+                            }
+                    );
+                } else {
+                    Toast.makeText(EditItemsActivity.this, "Can't Confirm since there's no Receipt selected to upload", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+        // NOTE: The below Transaction object is for the case when we use "Edit Sample Items" button for testing
         ArrayList<String> itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
         ArrayList<String> strPrices = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.prices)));
         currTransaction = new Transaction(1, 4, "2004-01-01", "NOT_STARTED",
