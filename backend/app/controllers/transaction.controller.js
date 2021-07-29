@@ -1,3 +1,4 @@
+const TransactionModel = require("../models/transaction.model.js");
 const TransactionService = require("../services/transaction.service.js");
 
 receiptParser = new TransactionService.ReceiptParser();
@@ -50,4 +51,29 @@ const getTransactionItems = async (request, response) => {
     }
 }
 
-module.exports = { parseReceipt, getGroupTransactions, getTransactionItems};
+const getTransaction = async (request, response) => {
+    try {
+        const tid = request.params.tid;
+        const items = await TransactionService.getTransactionItems(tid);
+        const transaction = await TransactionModel.findTransaction(tid);
+
+        console.log(transaction);
+        console.log({
+            items: items,
+            tid: tid,
+            transaction_name: transaction.transaction_name,
+            receipt_img: transaction.receipt_img
+        });
+
+        return response.send({
+            items: items,
+            tid: tid,
+            transaction_name: transaction.transaction_name,
+            receipt_img: transaction.receipt_img
+        });
+    } catch (err) {
+        return response.status(500).send({ error: "Internal error: Couldn't get transaction: " + err })
+    }
+}
+
+module.exports = { parseReceipt, getGroupTransactions, getTransactionItems, getTransaction};
