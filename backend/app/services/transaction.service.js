@@ -272,8 +272,7 @@ async function getGroupTransactions(gid) {
 }
 
 async function getTransactionItems(tid) {
-    const transactionService = new TransactionModel();
-    const transactionItemsJson = await transactionService.getTransactionItems(tid);
+    const transactionItemsJson = await TransactionModel.getTransactionItems(tid);
     return transactionItemsJson;
 }
 

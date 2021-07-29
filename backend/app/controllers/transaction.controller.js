@@ -57,14 +57,6 @@ const getTransaction = async (request, response) => {
         const items = await TransactionService.getTransactionItems(tid);
         const transaction = await TransactionModel.findTransaction(tid);
 
-        console.log(transaction);
-        console.log({
-            items: items,
-            tid: tid,
-            transaction_name: transaction.transaction_name,
-            receipt_img: transaction.receipt_img
-        });
-
         return response.send({
             items: items,
             tid: tid,
