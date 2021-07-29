@@ -94,7 +94,6 @@ public class ItemizedViewActivity extends Activity {
 
 
         // listener for items being modified
-        // here or item level: set listeners for "itemSelected" and "itemDeselected" (emitted by server when anyone updates the item)
         mSocket.on("itemUpdated", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
