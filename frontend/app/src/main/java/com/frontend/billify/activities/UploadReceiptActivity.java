@@ -61,17 +61,8 @@ public class UploadReceiptActivity extends AppCompatActivity {
         final Button takePhotoButton = findViewById(R.id.take_photo);
         final Button showGalleryButton = findViewById(R.id.show_gallery);
         final ProgressBar uploadProgress = findViewById(R.id.uploadProgressBar);
-        final Button editItemsButton = findViewById(R.id.edit_items_button);
 
         this.uploadProgress = uploadProgress;
-
-        editItemsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(UploadReceiptActivity.this, EditItemsActivity.class);
-                startActivity(intent);
-            }
-        });
 
         takePhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
