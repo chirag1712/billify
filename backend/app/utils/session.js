@@ -47,7 +47,13 @@ class Session {
         }
         this.tid2itemId2userInfos[tid][item_id].add(JSON.stringify(new UserInfo(uid, username)));
         const userInfos = Array.from(this.tid2itemId2userInfos[tid][item_id]);
-        return { item_id, userInfos };
+
+        // parse to JSONs before returning
+        const userInfoObjs = [];
+        userInfos.forEach((userInfoStr) => {
+            userInfoObjs.push(JSON.parse(userInfoStr));
+        });
+        return { item_id, userInfoObjs };
     }
 
     userDeselect(uid, username, tid, item_id) {
@@ -55,7 +61,13 @@ class Session {
             throw Error(uid + " did not select " + item_id + " to begin with");
         }
         const userInfos = Array.from(this.tid2itemId2userInfos[tid][item_id]);
-        return { item_id, userInfos };
+
+        // parse to JSONs before returning
+        const userInfoObjs = [];
+        userInfos.forEach((userInfoStr) => {
+            userInfoObjs.push(JSON.parse(userInfoStr));
+        });
+        return { item_id, userInfoObjs };
     }
 
     async userLeave(socketId) {
