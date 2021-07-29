@@ -37,6 +37,7 @@ import android.view.View;
 
 import com.frontend.billify.R;
 import com.frontend.billify.adapters.EditItemsRecViewAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -324,7 +325,9 @@ public class EditItemsActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onChildDraw(@NonNull @NotNull Canvas c, @NonNull @NotNull RecyclerView recyclerView, @NonNull @NotNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+        public void onChildDraw(@NonNull @NotNull Canvas c, @NonNull @NotNull RecyclerView recyclerView,
+                                @NonNull @NotNull RecyclerView.ViewHolder viewHolder,
+                                float dX, float dY, int actionState, boolean isCurrentlyActive) {
 
             // Code adapted from https://github.com/kitek/android-rv-swipe-delete/blob/master/app/src/main/java/pl/kitek/rvswipetodelete/SwipeToDeleteCallback.kt
             ColorDrawable background = new ColorDrawable();

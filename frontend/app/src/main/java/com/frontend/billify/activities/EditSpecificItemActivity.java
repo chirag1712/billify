@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -27,6 +29,7 @@ public class EditSpecificItemActivity extends AppCompatActivity {
         setData();
 
         Button saveEditButton = findViewById(R.id.save_edit_specific_item_button);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close_24);
 
         saveEditButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,6 +40,14 @@ public class EditSpecificItemActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.add_item_menu, menu);
+        return true; // True to display add_item_menu XML
+    }
+
 
     private void getData() {
         Intent intent = getIntent();
