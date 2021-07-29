@@ -66,56 +66,7 @@ public class EditItemsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (currTransaction.getCurrPhotoFile() != null) {
-                    transactionController.createActualTransaction(
-                            currTransaction.getTransactionJSONString(),
-                            currTransaction.getCurrPhotoFile()).enqueue(
-                            new Callback<Transaction>() {
-                                @Override
-                                public void onResponse(Call<Transaction> call, Response<Transaction> response) {
-                                    if (!response.isSuccessful()) {
-                                        try {
-                                            Toast parseReceiptErrorToast = Toast.makeText(
-                                                    EditItemsActivity.this,
-                                                    "Couldn't Parse Receipt",
-                                                    Toast.LENGTH_SHORT
-                                            );
-                                            parseReceiptErrorToast.show();
-                                            System.out.println("Error code onResponse "
-                                                    + response.code()
-                                                    + " "
-                                                    + response.errorBody().string());
-                                        } catch (Exception e) {
-                                            System.out.println(
-                                                    "Exception occurred during response callback from receipt parser API: "
-                                                            + e);
-                                        }
-                                        return;
-                                    }
-                                    Transaction currTransaction = response.body();
-                                    System.out.println("Successful item confirm and create transaction request with return value: "
-                                            + currTransaction.getName()
-                                    );
-                                    Intent moveToEditAndConfirmItemsActivityIntent = new Intent(
-                                            EditItemsActivity.this,
-                                            ItemizedViewActivity.class
-                                    );
-                                    Bundle transactionBundle = new Bundle();
-                                    transactionBundle.putSerializable("SerializedTransaction", currTransaction);
-                                    moveToEditAndConfirmItemsActivityIntent.putExtra(
-                                            "TransactionBundle",
-                                            transactionBundle
-                                    );
-                                    startActivity(moveToEditAndConfirmItemsActivityIntent);
-
-                                }
-
-                                @Override
-                                public void onFailure(Call<Transaction> call, Throwable t) {
-                                    Toast.makeText(EditItemsActivity.this, "Failed creating transaction since API request failed", Toast.LENGTH_SHORT).show();
-                                    t.printStackTrace();
-                                }
-                            }
-                    );
+                    createTransaction();
                 } else {
                     Toast.makeText(EditItemsActivity.this, "Can't Confirm since there's no Receipt selected to upload", Toast.LENGTH_SHORT).show();
                 }
@@ -219,6 +170,60 @@ public class EditItemsActivity extends AppCompatActivity {
 
 
     }
+
+    public void createTransaction() {
+        transactionController.createTransaction(
+                currTransaction.getTransactionJSONString(),
+                currTransaction.getCurrPhotoFile()).enqueue(
+                new Callback<Transaction>() {
+                    @Override
+                    public void onResponse(Call<Transaction> call, Response<Transaction> response) {
+                        if (!response.isSuccessful()) {
+                            try {
+                                Toast parseReceiptErrorToast = Toast.makeText(
+                                        EditItemsActivity.this,
+                                        "Couldn't Parse Receipt",
+                                        Toast.LENGTH_SHORT
+                                );
+                                parseReceiptErrorToast.show();
+                                System.out.println("Error code onResponse "
+                                        + response.code()
+                                        + " "
+                                        + response.errorBody().string());
+                            } catch (Exception e) {
+                                System.out.println(
+                                        "Exception occurred during response callback from receipt parser API: "
+                                                + e);
+                            }
+                            return;
+                        }
+                        Transaction currTransaction = response.body();
+                        System.out.println("Successful item confirm and create transaction request with return value: "
+                                + currTransaction.getName()
+                        );
+                        Intent moveToEditAndConfirmItemsActivityIntent = new Intent(
+                                EditItemsActivity.this,
+                                ItemizedViewActivity.class
+                        );
+                        Bundle transactionBundle = new Bundle();
+                        transactionBundle.putSerializable("SerializedTransaction", currTransaction);
+                        moveToEditAndConfirmItemsActivityIntent.putExtra(
+                                "TransactionBundle",
+                                transactionBundle
+                        );
+                        startActivity(moveToEditAndConfirmItemsActivityIntent);
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Transaction> call, Throwable t) {
+                        Toast.makeText(EditItemsActivity.this, "Failed creating transaction since API request failed", Toast.LENGTH_SHORT).show();
+                        t.printStackTrace();
+                    }
+                }
+        );
+    }
+
 
     ItemTouchHelper.SimpleCallback swipeDeleteCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 

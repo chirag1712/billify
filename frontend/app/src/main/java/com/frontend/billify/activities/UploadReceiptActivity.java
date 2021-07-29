@@ -132,7 +132,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             try {
                                 uploadProgress.setVisibility(View.VISIBLE);
-                                createTransaction(Integer.parseInt(getIntent().getStringExtra("gid")), transactionController);
+                                parseReceipt(Integer.parseInt(getIntent().getStringExtra("gid")));
                             } catch (Exception e) {
                                 Log.d(TAG, "onActivityResult: " + e.toString());
                             }
@@ -164,7 +164,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
                                 inputStream.close();
                                 uploadProgress.setVisibility(View.VISIBLE);
                                 System.out.println("In upload image ");
-                                createTransaction(Integer.parseInt(getIntent().getStringExtra("gid")), transactionController);
+                                parseReceipt(Integer.parseInt(getIntent().getStringExtra("gid")));
                             } catch (Exception e) {
                                 Log.d(TAG, "onActivityResult: " + e.toString());
                             }
@@ -195,14 +195,13 @@ public class UploadReceiptActivity extends AppCompatActivity {
         return false;
     }
 
-    private void createTransaction(
-            int gid,
-            TransactionController transactionController
+    private void parseReceipt(
+            int gid
     ) {
         /*
         Creates a new Group Transaction by making a call to the API, can specify a callback.
          */
-        transactionController.createTransaction(
+        transactionController.parseReceipt(
                 gid,
                 this.currPhotoFile
         ).enqueue(new Callback<Transaction>() {
