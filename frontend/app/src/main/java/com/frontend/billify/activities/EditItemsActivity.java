@@ -23,6 +23,8 @@ import android.widget.Toast;
 
 import com.frontend.billify.R;
 import com.frontend.billify.adapters.EditItemsRecViewAdapter;
+import com.frontend.billify.models.Item;
+import com.frontend.billify.models.Transaction;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.jetbrains.annotations.NotNull;
@@ -32,9 +34,10 @@ import java.util.Arrays;
 
 public class EditItemsActivity extends AppCompatActivity {
 
-    ArrayList<String> itemNames;
-    ArrayList<Float> itemPrices;
+//    ArrayList<String> itemNames;
+//    ArrayList<Float> itemPrices;
 
+    Transaction transaction;
     RecyclerView recyclerView;
 
     FloatingActionButton addNewItemButton;
@@ -48,11 +51,13 @@ public class EditItemsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_items);
 
 
-        itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
-        itemPrices = new ArrayList<>();
+        ArrayList<String> itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
         ArrayList<String> strPrices = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.prices)));
-        for (String price: strPrices) {
-            itemPrices.add(Float.valueOf(price));
+        transaction = new Transaction(1, 4, "2004-01-01", "NOT_STARTED",
+                "None", "empty_url");
+
+        for (int i = 0; i < itemNames.size(); ++i) {
+            transaction.addItem(new Item(itemNames.get(i), Float.valueOf(strPrices.get(i))));
         }
 
         addNewItemButton = findViewById(R.id.add_new_item_button);
@@ -64,12 +69,9 @@ public class EditItemsActivity extends AppCompatActivity {
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             Intent data = result.getData();
-                            String newItemName = data.getStringExtra(AddEditItemActivity.ADDED_ITEM_NAME);
-                            Float newItemPrice = data.getFloatExtra(AddEditItemActivity.ADDED_ITEM_PRICE, -1);
-                            itemNames.add(newItemName);
-                            itemPrices.add(newItemPrice);
+                            Item newItem = (Item) data.getSerializableExtra(AddEditItemActivity.ADDED_ITEM);
+                            transaction.addItem(newItem);
                             editItemsAdapter.notifyDataSetChanged();
-
                         }
                     }
                 }
@@ -89,8 +91,7 @@ public class EditItemsActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         editItemsAdapter = new EditItemsRecViewAdapter(
                 this,
-                itemNames,
-                itemPrices
+                transaction
         );
         recyclerView.setAdapter(editItemsAdapter);
         new ItemTouchHelper(swipeDeleteCallback).attachToRecyclerView(recyclerView);
@@ -103,19 +104,16 @@ public class EditItemsActivity extends AppCompatActivity {
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             Intent data = result.getData();
-                            String newItemName = data.getStringExtra(AddEditItemActivity.EDITED_ITEM_NAME);
-                            Float newItemPrice = data.getFloatExtra(AddEditItemActivity.EDITED_ITEM_PRICE, -1);
+                            Item editedItem = (Item) data.getSerializableExtra(AddEditItemActivity.EDITED_ITEM);
                             int editedItemIndex = data.getIntExtra(AddEditItemActivity.EDITED_ITEM_INDEX, -1);
                             if (editedItemIndex != -1) {
-                                itemNames.set(editedItemIndex, newItemName);
-                                itemPrices.set(editedItemIndex, newItemPrice);
+                                transaction.getItems().set(editedItemIndex, editedItem);
+                                editItemsAdapter.notifyDataSetChanged();
                             } else {
                                 Toast.makeText(EditItemsActivity.this,
                                         "Something wrong went wrong with editing",
                                         Toast.LENGTH_SHORT).show();
                             }
-                            editItemsAdapter.notifyDataSetChanged();
-
                         }
                     }
                 }
@@ -123,10 +121,9 @@ public class EditItemsActivity extends AppCompatActivity {
 
         editItemsAdapter.setOnItemClickListener(new EditItemsRecViewAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(String itemName, float itemPrice, int itemIndex) {
+            public void onItemClick(Item item, int itemIndex) {
                 Intent intent = new Intent(EditItemsActivity.this, AddEditItemActivity.class);
-                intent.putExtra(AddEditItemActivity.OLD_ITEM_NAME, itemName);
-                intent.putExtra(AddEditItemActivity.OLD_ITEM_PRICE, String.valueOf(itemPrice));
+                intent.putExtra(AddEditItemActivity.OLD_ITEM, item);
                 intent.putExtra(AddEditItemActivity.EDITED_ITEM_INDEX, itemIndex);
                 // The number 2 below doesn't matter. Adding extra attribute to intent just to check
                 // if the extra attribute is EDIT_MODE or ADD_MODE
@@ -152,8 +149,7 @@ public class EditItemsActivity extends AppCompatActivity {
         @Override
         public void onSwiped(@NonNull @NotNull RecyclerView.ViewHolder viewHolder, int i) {
             // remove the item and prices that you swiped on from the items Array List
-            itemNames.remove(viewHolder.getBindingAdapterPosition());
-            itemPrices.remove(viewHolder.getBindingAdapterPosition());
+            transaction.getItems().remove(viewHolder.getBindingAdapterPosition());
             editItemsAdapter.notifyDataSetChanged();
         }
 

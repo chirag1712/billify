@@ -11,6 +11,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.frontend.billify.R;
+import com.frontend.billify.models.Item;
+import com.frontend.billify.models.Transaction;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -18,15 +20,17 @@ import java.util.ArrayList;
 
 public class EditItemsRecViewAdapter extends RecyclerView.Adapter<EditItemsRecViewAdapter.EditItemsViewHolder> {
 
-    ArrayList<String> itemNames;
-    ArrayList<Float> itemPrices;
+//    ArrayList<String> itemNames;
+//    ArrayList<Float> itemPrices;
+    Transaction transaction;
     Context context;
     private OnItemClickListener onItemClickListener;
 
-    public EditItemsRecViewAdapter(Context context, ArrayList<String> itemNames, ArrayList<Float> itemPrices) {
+    public EditItemsRecViewAdapter(Context context, Transaction transaction) {
         this.context = context;
-        this.itemNames = itemNames;
-        this.itemPrices = itemPrices;
+        this.transaction = transaction;
+//        this.itemNames = itemNames;
+//        this.itemPrices = itemPrices;
     }
 
     @NonNull
@@ -40,13 +44,13 @@ public class EditItemsRecViewAdapter extends RecyclerView.Adapter<EditItemsRecVi
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull EditItemsViewHolder holder, int position) {
-        holder.itemName.setText(itemNames.get(position));
-        holder.price.setText(String.valueOf(itemPrices.get(position)));
+        holder.itemName.setText(transaction.getItems().get(position).getName());
+        holder.price.setText((transaction.getItems().get(position).getStrPrice()));
     }
 
     @Override
     public int getItemCount() {
-        return itemNames.size();
+        return transaction.getItems().size();
     }
 
     public class EditItemsViewHolder extends RecyclerView.ViewHolder {
@@ -67,8 +71,7 @@ public class EditItemsRecViewAdapter extends RecyclerView.Adapter<EditItemsRecVi
                     // position can be NO_POSITION if we click on an item when delete animation not finished
                     if ((onItemClickListener != null) && (position != RecyclerView.NO_POSITION)) {
                         onItemClickListener.onItemClick(
-                                itemNames.get(position),
-                                itemPrices.get(position),
+                                transaction.getItems().get(position),
                                 position
                                 );
                     }
@@ -78,7 +81,7 @@ public class EditItemsRecViewAdapter extends RecyclerView.Adapter<EditItemsRecVi
     }
 
     public interface OnItemClickListener {
-        void onItemClick(String itemName, float itemPrice, int itemIndex);
+        void onItemClick(Item item, int itemIndex);
     }
 
     // list view provides these methods by default, recycler view doesn't

@@ -9,7 +9,7 @@ public class Transaction implements Serializable {
     private String t_date;
     private String t_state;
     // TODO: Let DB Schema be fixed and cross-reference names with DB
-    private String receipt_img; // NOTE: This is a URL
+    private String receipt_img; // NOTE: receipt_img is a URL to the image
     private String transaction_name;
     private ArrayList<Item> items;
 
@@ -62,6 +62,10 @@ public class Transaction implements Serializable {
         for (Item item: items) {
             System.out.println(item.getName() + ": " + item.getPrice());
         }
+    }
+
+    public void setItems(ArrayList<Item> items) {
+        this.items = items;
     }
 
 }

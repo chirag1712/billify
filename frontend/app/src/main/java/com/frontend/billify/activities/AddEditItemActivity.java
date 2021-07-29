@@ -12,22 +12,20 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.frontend.billify.R;
+import com.frontend.billify.models.Item;
 
 public class AddEditItemActivity extends AppCompatActivity {
 
     private EditText itemNameEditText;
     private EditText itemPriceEditText;
-    public static final String ADDED_ITEM_NAME = "ADDED_ITEM_NAME";
-    public static final String ADDED_ITEM_PRICE = "ADDED_ITEM_PRICE";
-
-    public static final String EDITED_ITEM_NAME = "EDITED_ITEM_NAME";
-    public static final String EDITED_ITEM_PRICE = "EDITED_ITEM_PRICE";
+    public static final String ADDED_ITEM = "ADDED_ITEM";
     public static final String EDITED_ITEM_INDEX = "INDEX_OF_EDITED_ITEM";
-    public static final String OLD_ITEM_NAME = "OLD_ITEM_NAME";
-    public static final String OLD_ITEM_PRICE = "OLD_ITEM_PRICE";
-
+    public static final String EDITED_ITEM = "EDITED_ITEM";
+    public static final String OLD_ITEM = "OLD_ITEM";
     public static final String EDIT_MODE = "Edit Item";
     public static final String ADD_MODE = "Add Item";
+    Item itemToBeEdited;
+    Item itemToBeAdded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +39,10 @@ public class AddEditItemActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent.hasExtra(EDIT_MODE)) {
             setTitle(EDIT_MODE);
-            itemNameEditText.setText(intent.getStringExtra(OLD_ITEM_NAME));
-            itemPriceEditText.setText(intent.getStringExtra(OLD_ITEM_PRICE));
+            itemToBeEdited = (Item) intent.getSerializableExtra(OLD_ITEM);
+
+            itemNameEditText.setText(itemToBeEdited.getName());
+            itemPriceEditText.setText(itemToBeEdited.getStrPrice());
         } else {
             setTitle(ADD_MODE);
         }
@@ -52,7 +52,7 @@ public class AddEditItemActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.add_edit_item_menu, menu);
-        return true; // True to display add_item_menu XML
+        return true; // True to display add_edit_item_menu XML
     }
     
     private void saveItem() {
@@ -69,20 +69,19 @@ public class AddEditItemActivity extends AppCompatActivity {
         Intent oldIntent = getIntent();
         Intent data = new Intent();
 
-        String itemNamePropertyKey = "", itemPricePropertyKey = "";
-
         if (oldIntent.hasExtra(EDIT_MODE)) {
-            itemNamePropertyKey = EDITED_ITEM_NAME;
-            itemPricePropertyKey = EDITED_ITEM_PRICE;
             int editedItemIndex = oldIntent.getIntExtra(EDITED_ITEM_INDEX, -1);
+
+            itemToBeEdited.setName(itemName);
+            itemToBeEdited.setPrice(itemPrice);
+            data.putExtra(EDITED_ITEM, itemToBeEdited);
             data.putExtra(EDITED_ITEM_INDEX, editedItemIndex);
+
         } else {
-            itemNamePropertyKey = ADDED_ITEM_NAME;
-            itemPricePropertyKey = ADDED_ITEM_PRICE;
+            itemToBeAdded = new Item(itemName, Float.valueOf(strItemPrice));
+            data.putExtra(ADDED_ITEM, itemToBeAdded);
         }
 
-        data.putExtra(itemNamePropertyKey, itemName);
-        data.putExtra(itemPricePropertyKey, itemPrice);
         setResult(RESULT_OK, data);
 
         finish();
@@ -113,7 +112,6 @@ public class AddEditItemActivity extends AppCompatActivity {
             default:
                 goBackToPrevActivity();
                 return true;
-//                return super.onOptionsItemSelected(item);
         }
     }
 }
