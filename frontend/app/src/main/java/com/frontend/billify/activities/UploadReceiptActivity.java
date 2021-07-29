@@ -249,7 +249,10 @@ public class UploadReceiptActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Transaction> call, Throwable t) {
+                uploadProgress.setVisibility(View.GONE);
                 System.out.println("Error: " + t.getMessage());
+                Toast.makeText(UploadReceiptActivity.this, "Failed Parsing Receipt since API request failed", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
             }
         });
     }
