@@ -98,4 +98,4 @@ const getTransaction = async (request, response) => {
     }
 }
 
-module.exports = { parseReceipt, getGroupTransactions, getTransactionItems, createNewTransaction};
+module.exports = { parseReceipt, getGroupTransactions, getTransactionItems, getTransaction, createNewTransaction};
