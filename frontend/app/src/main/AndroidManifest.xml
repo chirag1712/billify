@@ -42,10 +42,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Billify"
         tools:targetApi="n">
-        <activity android:name=".activities.EditSpecificItemActivity"
+        <activity
+            android:name=".activities.AddItemActivity"
+            android:label="Add New Item"
             android:parentActivityName=".activities.EditItemsActivity"
+            />
+        <activity
+            android:name=".activities.EditSpecificItemActivity"
             android:label="Edit Specific Item"
-            ></activity>
+            android:launchMode="singleTop"
+            android:parentActivityName=".activities.EditItemsActivity" />
         <activity android:name=".activities.EditItemsActivity" />
         <activity android:name=".activities.CreateGroupActivity" />
         <activity android:name=".activities.GroupTransaction" />

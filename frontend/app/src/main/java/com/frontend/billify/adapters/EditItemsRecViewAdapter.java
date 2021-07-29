@@ -33,7 +33,7 @@ public class EditItemsRecViewAdapter extends RecyclerView.Adapter<EditItemsRecVi
     @NotNull
     @Override
     public EditItemsViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.edit_item_row, parent, false);
         return new EditItemsViewHolder(view);
     }
