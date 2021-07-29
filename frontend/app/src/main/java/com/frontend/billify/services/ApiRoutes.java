@@ -46,4 +46,12 @@ public interface ApiRoutes {
 
     @GET("api/transactions/transaction/{tid}")
     Call<Transaction> getTransaction(@Path("tid") int tid);
+
+    
+    @Multipart
+    @POST("api/transactions/create-transaction")
+    Call<Transaction> createActualTransaction(
+      @Part("transaction_details") RequestBody transactionDetails,
+      @Part MultipartBody.Part file
+    );
 }

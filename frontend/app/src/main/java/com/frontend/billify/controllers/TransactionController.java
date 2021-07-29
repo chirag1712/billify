@@ -24,25 +24,46 @@ public class TransactionController {
     public Call<Transaction> createTransaction(int gid, File img) {
         RequestBody requestGid = RequestBody.create(
                 MediaType.parse("multipart/form-data"),
-                Integer.toString(gid)
+                String.valueOf(gid)
         );
         RequestBody requestImg = RequestBody.create(
                 MediaType.parse("multipart/form-data"),
                 img
         );
-        MultipartBody.Part body =  MultipartBody.Part.createFormData(
+        MultipartBody.Part file =  MultipartBody.Part.createFormData(
                 "file",
                 img.getName(),
                 requestImg
         );
 
-        Call<Transaction> call = this.apiRoutes.createTransaction(requestGid, body);
+        Call<Transaction> call = this.apiRoutes.createTransaction(requestGid, file);
         return call;
 
     }
 
     public Call<Transaction> getTransaction(int tid) {
         Call<Transaction> call = this.apiRoutes.getTransaction(tid);
+        return call;
+    }
+    
+    public Call<Transaction> createActualTransaction(String transactionDetails, File img) {
+        RequestBody transactionDetailsBody = RequestBody.create(
+                MediaType.parse("multipart/form-data"),
+                transactionDetails
+        );
+
+        RequestBody requestImg = RequestBody.create(
+                MediaType.parse("multipart/form-data"),
+                img
+        );
+
+        MultipartBody.Part file =  MultipartBody.Part.createFormData(
+                "file",
+                img.getName(),
+                requestImg
+        );
+
+        Call<Transaction> call = this.apiRoutes.createActualTransaction(transactionDetailsBody, file);
         return call;
     }
 

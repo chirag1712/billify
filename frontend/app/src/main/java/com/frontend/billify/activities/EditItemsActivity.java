@@ -24,8 +24,10 @@ import android.widget.Toast;
 
 import com.frontend.billify.R;
 import com.frontend.billify.adapters.EditItemsRecViewAdapter;
+import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.models.Item;
 import com.frontend.billify.models.Transaction;
+import com.frontend.billify.services.RetrofitService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.jetbrains.annotations.NotNull;
@@ -33,12 +35,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import static java.lang.Math.max;
 
 public class EditItemsActivity extends AppCompatActivity {
-
-//    ArrayList<String> itemNames;
-//    ArrayList<Float> itemPrices;
 
     Transaction currTransaction;
     RecyclerView recyclerView;
@@ -49,6 +52,8 @@ public class EditItemsActivity extends AppCompatActivity {
 
     EditItemsRecViewAdapter editItemsAdapter;
     Button confirmButton;
+    private final RetrofitService retrofitService = new RetrofitService();
+    private final TransactionController transactionController = new TransactionController(retrofitService);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,13 +62,68 @@ public class EditItemsActivity extends AppCompatActivity {
 
         confirmButton = findViewById(R.id.confirm_items_button);
 
-//        confirmButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//            }
-//        });
+        confirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (currTransaction.getCurrPhotoFile() != null) {
+                    transactionController.createActualTransaction(
+                            currTransaction.getTransactionJSONString(),
+                            currTransaction.getCurrPhotoFile()).enqueue(
+                            new Callback<Transaction>() {
+                                @Override
+                                public void onResponse(Call<Transaction> call, Response<Transaction> response) {
+                                    if (!response.isSuccessful()) {
+                                        try {
+                                            Toast parseReceiptErrorToast = Toast.makeText(
+                                                    EditItemsActivity.this,
+                                                    "Couldn't Parse Receipt",
+                                                    Toast.LENGTH_SHORT
+                                            );
+                                            parseReceiptErrorToast.show();
+                                            System.out.println("Error code onResponse "
+                                                    + response.code()
+                                                    + " "
+                                                    + response.errorBody().string());
+                                        } catch (Exception e) {
+                                            System.out.println(
+                                                    "Exception occurred during response callback from receipt parser API: "
+                                                            + e);
+                                        }
+                                        return;
+                                    }
+                                    Transaction currTransaction = response.body();
+                                    System.out.println("Successful item confirm and create transaction request with return value: "
+                                            + currTransaction.getName()
+                                    );
+                                    Intent moveToEditAndConfirmItemsActivityIntent = new Intent(
+                                            EditItemsActivity.this,
+                                            ItemizedViewActivity.class
+                                    );
+                                    Bundle transactionBundle = new Bundle();
+                                    transactionBundle.putSerializable("SerializedTransaction", currTransaction);
+                                    moveToEditAndConfirmItemsActivityIntent.putExtra(
+                                            "TransactionBundle",
+                                            transactionBundle
+                                    );
+                                    startActivity(moveToEditAndConfirmItemsActivityIntent);
 
+                                }
+
+                                @Override
+                                public void onFailure(Call<Transaction> call, Throwable t) {
+                                    Toast.makeText(EditItemsActivity.this, "Failed creating transaction since API request failed", Toast.LENGTH_SHORT).show();
+                                    t.printStackTrace();
+                                }
+                            }
+                    );
+                } else {
+                    Toast.makeText(EditItemsActivity.this, "Can't Confirm since there's no Receipt selected to upload", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+        // NOTE: The below Transaction object is for the case when we use "Edit Sample Items" button for testing
         ArrayList<String> itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
         ArrayList<String> strPrices = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.prices)));
         currTransaction = new Transaction(1, 4, "2004-01-01", "NOT_STARTED",
@@ -78,8 +138,6 @@ public class EditItemsActivity extends AppCompatActivity {
             Bundle b = i.getBundleExtra("TransactionBundle");
             currTransaction = (Transaction) b.getSerializable("SerializedTransaction");
         }
-
-
 
         addNewItemButton = findViewById(R.id.add_new_item_button);
 
@@ -110,7 +168,7 @@ public class EditItemsActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.edit_items_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        recyclerView.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);

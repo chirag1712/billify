@@ -15,19 +15,49 @@ const parseReceipt = async (request, response) => {
             }
             const transactionName = request.body["transaction_name"];
             const parsedReceiptJson = await receiptParser.parseReceiptData(imgData);
-            const jsonResponse = await TransactionService.insertTransactionsAndItemsToDB(
-                gid, 
-                transactionName,
-                imgData,
-                request.files["file"].name,
-                parsedReceiptJson);
-            console.log(jsonResponse);
-            return response.send(jsonResponse); 
+            parsedReceiptJson["gid"] = gid;
+            console.log("Parsed receipt:");
+            console.log(parsedReceiptJson);
+            return response.send(parsedReceiptJson);
         } catch (err) {
             return response.status(500).send({ error: "Internal error: " + err});
         }
     } else {
         response.status(500).send({ error: "Error: Receipt file was not attached"});
+    }
+}
+
+const createNewTransaction = async (request, response) => {
+    try {
+        if ((request.body) && (request.files)) {
+            // const gid = request.body["gid"];
+            console.log(request.files);
+            const parsedReceiptJsonString = request.body["transaction_details"];
+            // NOTE: Sending JSON as string through mobile since we want to send image + JSON data in same request
+            const parsedReceiptJson = JSON.parse(parsedReceiptJsonString); 
+            const imgData = request.files["file"]["data"];
+            // console.log(parsedReceiptJson.gid);
+            console.log(parsedReceiptJson["gid"]);
+            jsonResponse = await TransactionService.insertTransactionsAndItemsToDB(
+                parsedReceiptJson["gid"], 
+                parsedReceiptJson["transaction_name"],
+                imgData,
+                request.files["file"].name,
+                parsedReceiptJson
+            );
+            console.log("Final JSON response:");
+            console.log(jsonResponse);
+            
+            return response.send(parsedReceiptJson);
+        } else {
+            const error = "Error: Creating new Transaction failed due to not having request.body or passing a file";
+            console.log(error);
+            return response.status(500).send({error});
+        }
+    } catch (err) {
+        const error = "Error: Creating new Transaction failed due to: " + err;
+        console.log(error);
+        return response.status(500).send({error})
     }
 }
 
@@ -68,4 +98,4 @@ const getTransaction = async (request, response) => {
     }
 }
 
-module.exports = { parseReceipt, getGroupTransactions, getTransactionItems, getTransaction};
+module.exports = { parseReceipt, getGroupTransactions, getTransactionItems, createNewTransaction};

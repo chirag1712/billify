@@ -163,7 +163,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
                                 outputStream.close();
                                 inputStream.close();
                                 uploadProgress.setVisibility(View.VISIBLE);
-                                System.out.println("In upload image " + getIntent().getStringExtra("gid"));
+                                System.out.println("In upload image ");
                                 createTransaction(Integer.parseInt(getIntent().getStringExtra("gid")), transactionController);
                             } catch (Exception e) {
                                 Log.d(TAG, "onActivityResult: " + e.toString());
@@ -230,11 +230,10 @@ public class UploadReceiptActivity extends AppCompatActivity {
                     return;
                 }
                 Transaction currTransaction = new Transaction(response.body());
-                System.out.println("Successful request with return value: "
+                currTransaction.setCurrPhotoFile(UploadReceiptActivity.this.currPhotoFile);
+                System.out.println("Successful upload request with return value: "
                         + currTransaction.getName()
                 );
-                currTransaction.printItems();
-                System.out.println(currTransaction.getTid());
                 Intent moveToEditAndConfirmItemsActivityIntent = new Intent(
                         UploadReceiptActivity.this,
                         EditItemsActivity.class

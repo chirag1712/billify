@@ -1,5 +1,6 @@
 package com.frontend.billify.models;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -13,6 +14,8 @@ public class Transaction implements Serializable {
     private String transaction_name;
     private ArrayList<Item> items;
 
+    // currPhotoF
+    private File currPhotoFile;
     public Transaction(int tid, int gid, String t_date, String t_state,
                        String transaction_name, String receipt_img) {
         this.tid = tid;
@@ -76,4 +79,24 @@ public class Transaction implements Serializable {
         return items.size();
     }
 
+    public String getTransactionJSONString() {
+        String jsonString = "{\"gid\": " + gid + ",";
+        jsonString += "\"items\": [";
+        for (Item item: items) {
+            jsonString += "{" + "\"name\": " + "\"" + item.getName() + "\"" + ", \"price\": " + item.getStrPrice() + "},";
+        }
+        jsonString = jsonString.substring(0, jsonString.length() - 1);
+        jsonString += "]}";
+
+        return jsonString;
+
+    }
+
+    public File getCurrPhotoFile() {
+        return currPhotoFile;
+    }
+
+    public void setCurrPhotoFile(File currPhotoFile) {
+        this.currPhotoFile = currPhotoFile;
+    }
 }
