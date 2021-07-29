@@ -62,16 +62,6 @@ public class Item implements Serializable {
 
     // helper for returning all user names who have selected the item
     public ArrayList<String> getSelectedUsers() {
-        // for experimenting with UI, let's add a lot of users to the first item
-
-        ArrayList<String> users = new ArrayList<String>();
-        users.add("Chirag");
-        users.add("Alric");
-        users.add("Huy");
-        users.add("Denis");
-        users.add("Pranav");
-        users.add("Mayank");
-        return users;
-//        return new ArrayList<String>(this.selectedBy.values());
+        return new ArrayList<>(this.selectedBy.values());
     }
 }
