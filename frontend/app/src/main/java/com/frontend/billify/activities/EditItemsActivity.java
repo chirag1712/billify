@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.frontend.billify.R;
 import com.frontend.billify.adapters.EditItemsRecViewAdapter;
+<<<<<<< HEAD
 import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.models.Item;
 import com.frontend.billify.models.Transaction;
@@ -35,6 +36,10 @@ import android.view.View;
 
 import com.frontend.billify.R;
 import com.frontend.billify.adapters.EditItemsRecViewAdapter;
+=======
+import com.frontend.billify.models.Item;
+import com.frontend.billify.models.Transaction;
+>>>>>>> Change from using ArrayLists to using Transaction and Items in EditItemsActivity and Recycler View for this Activity
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.jetbrains.annotations.NotNull;
@@ -46,9 +51,16 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+<<<<<<< HEAD
 public class EditItemsActivity extends AppCompatActivity {
 
     Transaction currTransaction;
+=======
+//    ArrayList<String> itemNames;
+//    ArrayList<Float> itemPrices;
+
+    Transaction transaction;
+>>>>>>> Change from using ArrayLists to using Transaction and Items in EditItemsActivity and Recycler View for this Activity
     RecyclerView recyclerView;
 
     FloatingActionButton addNewItemButton;
@@ -119,11 +131,13 @@ public class EditItemsActivity extends AppCompatActivity {
             currTransaction = (Transaction) b.getSerializable("SerializedTransaction");
         }
 
-        itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
-        itemPrices = new ArrayList<>();
+        ArrayList<String> itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
         ArrayList<String> strPrices = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.prices)));
-        for (String price: strPrices) {
-            itemPrices.add(Float.valueOf(price));
+        transaction = new Transaction(1, 4, "2004-01-01", "NOT_STARTED",
+                "None", "empty_url");
+
+        for (int i = 0; i < itemNames.size(); ++i) {
+            transaction.addItem(new Item(itemNames.get(i), Float.valueOf(strPrices.get(i))));
         }
 
         addNewItemButton = findViewById(R.id.add_new_item_button);
@@ -136,9 +150,14 @@ public class EditItemsActivity extends AppCompatActivity {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             Intent data = result.getData();
                             Item newItem = (Item) data.getSerializableExtra(AddEditItemActivity.ADDED_ITEM);
+<<<<<<< HEAD
                             int insertIndex = 0;
                             currTransaction.addItem(insertIndex, newItem);
                             editItemsAdapter.notifyItemInserted(insertIndex);
+=======
+                            transaction.addItem(newItem);
+                            editItemsAdapter.notifyDataSetChanged();
+>>>>>>> Change from using ArrayLists to using Transaction and Items in EditItemsActivity and Recycler View for this Activity
                         }
                     }
                 }
@@ -162,7 +181,11 @@ public class EditItemsActivity extends AppCompatActivity {
 
         editItemsAdapter = new EditItemsRecViewAdapter(
                 this,
+<<<<<<< HEAD
                 currTransaction
+=======
+                transaction
+>>>>>>> Change from using ArrayLists to using Transaction and Items in EditItemsActivity and Recycler View for this Activity
         );
         recyclerView.setAdapter(editItemsAdapter);
         new ItemTouchHelper(swipeDeleteCallback).attachToRecyclerView(recyclerView);
@@ -178,8 +201,13 @@ public class EditItemsActivity extends AppCompatActivity {
                             Item editedItem = (Item) data.getSerializableExtra(AddEditItemActivity.EDITED_ITEM);
                             int editedItemIndex = data.getIntExtra(AddEditItemActivity.EDITED_ITEM_INDEX, -1);
                             if (editedItemIndex != -1) {
+<<<<<<< HEAD
                                 currTransaction.getItems().set(editedItemIndex, editedItem);
                                 editItemsAdapter.notifyItemChanged(editedItemIndex);
+=======
+                                transaction.getItems().set(editedItemIndex, editedItem);
+                                editItemsAdapter.notifyDataSetChanged();
+>>>>>>> Change from using ArrayLists to using Transaction and Items in EditItemsActivity and Recycler View for this Activity
                             } else {
                                 Toast.makeText(
                                         EditItemsActivity.this,
