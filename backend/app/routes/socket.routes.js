@@ -4,6 +4,10 @@ const Transaction = require("../models/transaction.model.js");
 
 // handles socket events
 class SocketHandler {
+    constructor(io) {
+        this.server = io;
+    }
+
     connection(client) {
         // socket routes
         client.on("testConnection", (message) => {
@@ -47,6 +51,7 @@ class SocketHandler {
             }
             // return state by emitting events to this client socket
             console.log(state);
+            this.server.to(client.id).emit("currentState", state);
         });
 
         // event listener: "selectItem"
@@ -56,7 +61,8 @@ class SocketHandler {
             // add validation s.t. user not in session cant do this
             const obj = Session.userSelect(uid, username, tid, item_id);
             console.log("selected ", item_id, " userInfos: ", obj.userInfos);
-            // broadcast {item_id, userInfos}
+            // broadcast to everyone except sender {item_id, userInfos}
+            client.broadcast.to(tid).emit("itemUpdated", {item_id: item_id, userInfos: obj.userInfos});
         });
 
         // event listener: "deselectItem"
@@ -64,7 +70,8 @@ class SocketHandler {
             // add validation s.t. user not in session cant do this
             const obj = Session.userDeselect(uid, username, tid, item_id);
             console.log("deselected ", item_id, " userInfos: ", obj.userInfos);
-            // broadcast {item_id, userInfos}
+            // broadcast to everyone except sender {item_id, userInfos}
+            client.broadcast.to(tid).emit("itemUpdated", {item_id: item_id, userInfos: obj.userInfos});
         });
 
         // event listener: "disconnect"
@@ -79,4 +86,4 @@ class SocketHandler {
     }
 }
 
-module.exports = new SocketHandler();
+module.exports = SocketHandler;
