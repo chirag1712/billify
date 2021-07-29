@@ -21,6 +21,7 @@
     <string name="view_all_group">  + View Groups</string>
     <string name="create_group">  + Create Group</string>
     <string name="add_receipt">  + Add Receipt</string>
+    <string name="billify">  + Billify</string>
 
     <!--Create Group-->
     <string name="create_group_title">Create Group</string>
