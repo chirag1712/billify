@@ -1,5 +1,9 @@
 package com.frontend.billify.models;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,5 +67,19 @@ public class Item implements Serializable {
     // helper for returning all user names who have selected the item
     public ArrayList<String> getSelectedUsers() {
         return new ArrayList<>(this.selectedBy.values());
+    }
+
+    public void updateSelectedBy(JSONArray userInfos) {
+        this.selectedBy.clear();
+        for(int i = 0; i < userInfos.length(); i++) {
+            try {
+                JSONObject userInfo = (JSONObject) userInfos.get(i);
+                int uid = Integer.parseInt((String) userInfo.get("uid"));
+                String username = (String) userInfo.get("username");
+                this.selectedBy.put(uid, username);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

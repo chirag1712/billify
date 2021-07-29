@@ -86,18 +86,17 @@ public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsIt
                 // the uid was present in hashmap or not
                 ItemSelecter request = new ItemSelecter(new User(uid, userName), tid, items.get(position).getItem_id());
 
+                // updates for sender separately to avoid any latency
                 if (items.get(position).isSelectedBy(uid)) {
                     items.get(position).deselect(uid);
                     mSocket.emit("deselectItem", request.getJson());
                     Toast.makeText(context, items.get(position).getName() + " Deselected", Toast.LENGTH_SHORT).show();
-                    notifyDataSetChanged();
                 } else {
                     items.get(position).select(uid, userName);
                     mSocket.emit("selectItem", request.getJson());
-                    // can remove this toast once sockets start working properly
                     Toast.makeText(context, items.get(position).getName() + " Selected", Toast.LENGTH_SHORT).show();
-                    notifyDataSetChanged();
                 }
+                notifyDataSetChanged();
             }
         });
     }
