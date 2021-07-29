@@ -43,7 +43,7 @@
         android:theme="@style/Theme.Billify"
         tools:targetApi="n">
         <activity
-            android:name=".activities.AddItemActivity"
+            android:name=".activities.AddEditItemActivity"
             android:label="Add New Item"
             android:parentActivityName=".activities.EditItemsActivity"
             />
@@ -52,7 +52,9 @@
             android:label="Edit Specific Item"
             android:launchMode="singleTop"
             android:parentActivityName=".activities.EditItemsActivity" />
-        <activity android:name=".activities.EditItemsActivity" />
+        <activity android:name=".activities.EditItemsActivity"
+            android:label="Edit and Confirm Parsed Items"
+            />
         <activity android:name=".activities.CreateGroupActivity" />
         <activity android:name=".activities.GroupTransaction" />
         <activity

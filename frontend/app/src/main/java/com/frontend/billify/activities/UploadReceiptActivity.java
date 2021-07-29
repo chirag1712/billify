@@ -131,7 +131,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             try {
                                 uploadProgress.setVisibility(View.VISIBLE);
-                                System.out.println("In upload image " + getIntent().getStringExtra("gid"));
                                 createTransaction(Integer.parseInt(getIntent().getStringExtra("gid")), transactionController);
                             } catch (Exception e) {
                                 Log.d(TAG, "onActivityResult: " + e.toString());
@@ -206,6 +205,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
                 gid,
                 this.currPhotoFile
         ).enqueue(new Callback<Transaction>() {
+
             @Override
             public void onResponse(Call<Transaction> call, Response<Transaction> response) {
                 uploadProgress.setVisibility(View.GONE);

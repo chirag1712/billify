@@ -1,7 +1,6 @@
 package com.frontend.billify.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.frontend.billify.R;
-import com.frontend.billify.activities.EditSpecificItemActivity;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -20,13 +18,15 @@ import java.util.ArrayList;
 
 public class EditItemsRecViewAdapter extends RecyclerView.Adapter<EditItemsRecViewAdapter.EditItemsViewHolder> {
 
-    ArrayList<String> items;
-    ArrayList<String> prices;
+    ArrayList<String> itemNames;
+    ArrayList<Float> itemPrices;
     Context context;
-    public EditItemsRecViewAdapter(Context context, ArrayList<String> items, ArrayList<String> prices) {
+    private OnItemClickListener onItemClickListener;
+
+    public EditItemsRecViewAdapter(Context context, ArrayList<String> itemNames, ArrayList<Float> itemPrices) {
         this.context = context;
-        this.items = items;
-        this.prices = prices;
+        this.itemNames = itemNames;
+        this.itemPrices = itemPrices;
     }
 
     @NonNull
@@ -40,35 +40,50 @@ public class EditItemsRecViewAdapter extends RecyclerView.Adapter<EditItemsRecVi
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull EditItemsViewHolder holder, int position) {
-        holder.item.setText(items.get(position));
-        holder.price.setText(prices.get(position));
-
-        holder.itemLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(context, EditSpecificItemActivity.class);
-                intent.putExtra("item_name", items.get(position));
-                intent.putExtra("item_price", prices.get(position));
-                intent.putExtra("item_index", position);
-                context.startActivity(intent);
-            }
-        });
+        holder.itemName.setText(itemNames.get(position));
+        holder.price.setText(String.valueOf(itemPrices.get(position)));
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return itemNames.size();
     }
 
     public class EditItemsViewHolder extends RecyclerView.ViewHolder {
-        TextView item;
+        TextView itemName;
         TextView price;
         ConstraintLayout itemLayout;
         public EditItemsViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
-            this.item = itemView.findViewById(R.id.edit_item_name);
+            this.itemName = itemView.findViewById(R.id.edit_item_name);
             this.price = itemView.findViewById(R.id.edit_item_price);
             itemLayout = itemView.findViewById(R.id.item_layout);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getBindingAdapterPosition();
+                    // onItemClickListener can be null if not set with setOnClickListener
+                    // position can be NO_POSITION if we click on an item when delete animation not finished
+                    if ((onItemClickListener != null) && (position != RecyclerView.NO_POSITION)) {
+                        onItemClickListener.onItemClick(
+                                itemNames.get(position),
+                                itemPrices.get(position),
+                                position
+                                );
+                    }
+                }
+            });
         }
     }
+
+    public interface OnItemClickListener {
+        void onItemClick(String itemName, float itemPrice, int itemIndex);
+    }
+
+    // list view provides these methods by default, recycler view doesn't
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
 }

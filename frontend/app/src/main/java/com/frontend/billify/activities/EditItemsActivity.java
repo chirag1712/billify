@@ -6,8 +6,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.view.menu.MenuView;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,7 +15,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -35,39 +32,44 @@ import java.util.Arrays;
 
 public class EditItemsActivity extends AppCompatActivity {
 
-    ArrayList<String> items;
-    ArrayList<String> prices;
+    ArrayList<String> itemNames;
+    ArrayList<Float> itemPrices;
 
     RecyclerView recyclerView;
 
     FloatingActionButton addNewItemButton;
+    ActivityResultLauncher<Intent> addItemActivityResultLauncher;
+    ActivityResultLauncher<Intent> editItemActivityResultLauncher;
 
     EditItemsRecViewAdapter editItemsAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_items);
-        items = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.items)));
-        prices = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.prices)));
 
+
+        itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
+        itemPrices = new ArrayList<>();
+        ArrayList<String> strPrices = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.prices)));
+        for (String price: strPrices) {
+            itemPrices.add(Float.valueOf(price));
+        }
 
         addNewItemButton = findViewById(R.id.add_new_item_button);
 
-        ActivityResultLauncher<Intent> addNewItemActivityResultLauncher = registerForActivityResult(
+        addItemActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             Intent data = result.getData();
-                            String newItemName = data.getStringExtra(AddItemActivity.ADDED_ITEM_NAME);
-                            String newItemPrice = data.getStringExtra(AddItemActivity.ADDED_ITEM_PRICE);
-                            items.add(newItemName);
-                            prices.add(newItemPrice);
+                            String newItemName = data.getStringExtra(AddEditItemActivity.ADDED_ITEM_NAME);
+                            Float newItemPrice = data.getFloatExtra(AddEditItemActivity.ADDED_ITEM_PRICE, -1);
+                            itemNames.add(newItemName);
+                            itemPrices.add(newItemPrice);
                             editItemsAdapter.notifyDataSetChanged();
 
-                        } else {
-                            Toast.makeText(EditItemsActivity.this,"New item was not saved", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -76,17 +78,65 @@ public class EditItemsActivity extends AppCompatActivity {
         addNewItemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(EditItemsActivity.this, AddItemActivity.class);
-                addNewItemActivityResultLauncher.launch(intent);
+                Intent intent = new Intent(EditItemsActivity.this, AddEditItemActivity.class);
+                intent.putExtra(AddEditItemActivity.ADD_MODE, 1);
+                addItemActivityResultLauncher.launch(intent);
             }
         });
 
         recyclerView = findViewById(R.id.edit_items_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
-        editItemsAdapter = new EditItemsRecViewAdapter(this, items, prices);
+        editItemsAdapter = new EditItemsRecViewAdapter(
+                this,
+                itemNames,
+                itemPrices
+        );
         recyclerView.setAdapter(editItemsAdapter);
         new ItemTouchHelper(swipeDeleteCallback).attachToRecyclerView(recyclerView);
+
+
+        editItemActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            Intent data = result.getData();
+                            String newItemName = data.getStringExtra(AddEditItemActivity.EDITED_ITEM_NAME);
+                            Float newItemPrice = data.getFloatExtra(AddEditItemActivity.EDITED_ITEM_PRICE, -1);
+                            int editedItemIndex = data.getIntExtra(AddEditItemActivity.EDITED_ITEM_INDEX, -1);
+                            if (editedItemIndex != -1) {
+                                itemNames.set(editedItemIndex, newItemName);
+                                itemPrices.set(editedItemIndex, newItemPrice);
+                            } else {
+                                Toast.makeText(EditItemsActivity.this,
+                                        "Something wrong went wrong with editing",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                            editItemsAdapter.notifyDataSetChanged();
+
+                        }
+                    }
+                }
+        );
+
+        editItemsAdapter.setOnItemClickListener(new EditItemsRecViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(String itemName, float itemPrice, int itemIndex) {
+                Intent intent = new Intent(EditItemsActivity.this, AddEditItemActivity.class);
+                intent.putExtra(AddEditItemActivity.OLD_ITEM_NAME, itemName);
+                intent.putExtra(AddEditItemActivity.OLD_ITEM_PRICE, String.valueOf(itemPrice));
+                intent.putExtra(AddEditItemActivity.EDITED_ITEM_INDEX, itemIndex);
+                // The number 2 below doesn't matter. Adding extra attribute to intent just to check
+                // if the extra attribute is EDIT_MODE or ADD_MODE
+                intent.putExtra(AddEditItemActivity.EDIT_MODE, 2);
+                editItemActivityResultLauncher.launch(intent);
+
+            }
+        });
+
+
     }
 
     ItemTouchHelper.SimpleCallback swipeDeleteCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
@@ -102,8 +152,8 @@ public class EditItemsActivity extends AppCompatActivity {
         @Override
         public void onSwiped(@NonNull @NotNull RecyclerView.ViewHolder viewHolder, int i) {
             // remove the item and prices that you swiped on from the items Array List
-            items.remove(viewHolder.getBindingAdapterPosition());
-            prices.remove(viewHolder.getBindingAdapterPosition());
+            itemNames.remove(viewHolder.getBindingAdapterPosition());
+            itemPrices.remove(viewHolder.getBindingAdapterPosition());
             editItemsAdapter.notifyDataSetChanged();
         }
 
