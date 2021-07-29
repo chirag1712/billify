@@ -16,4 +16,7 @@ router.get("/get-group-transactions/:gid", transaction.getGroupTransactions);
 // @route GET api/transactions/get-transaction-items/tid_value_here
 router.get("/get-transaction-items/:tid", transaction.getTransactionItems);
 
+// @route GET api/transactions/transaction/:tid
+router.get("/transaction/:tid", transaction.getTransaction);
+
 module.exports = router;
