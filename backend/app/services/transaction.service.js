@@ -262,7 +262,6 @@ async function insertItemsToDB(tid, receiptItemsJson) {
         itemObject["item_id"] = insertedItemId;
     });
     await Promise.all(createPromises);
-    console.log("here:", receiptItemsJson);
     return receiptItemsJson;
 }
 
