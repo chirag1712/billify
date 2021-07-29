@@ -39,6 +39,10 @@ public class Transaction implements Serializable {
             this.items.add(new Item(item.getItem_id(), item.getTid(), item.getName(), item.getPrice()));
         }
     }
+    
+    public void addItem(int position, Item item) {
+        this.items.add(position, item);
+    }
 
     public void addItem(Item item) {
         this.items.add(item);
@@ -66,6 +70,10 @@ public class Transaction implements Serializable {
 
     public void setItems(ArrayList<Item> items) {
         this.items = items;
+    }
+
+    public int getNumItems() {
+        return items.size();
     }
 
 }

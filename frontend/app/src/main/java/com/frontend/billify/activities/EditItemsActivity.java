@@ -19,6 +19,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.frontend.billify.R;
@@ -28,6 +29,11 @@ import com.frontend.billify.models.Transaction;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import static java.lang.Math.max;
 
 public class EditItemsActivity extends AppCompatActivity {
 
@@ -42,14 +48,38 @@ public class EditItemsActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> editItemActivityResultLauncher;
 
     EditItemsRecViewAdapter editItemsAdapter;
+    Button confirmButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_items);
 
+        confirmButton = findViewById(R.id.confirm_items_button);
+
+//        confirmButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//            }
+//        });
+
+        ArrayList<String> itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
+        ArrayList<String> strPrices = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.prices)));
+        currTransaction = new Transaction(1, 4, "2004-01-01", "NOT_STARTED",
+                "None", "empty_url");
+
+        for (int i = 0; i < itemNames.size(); ++i) {
+            currTransaction.addItem(new Item(itemNames.get(i), Float.valueOf(strPrices.get(i))));
+        }
+
         Intent i = getIntent();
-        Bundle b = i.getBundleExtra("TransactionBundle");
-        currTransaction = (Transaction) b.getSerializable("SerializedTransaction");
+        if (i.hasExtra("TransactionBundle")) {
+            Bundle b = i.getBundleExtra("TransactionBundle");
+            currTransaction = (Transaction) b.getSerializable("SerializedTransaction");
+        }
+
+
 
         addNewItemButton = findViewById(R.id.add_new_item_button);
 
@@ -61,8 +91,9 @@ public class EditItemsActivity extends AppCompatActivity {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             Intent data = result.getData();
                             Item newItem = (Item) data.getSerializableExtra(AddEditItemActivity.ADDED_ITEM);
-                            currTransaction.addItem(newItem);
-                            editItemsAdapter.notifyDataSetChanged();
+                            int insertIndex = 0;
+                            currTransaction.addItem(insertIndex, newItem);
+                            editItemsAdapter.notifyItemInserted(insertIndex);
                         }
                     }
                 }
@@ -79,7 +110,11 @@ public class EditItemsActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.edit_items_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setHasFixedSize(true);
+//        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemViewCacheSize(20);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
         editItemsAdapter = new EditItemsRecViewAdapter(
                 this,
                 currTransaction
@@ -99,7 +134,7 @@ public class EditItemsActivity extends AppCompatActivity {
                             int editedItemIndex = data.getIntExtra(AddEditItemActivity.EDITED_ITEM_INDEX, -1);
                             if (editedItemIndex != -1) {
                                 currTransaction.getItems().set(editedItemIndex, editedItem);
-                                editItemsAdapter.notifyDataSetChanged();
+                                editItemsAdapter.notifyItemChanged(editedItemIndex);
                             } else {
                                 Toast.makeText(EditItemsActivity.this,
                                         "Something wrong went wrong with editing",
@@ -140,8 +175,11 @@ public class EditItemsActivity extends AppCompatActivity {
         @Override
         public void onSwiped(@NonNull @NotNull RecyclerView.ViewHolder viewHolder, int i) {
             // remove the item and prices that you swiped on from the items Array List
-            currTransaction.getItems().remove(viewHolder.getBindingAdapterPosition());
-            editItemsAdapter.notifyDataSetChanged();
+            int position = viewHolder.getBindingAdapterPosition();
+            currTransaction.getItems().remove(position);
+            editItemsAdapter.notifyItemRemoved(position);
+            editItemsAdapter.notifyItemRangeChanged(position, currTransaction.getNumItems());
+
         }
 
         @Override
