@@ -29,6 +29,7 @@ public class Transaction implements Serializable {
         this.receipt_img = receipt_img;
     }
 
+<<<<<<< HEAD
     public Transaction(Transaction t) {
         this.tid = t.tid;
         this.gid = t.gid;
@@ -45,6 +46,8 @@ public class Transaction implements Serializable {
         }
     }
     
+=======
+>>>>>>> Change notifyDatasetChanged to notifyItemInserted/changed/removed re-bind only affected items
     public void addItem(int position, Item item) {
         this.items.add(position, item);
     }

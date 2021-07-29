@@ -113,6 +113,24 @@ public class EditItemsActivity extends AppCompatActivity {
             currTransaction.addItem(new Item(itemNames.get(i), Float.valueOf(strPrices.get(i))));
         }
 
+        confirmButton = findViewById(R.id.confirm_items_button);
+
+//        confirmButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//            }
+//        });
+
+        ArrayList<String> itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
+        ArrayList<String> strPrices = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.prices)));
+        currTransaction = new Transaction(1, 4, "2004-01-01", "NOT_STARTED",
+                "None", "empty_url");
+
+        for (int i = 0; i < itemNames.size(); ++i) {
+            currTransaction.addItem(new Item(itemNames.get(i), Float.valueOf(strPrices.get(i))));
+        }
+
         Intent i = getIntent();
         if (i.hasExtra("TransactionBundle")) {
             Bundle b = i.getBundleExtra("TransactionBundle");
