@@ -40,8 +40,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static java.lang.Math.max;
-
 public class EditItemsActivity extends AppCompatActivity {
 
     Transaction currTransaction;
@@ -68,15 +66,34 @@ public class EditItemsActivity extends AppCompatActivity {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (currTransaction.getCurrPhotoFile() != null) {
+                if (
+                        (currTransaction.getCurrPhotoFile() != null) &&
+                        (currTransaction.getNumItems() > 0)
+                ) {
                     createTransactionRequestProgressBar.setVisibility(View.VISIBLE);
                     confirmButton.setVisibility(View.INVISIBLE);
                     createTransaction();
 
+                } else if (currTransaction.getCurrPhotoFile() == null) {
+                    Toast.makeText(
+                            EditItemsActivity.this,
+                            "Can't Confirm since there's no Receipt selected to upload",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                } else if (currTransaction.getNumItems() == 0) {
+                    Toast.makeText(
+                            EditItemsActivity.this,
+                            "Can't Confirm since there are no items in this Transaction",
+                            Toast.LENGTH_SHORT
+                    ).show();
                 } else {
-                    Toast.makeText(EditItemsActivity.this, "Can't Confirm since there's no Receipt selected to upload", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(
+                            EditItemsActivity.this,
+                            "Was not able to create Transaction since number of items are either" +
+                                    "0 or there is no receipt image",
+                            Toast.LENGTH_SHORT
+                    ).show();
                 }
-
             }
         });
 
@@ -151,9 +168,11 @@ public class EditItemsActivity extends AppCompatActivity {
                                 currTransaction.getItems().set(editedItemIndex, editedItem);
                                 editItemsAdapter.notifyItemChanged(editedItemIndex);
                             } else {
-                                Toast.makeText(EditItemsActivity.this,
+                                Toast.makeText(
+                                        EditItemsActivity.this,
                                         "Something wrong went wrong with editing",
-                                        Toast.LENGTH_SHORT).show();
+                                        Toast.LENGTH_SHORT
+                                ).show();
                             }
                         }
                     }
@@ -211,16 +230,16 @@ public class EditItemsActivity extends AppCompatActivity {
                         );
                         Intent moveToEditAndConfirmItemsActivityIntent = new Intent(
                                 EditItemsActivity.this,
-                                HomepageActivity.class
+                                ItemizedViewActivity.class
                         );
                         /* Commenting out this code for now since we go back to homepage and not start billify
                          session for now. */
-//                        Bundle transactionBundle = new Bundle();
-//                        transactionBundle.putSerializable("SerializedTransaction", currTransaction);
-//                        moveToEditAndConfirmItemsActivityIntent.putExtra(
-//                                "TransactionBundle",
-//                                transactionBundle
-//                        );
+                        Bundle transactionBundle = new Bundle();
+                        transactionBundle.putSerializable("SerializedTransaction", currTransaction);
+                        moveToEditAndConfirmItemsActivityIntent.putExtra(
+                                "TransactionBundle",
+                                transactionBundle
+                        );
                         startActivity(moveToEditAndConfirmItemsActivityIntent);
 
                     }
@@ -229,7 +248,11 @@ public class EditItemsActivity extends AppCompatActivity {
                     public void onFailure(Call<Transaction> call, Throwable t) {
                         createTransactionRequestProgressBar.setVisibility(View.GONE);
                         confirmButton.setVisibility(View.VISIBLE);
-                        Toast.makeText(EditItemsActivity.this, "Failed creating transaction since API request failed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(
+                                EditItemsActivity.this,
+                                "Failed creating transaction since API request failed",
+                                Toast.LENGTH_SHORT
+                        ).show();
                         t.printStackTrace();
                     }
                 }

@@ -87,7 +87,9 @@ public class Transaction implements Serializable {
         for (Item item: items) {
             jsonString += "{" + "\"name\": " + "\"" + item.getName() + "\"" + ", \"price\": " + item.getStrPrice() + "},";
         }
-        jsonString = jsonString.substring(0, jsonString.length() - 1);
+        if (jsonString.charAt(jsonString.length() - 1) == ',') {
+            jsonString = jsonString.substring(0, jsonString.length() - 1);
+        }
         jsonString += "]}";
 
         return jsonString;
