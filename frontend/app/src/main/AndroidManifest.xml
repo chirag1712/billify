@@ -47,11 +47,6 @@
             android:label="Add New Item"
             android:parentActivityName=".activities.EditItemsActivity"
             />
-        <activity
-            android:name=".activities.EditSpecificItemActivity"
-            android:label="Edit Specific Item"
-            android:launchMode="singleTop"
-            android:parentActivityName=".activities.EditItemsActivity" />
         <activity android:name=".activities.EditItemsActivity"
             android:label="Edit and Confirm Parsed Items"
             />
