@@ -51,11 +51,11 @@ public class AddEditItemActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.add_item_menu, menu);
+        menuInflater.inflate(R.menu.add_edit_item_menu, menu);
         return true; // True to display add_item_menu XML
     }
     
-    private void saveNewItem() {
+    private void saveItem() {
         String itemName = itemNameEditText.getText().toString();
         String strItemPrice = itemPriceEditText.getText().toString();
         if (itemName.trim().isEmpty() || (strItemPrice.trim().isEmpty())) {
@@ -107,8 +107,8 @@ public class AddEditItemActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.save_new_item:
-                saveNewItem();
+            case R.id.save_item:
+                saveItem();
                 return true;
             default:
                 goBackToPrevActivity();
