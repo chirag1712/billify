@@ -65,6 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/add_receipt_button"
             android:layout_marginBottom="30dp"
+            app:backgroundTint="@color/cyan_button"
             android:text="@string/view_transactions"/>
         
         <Button

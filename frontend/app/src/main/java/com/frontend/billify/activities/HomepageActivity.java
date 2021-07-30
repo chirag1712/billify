@@ -65,7 +65,8 @@ public class HomepageActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(HomepageActivity.this, ViewTransactionsActivity.class);
                 startActivity(intent);
-            });
+            }
+        });
             
         join_billify_session.setOnClickListener(new View.OnClickListener() {
             @Override
