@@ -4,6 +4,10 @@ const Transaction = require("../models/transaction.model.js");
 
 // handles socket events
 class SocketHandler {
+    constructor(io) {
+        this.server = io;
+    }
+
     connection(client) {
         // socket routes
         client.on("testConnection", (message) => {
@@ -47,24 +51,27 @@ class SocketHandler {
             }
             // return state by emitting events to this client socket
             console.log(state);
+            this.server.to(client.id).emit("currentState", state);
         });
 
         // event listener: "selectItem"
         // (uid and item_id in json message), update socket state, and reemit for other users
         // of the room - current uids of the item_id
-        client.on("selectItem", ({ uid: uid, username: username, tid: tid, item_id: item_id }) => {
+        client.on("selectItem", ({ uid: uid, userName: username, tid: tid, item_id: item_id }) => {
             // add validation s.t. user not in session cant do this
             const obj = Session.userSelect(uid, username, tid, item_id);
-            console.log("selected ", item_id, " userInfos: ", obj.userInfos);
-            // emit {item_id, uids}
+            console.log("selected ", item_id, " userInfos: ", obj.userInfoObjs);
+            // broadcast to everyone except sender {item_id, userInfos}
+            client.broadcast.to(tid).emit("itemUpdated", {item_id: item_id, userInfos: obj.userInfoObjs});
         });
 
         // event listener: "deselectItem"
-        client.on("deselectItem", ({ uid: uid, username: username, tid: tid, item_id: item_id }) => {
+        client.on("deselectItem", ({ uid: uid, userName: username, tid: tid, item_id: item_id }) => {
             // add validation s.t. user not in session cant do this
             const obj = Session.userDeselect(uid, username, tid, item_id);
-            console.log("deselected ", item_id, " userInfos: ", obj.userInfos);
-            // emit {item_id, uids}
+            console.log("deselected ", item_id, " userInfos: ", obj.userInfoObjs);
+            // broadcast to everyone except sender {item_id, userInfos}
+            client.broadcast.to(tid).emit("itemUpdated", {item_id: item_id, userInfos: obj.userInfoObjs});
         });
 
         // event listener: "disconnect"
@@ -79,4 +86,4 @@ class SocketHandler {
     }
 }
 
-module.exports = new SocketHandler();
+module.exports = SocketHandler;

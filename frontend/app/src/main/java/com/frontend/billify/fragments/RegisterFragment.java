@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import com.frontend.billify.NavigationHost;
 import com.frontend.billify.R;
 import com.frontend.billify.controllers.UserService;
+import com.frontend.billify.fragments.LoginFragment;
 import com.frontend.billify.models.User;
 import com.frontend.billify.services.RetrofitService;
 import com.google.android.material.button.MaterialButton;
@@ -78,7 +79,7 @@ public class RegisterFragment extends Fragment {
                     String userName = usernameEditText.getText().toString();
                     String email = emailEditText.getText().toString();
                     String password = passwordEditText.getText().toString();
-                    user.setUser_name(userName);
+                    user.setUserName(userName);
                     user.setPassword(password);
                     user.setEmail(email);
 

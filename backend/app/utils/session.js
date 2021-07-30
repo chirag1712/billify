@@ -45,17 +45,29 @@ class Session {
         if (!this.tid2itemId2userInfos[tid][item_id]) {
             this.tid2itemId2userInfos[tid][item_id] = new Set();
         }
-        this.tid2itemId2userInfos[tid][item_id].add(new UserInfo(uid, username));
+        this.tid2itemId2userInfos[tid][item_id].add(JSON.stringify(new UserInfo(uid, username)));
         const userInfos = Array.from(this.tid2itemId2userInfos[tid][item_id]);
-        return { item_id, userInfos };
+
+        // parse to JSONs before returning
+        const userInfoObjs = [];
+        userInfos.forEach((userInfoStr) => {
+            userInfoObjs.push(JSON.parse(userInfoStr));
+        });
+        return { item_id, userInfoObjs };
     }
 
     userDeselect(uid, username, tid, item_id) {
-        if (!this.tid2itemId2userInfos[tid][item_id].delete(uid)) {
-            throw Error(uid + " didnt select " + item_id + " to begin with");
+        if (!this.tid2itemId2userInfos[tid][item_id].delete(JSON.stringify(new UserInfo(uid, username)))) {
+            throw Error(uid + " did not select " + item_id + " to begin with");
         }
         const userInfos = Array.from(this.tid2itemId2userInfos[tid][item_id]);
-        return { item_id, userInfos };
+
+        // parse to JSONs before returning
+        const userInfoObjs = [];
+        userInfos.forEach((userInfoStr) => {
+            userInfoObjs.push(JSON.parse(userInfoStr));
+        });
+        return { item_id, userInfoObjs };
     }
 
     async userLeave(socketId) {
@@ -71,7 +83,8 @@ class Session {
             // using option 1 for now
             await UserItem.deleteAll(tid);
             Object.entries(this.tid2itemId2userInfos[tid]).forEach(([item_id, userInfos]) => {
-                userInfos.forEach(({uid}) => {
+                userInfos.forEach((userInfoString) => {
+                    const { uid } = JSON.parse(userInfoString);
                     const userItem = new UserItem(tid, uid, item_id);
                     userItem.createUserItem();
                 });
@@ -96,7 +109,11 @@ class Session {
     getState(tid) {
         const state = { items: [] };
         Object.entries(this.tid2itemId2userInfos[tid]).forEach(([item_id, userInfos]) => {
-            state.items.push({ item_id, userInfos: Array.from(userInfos) });
+            const arr = [];
+            userInfos.forEach((userInfoString) => {
+                arr.push(JSON.parse(userInfoString));
+            });
+            state.items.push({ item_id, userInfos: arr });
         });
         return state;
     }
@@ -110,7 +127,10 @@ class Session {
             if (!this.tid2itemId2userInfos[tid]) {
                 this.tid2itemId2userInfos[tid] = {};
             }
-            this.tid2itemId2userInfos[tid][item_id] = new Set(userInfos);
+            this.tid2itemId2userInfos[tid][item_id] = new Set();
+            userInfos.forEach((userInfoObj) => {
+                this.tid2itemId2userInfos[tid][item_id].add(JSON.stringify(userInfoObj));
+            });
         });
         return state;
     }

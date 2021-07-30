@@ -9,29 +9,47 @@
     android:layout_margin="5dp"
     app:cardCornerRadius="5dp">
 
-    <RelativeLayout
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:layout_weight="0.7"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="25dp">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Receipt Item"
-            android:id="@+id/receiptItem"
-            android:layout_margin="5dp"
-            android:textStyle="bold"/>
+            >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Receipt Item"
+                    android:id="@+id/receiptItem"
+                    android:layout_margin="5dp"
+                    android:textStyle="bold"/>
 
-        <TextView
-            android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/itemPrice"
+                    android:text="Price"
+                    android:layout_alignParentRight="true"
+                    android:layout_margin="5dp"
+                    android:textStyle="bold"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/itemPrice"
-            android:text="Price"
-            android:layout_alignParentRight="true"
-            android:layout_margin="5dp"
-            android:textStyle="bold"/>
+            >
 
-    </RelativeLayout>
+            <GridLayout
+                android:id="@+id/selected_users"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+
+    </LinearLayout>
 
 
 </androidx.cardview.widget.CardView>

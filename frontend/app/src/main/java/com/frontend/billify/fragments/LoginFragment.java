@@ -99,8 +99,9 @@ public class LoginFragment extends Fragment {
                                     }
                                     return;
                                 }
-                                User user = response.body(); // only userId is returned
+                                User user = response.body(); // userId and userName are returned
                                 Persistence.saveUserId(getActivity(), user.getId());
+                                Persistence.saveUserName(getActivity(), user.getUserName());
                                 openHomepage();
                             }
 
