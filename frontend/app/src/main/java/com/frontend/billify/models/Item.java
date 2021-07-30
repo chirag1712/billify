@@ -69,6 +69,25 @@ public class Item implements Serializable {
         return new ArrayList<>(this.selectedBy.values());
     }
 
+    public Boolean isSelectedBy(int uid) {
+        return this.selectedBy.containsKey(uid);
+    }
+
+    public void select(int uid, String username) {
+        // add uid to hashmap
+        this.selectedBy.put(uid, username);
+    }
+
+    public void deselect(int uid) {
+        // remove uid from hashmap
+        this.selectedBy.remove(uid);
+    }
+
+    // helper for returning all user names who have selected the item
+    public ArrayList<String> getSelectedUsers() {
+        return new ArrayList<>(this.selectedBy.values());
+    }
+
     public void updateSelectedBy(JSONArray userInfos) {
         this.selectedBy.clear();
         for(int i = 0; i < userInfos.length(); i++) {
@@ -82,6 +101,7 @@ public class Item implements Serializable {
             }
         }
     }
+    
     public void setName(String name) {
         this.name = name;
     }

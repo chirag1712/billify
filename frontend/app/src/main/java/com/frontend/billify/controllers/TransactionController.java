@@ -65,4 +65,9 @@ public class TransactionController {
         return call;
     }
 
+    public Call<Transaction> getTransaction(int tid) {
+        Call<Transaction> call = this.apiRoutes.getTransaction(tid);
+        return call;
+    }
+
 }
