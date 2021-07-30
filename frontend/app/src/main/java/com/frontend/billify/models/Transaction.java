@@ -1,5 +1,6 @@
 package com.frontend.billify.models;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -9,10 +10,14 @@ public class Transaction implements Serializable {
     private String t_date;
     private String t_state;
     // TODO: Let DB Schema be fixed and cross-reference names with DB
-    private String receipt_img; // NOTE: This is a URL
+    private String receipt_img; // NOTE: receipt_img is a URL to the image
     private String transaction_name;
     private ArrayList<Item> items;
 
+    /* currPhotoFile is used to store the chosen picture and send it to backend for parsing receipt
+    or creating a new transaction
+    */
+    private File currPhotoFile;
     public Transaction(int tid, int gid, String t_date, String t_state,
                        String transaction_name, String receipt_img) {
         this.tid = tid;
@@ -35,9 +40,12 @@ public class Transaction implements Serializable {
         // deep copy
         this.items = new ArrayList<Item>();
         for (Item item: t.items) {
-            System.out.println(item.getItem_id());
             this.items.add(new Item(item.getItem_id(), item.getTid(), item.getName(), item.getPrice()));
         }
+    }
+    
+    public void addItem(int position, Item item) {
+        this.items.add(position, item);
     }
 
     public void addItem(Item item) {
@@ -64,4 +72,34 @@ public class Transaction implements Serializable {
         }
     }
 
+    public void setItems(ArrayList<Item> items) {
+        this.items = items;
+    }
+
+    public int getNumItems() {
+        return items.size();
+    }
+
+    public String getTransactionJSONString() {
+        String jsonString = "{\"gid\": " + gid + ",";
+        jsonString += "\"items\": [";
+        for (Item item: items) {
+            jsonString += "{" + "\"name\": " + "\"" + item.getName() + "\"" + ", \"price\": " + item.getStrPrice() + "},";
+        }
+        if (jsonString.charAt(jsonString.length() - 1) == ',') {
+            jsonString = jsonString.substring(0, jsonString.length() - 1);
+        }
+        jsonString += "]}";
+
+        return jsonString;
+
+    }
+
+    public File getCurrPhotoFile() {
+        return currPhotoFile;
+    }
+
+    public void setCurrPhotoFile(File currPhotoFile) {
+        this.currPhotoFile = currPhotoFile;
+    }
 }

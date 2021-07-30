@@ -47,7 +47,7 @@ public class Item implements Serializable {
         return this.price;
     }
     public String getStrPrice() {
-        return Float.toString(this.price);
+        return String.valueOf(this.price);
     }
 
     public Boolean isSelectedBy(int uid) {
@@ -82,4 +82,18 @@ public class Item implements Serializable {
             }
         }
     }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
+    }
+
+    public void setPrice(String price) {
+        this.price = Float.valueOf(price);
+    }
+
+
 }

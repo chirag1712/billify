@@ -8,47 +8,12 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/bill"
-        android:label="@string/app_name"
-        android:networkSecurityConfig="@xml/network_security_config"
-        android:roundIcon="@mipmap/bill"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.Billify"
-        tools:targetApi="n">
-        <activity android:name=".activities.CreateGroupActivity"></activity>
-        <activity android:name=".activities.GroupTransaction"></activity>
-        <activity
-            android:name=".activities.groupPop"
-            android:theme="@style/Theme.Billify.group_popup"></activity>
-        <activity android:name=".activities.HomepageActivity" />
-
-        <activity android:name=".activities.UploadReceiptActivity"></activity>
-
-        <activity android:name=".activities.ItemizedViewActivity"></activity>
-        <activity android:name=".activities.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.android.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
-        </provider>
-
-    </application>
     <queries>
+
         <!-- Browser -->
         <intent>
             <action android:name="android.intent.action.VIEW" />
+
             <data android:scheme="http" />
         </intent>
 
@@ -63,9 +28,55 @@
         </intent>
         <intent>
             <action android:name="android.intent.action.PICK" />
+
             <data android:mimeType="vnd.android.cursor.dir/image" />
         </intent>
-
     </queries>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/bill"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:roundIcon="@mipmap/bill"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Billify"
+        tools:targetApi="n">
+        <activity
+            android:name=".activities.AddEditItemActivity"
+            android:label="Add New Item"
+            android:parentActivityName=".activities.EditItemsActivity"
+            />
+        <activity android:name=".activities.EditItemsActivity"
+            android:label="Edit and Confirm Parsed Items"
+            />
+        <activity android:name=".activities.CreateGroupActivity" />
+        <activity android:name=".activities.GroupTransaction" />
+        <activity
+            android:name=".activities.groupPop"
+            android:theme="@style/Theme.Billify.group_popup" />
+        <activity android:name=".activities.HomepageActivity" />
+        <activity android:name=".activities.UploadReceiptActivity"
+            android:label="Upload a New Receipt"
+            />
+        <activity android:name=".activities.ItemizedViewActivity" />
+        <activity android:name=".activities.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.android.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
 
 </manifest>

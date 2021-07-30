@@ -186,8 +186,9 @@ class ReceiptParser {
             console.log("Couldn't parse receipt, no items found.");
             throw new Error("Couldn't parse receipt, no items found.");
         }
-        const processed_items = this.processRawItemsTable(rawItemsTable);
-        return processed_items;
+        const processedItems = this.processRawItemsTable(rawItemsTable);
+        const parsedReceiptJson = {"items": processedItems};
+        return parsedReceiptJson;
     }
 
 }
@@ -243,9 +244,8 @@ async function insertTransactionToDB(gid, transactionName, imgData, imgFileName,
     // user edits items on their mobile app and confirms right set of items to add.
     const receiptImgS3URI = await uploadReceiptImgToS3(params);
     const transactionObj = await transactionService.createTransaction(gid, transactionName, receiptImgS3URI);
-
     parsedReceiptJson = {
-        "items": parsedReceiptJson,
+        "items": parsedReceiptJson["items"],
         "tid": transactionObj["tid"],
         "transaction_name": transactionObj["transaction_name"],
         "receipt_img": receiptImgS3URI
