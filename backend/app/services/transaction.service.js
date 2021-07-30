@@ -186,8 +186,9 @@ class ReceiptParser {
             console.log("Couldn't parse receipt, no items found.");
             throw new Error("Couldn't parse receipt, no items found.");
         }
-        const processed_items = this.processRawItemsTable(rawItemsTable);
-        return processed_items;
+        const processedItems = this.processRawItemsTable(rawItemsTable);
+        const parsedReceiptJson = {"items": processedItems};
+        return parsedReceiptJson;
     }
 
 }
@@ -199,7 +200,7 @@ async function insertTransactionsAndItemsToDB(gid, transactionName, imgData, img
         console.log("Couldn't insert expense into DB");
         throw new Error("Couldn't insert expense into DB, could be that provided gid value was invalid");
     }
-    await insertItemsToDB(parsedReceiptJson["tid"], parsedReceiptJson["items"]);
+    parsedReceiptJson["items"] = await insertItemsToDB(parsedReceiptJson["tid"], parsedReceiptJson["items"]);
     return parsedReceiptJson;
 }
 
@@ -243,9 +244,8 @@ async function insertTransactionToDB(gid, transactionName, imgData, imgFileName,
     // user edits items on their mobile app and confirms right set of items to add.
     const receiptImgS3URI = await uploadReceiptImgToS3(params);
     const transactionObj = await transactionService.createTransaction(gid, transactionName, receiptImgS3URI);
-
     parsedReceiptJson = {
-        "items": parsedReceiptJson,
+        "items": parsedReceiptJson["items"],
         "tid": transactionObj["tid"],
         "transaction_name": transactionObj["transaction_name"],
         "receipt_img": receiptImgS3URI
@@ -254,12 +254,15 @@ async function insertTransactionToDB(gid, transactionName, imgData, imgFileName,
 }
 
 async function insertItemsToDB(tid, receiptItemsJson) {
-    receiptItemsJson.forEach(async itemObject => {
+    const createPromises = receiptItemsJson.map(async itemObject => {
         const itemName = itemObject["name"];
         const itemPrice = itemObject["price"];
         const item = new Item(tid, itemName, itemPrice);
         const insertedItemId = await item.insertItemToDB();
+        itemObject["item_id"] = insertedItemId;
     });
+    await Promise.all(createPromises);
+    return receiptItemsJson;
 }
 
 async function getGroupTransactions(gid) {
@@ -269,8 +272,7 @@ async function getGroupTransactions(gid) {
 }
 
 async function getTransactionItems(tid) {
-    const transactionService = new TransactionModel();
-    const transactionItemsJson = await transactionService.getTransactionItems(tid);
+    const transactionItemsJson = await TransactionModel.getTransactionItems(tid);
     return transactionItemsJson;
 }
 

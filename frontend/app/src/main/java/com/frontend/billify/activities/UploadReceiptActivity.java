@@ -28,8 +28,6 @@ import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.services.RetrofitService;
 
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -63,7 +61,18 @@ public class UploadReceiptActivity extends AppCompatActivity {
         final Button takePhotoButton = findViewById(R.id.take_photo);
         final Button showGalleryButton = findViewById(R.id.show_gallery);
         final ProgressBar uploadProgress = findViewById(R.id.uploadProgressBar);
+        final Button editItemsButton = findViewById(R.id.edit_items_button);
+
         this.uploadProgress = uploadProgress;
+
+        editItemsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(UploadReceiptActivity.this, EditItemsActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         takePhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,8 +132,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             try {
                                 uploadProgress.setVisibility(View.VISIBLE);
-                                System.out.println("In upload image " + getIntent().getStringExtra("gid"));
-                                createTransaction(Integer.parseInt(getIntent().getStringExtra("gid")), transactionController);
+                                parseReceipt(Integer.parseInt(getIntent().getStringExtra("gid")));
                             } catch (Exception e) {
                                 Log.d(TAG, "onActivityResult: " + e.toString());
                             }
@@ -155,8 +163,8 @@ public class UploadReceiptActivity extends AppCompatActivity {
                                 outputStream.close();
                                 inputStream.close();
                                 uploadProgress.setVisibility(View.VISIBLE);
-                                System.out.println("In upload image " + getIntent().getStringExtra("gid"));
-                                createTransaction(Integer.parseInt(getIntent().getStringExtra("gid")), transactionController);
+                                System.out.println("In upload image ");
+                                parseReceipt(Integer.parseInt(getIntent().getStringExtra("gid")));
                             } catch (Exception e) {
                                 Log.d(TAG, "onActivityResult: " + e.toString());
                             }
@@ -187,17 +195,17 @@ public class UploadReceiptActivity extends AppCompatActivity {
         return false;
     }
 
-    private void createTransaction(
-            int gid,
-            TransactionController transactionController
+    private void parseReceipt(
+            int gid
     ) {
         /*
         Creates a new Group Transaction by making a call to the API, can specify a callback.
          */
-        transactionController.createTransaction(
+        transactionController.parseReceipt(
                 gid,
                 this.currPhotoFile
         ).enqueue(new Callback<Transaction>() {
+
             @Override
             public void onResponse(Call<Transaction> call, Response<Transaction> response) {
                 uploadProgress.setVisibility(View.GONE);
@@ -220,29 +228,31 @@ public class UploadReceiptActivity extends AppCompatActivity {
                     }
                     return;
                 }
-                Transaction currTransaction = response.body();
-                System.out.println("Successful request with return value: "
+                Transaction currTransaction = new Transaction(response.body());
+                currTransaction.setCurrPhotoFile(UploadReceiptActivity.this.currPhotoFile);
+                System.out.println("Successful upload request with return value: "
                         + currTransaction.getName()
                 );
-                currTransaction.printItems();
-                System.out.println(currTransaction.getTid());
-                Intent moveToItemizedScreenIntent = new Intent(
+                Intent moveToEditAndConfirmItemsActivityIntent = new Intent(
                         UploadReceiptActivity.this,
-                        ItemizedViewActivity.class
+                        EditItemsActivity.class
                 );
                 Bundle transactionBundle = new Bundle();
                 transactionBundle.putSerializable("SerializedTransaction", currTransaction);
-                moveToItemizedScreenIntent.putExtra(
+                moveToEditAndConfirmItemsActivityIntent.putExtra(
                         "TransactionBundle",
                         transactionBundle
                         );
-                startActivity(moveToItemizedScreenIntent);
+                startActivity(moveToEditAndConfirmItemsActivityIntent);
 
             }
 
             @Override
             public void onFailure(Call<Transaction> call, Throwable t) {
+                uploadProgress.setVisibility(View.GONE);
                 System.out.println("Error: " + t.getMessage());
+                Toast.makeText(UploadReceiptActivity.this, "Failed Parsing Receipt since API request failed", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
             }
         });
     }

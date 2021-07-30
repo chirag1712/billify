@@ -29,17 +29,28 @@ public interface ApiRoutes {
     @POST("api/users/signup/")
     Call<User> signupUser(@Body User user);
 
-
+    // Group routes
     @GET("api/groups/user/{uid}")
     Call<User> getGroups(@Path("uid") int uid);
 
     @POST("api/groups/create")
     Call<Group> createGroup(@Body CreateGroupModel createGroupModel);
 
+    // Transaction routes
     // NOTE: parse-receipt endpoint creates transaction
     @Multipart
     @POST("api/transactions/parse-receipt")
-    Call<Transaction> createTransaction(
+    Call<Transaction> parseReceipt(
             @Part("gid") RequestBody gid,
             @Part MultipartBody.Part file);
+
+    @GET("api/transactions/transaction/{tid}")
+    Call<Transaction> getTransaction(@Path("tid") int tid);
+
+    @Multipart
+    @POST("api/transactions/create-transaction")
+    Call<Transaction> createTransaction(
+      @Part("transaction_details") RequestBody transactionDetails,
+      @Part MultipartBody.Part file
+    );
 }

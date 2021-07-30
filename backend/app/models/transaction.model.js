@@ -75,6 +75,22 @@ class TransactionModel {
         }
     }
 
+    static findTransaction(tid) {
+        if (tid !== undefined) {
+            return new Promise((resolve, reject) => {
+                sql.query("SELECT * FROM Transaction WHERE tid = ?",
+                    tid, (err, res) => {
+                        if (err) {
+                            console.log("error: ", err);
+                            reject(err);
+                        }
+                        resolve(res[0]);
+                    });
+            });
+        } else {
+            throw Error("tid is undefined");
+        }
+    }
 }
 
 module.exports = TransactionModel;

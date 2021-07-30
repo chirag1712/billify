@@ -43,13 +43,23 @@
         android:theme="@style/Theme.Billify"
         tools:targetApi="n">
         <activity android:name=".activities.view_transactions.ViewTransactionsActivity"></activity>
+        <activity
+            android:name=".activities.AddEditItemActivity"
+            android:label="Add New Item"
+            android:parentActivityName=".activities.EditItemsActivity"
+            />
+        <activity android:name=".activities.EditItemsActivity"
+            android:label="Edit and Confirm Parsed Items"
+            />
         <activity android:name=".activities.CreateGroupActivity" />
         <activity android:name=".activities.GroupTransaction" />
         <activity
             android:name=".activities.groupPop"
             android:theme="@style/Theme.Billify.group_popup" />
         <activity android:name=".activities.HomepageActivity" />
-        <activity android:name=".activities.UploadReceiptActivity" />
+        <activity android:name=".activities.UploadReceiptActivity"
+            android:label="Upload a New Receipt"
+            />
         <activity android:name=".activities.ItemizedViewActivity" />
         <activity android:name=".activities.MainActivity">
             <intent-filter>

@@ -1,17 +1,24 @@
 const { UserItem } = require("../models/item.model");
 
+class UserInfo {
+    constructor(uid, username) {
+        this.uid = uid;
+        this.username = username;
+    }
+}
+
 class Session {
     constructor() {
         // TRANSACTION STATE
         // stores tid to itemid to set of uids - state of transaction items
-        this.tid2itemId2uids = {};
+        this.tid2itemId2userInfos = {};
 
         // stores tid to uid to price owed for that transaction - state of user prices
         // this.tid2uid2price = {}; // if we want running totals even when transaction not final
 
         // SOCKET ROOM STATE
         // socket id to uid (since disconnect only sends socket id)
-        this.socketId2uid = {};
+        this.socketId2userInfo = {};
 
         // tid to number of connections
         // to check if last user left
@@ -23,8 +30,8 @@ class Session {
     }
 
     // returns true if first user
-    userJoin(socketId, uid, tid) {
-        this.socketId2uid[socketId] = uid;
+    userJoin(socketId, uid, username, tid) {
+        this.socketId2userInfo[socketId] = new UserInfo(uid, username);
         this.uid2Tid[uid] = tid;
         if (this.tid2num[tid]) {
             this.tid2num[tid]++;
@@ -34,25 +41,37 @@ class Session {
         return true;
     }
 
-    userSelect(tid, item_id, uid) {
-        if(!this.tid2itemId2uids[tid][item_id]) {
-            this.tid2itemId2uids[tid][item_id] = new Set();
+    userSelect(uid, username, tid, item_id) {
+        if (!this.tid2itemId2userInfos[tid][item_id]) {
+            this.tid2itemId2userInfos[tid][item_id] = new Set();
         }
-        this.tid2itemId2uids[tid][item_id].add(uid);
-        const uids = Array.from(this.tid2itemId2uids[tid][item_id]);
-        return {item_id, uids};
+        this.tid2itemId2userInfos[tid][item_id].add(JSON.stringify(new UserInfo(uid, username)));
+        const userInfos = Array.from(this.tid2itemId2userInfos[tid][item_id]);
+
+        // parse to JSONs before returning
+        const userInfoObjs = [];
+        userInfos.forEach((userInfoStr) => {
+            userInfoObjs.push(JSON.parse(userInfoStr));
+        });
+        return { item_id, userInfoObjs };
     }
 
-    userDeselect(tid, item_id, uid) {
-        if(!this.tid2itemId2uids[tid][item_id].delete(uid)) {
-            throw Error(uid + " didnt select " + item_id + " to begin with");
+    userDeselect(uid, username, tid, item_id) {
+        if (!this.tid2itemId2userInfos[tid][item_id].delete(JSON.stringify(new UserInfo(uid, username)))) {
+            throw Error(uid + " did not select " + item_id + " to begin with");
         }
-        const uids = Array.from(this.tid2itemId2uids[tid][item_id]);
-        return {item_id, uids};
+        const userInfos = Array.from(this.tid2itemId2userInfos[tid][item_id]);
+
+        // parse to JSONs before returning
+        const userInfoObjs = [];
+        userInfos.forEach((userInfoStr) => {
+            userInfoObjs.push(JSON.parse(userInfoStr));
+        });
+        return { item_id, userInfoObjs };
     }
 
     async userLeave(socketId) {
-        const uid = this.socketId2uid[socketId];
+        const { uid } = this.socketId2userInfo[socketId];
         const tid = this.uid2Tid[uid];
         if (this.tid2num[tid] == 1) {
             console.log("last user leaving");
@@ -63,8 +82,9 @@ class Session {
 
             // using option 1 for now
             await UserItem.deleteAll(tid);
-            Object.entries(this.tid2itemId2uids[tid]).forEach(([item_id, uids]) => {
-                uids.forEach((uid) => {
+            Object.entries(this.tid2itemId2userInfos[tid]).forEach(([item_id, userInfos]) => {
+                userInfos.forEach((userInfoString) => {
+                    const { uid } = JSON.parse(userInfoString);
                     const userItem = new UserItem(tid, uid, item_id);
                     userItem.createUserItem();
                 });
@@ -72,12 +92,12 @@ class Session {
 
             // clearing socket state
             // might not need to clear it as it can save db trip later
-            delete this.tid2itemId2uids[tid];
+            delete this.tid2itemId2userInfos[tid];
         }
 
         // update room state
         this.tid2num[tid]--;
-        delete this.socketId2uid[socketId];
+        delete this.socketId2userInfo[socketId];
         delete this.uid2Tid[uid];
     }
 
@@ -87,26 +107,36 @@ class Session {
     //      items: [{item_id, price, uids: [uid]}]
     // }
     getState(tid) {
-        const state = {items: []};
-        Object.entries(this.tid2itemId2uids[tid]).forEach(([item_id, uids]) => {
-            state.items.push({ item_id, uids: Array.from(uids) });
+        const state = { items: [] };
+        Object.entries(this.tid2itemId2userInfos[tid]).forEach(([item_id, userInfos]) => {
+            const arr = [];
+            userInfos.forEach((userInfoString) => {
+                arr.push(JSON.parse(userInfoString));
+            });
+            state.items.push({ item_id, userInfos: arr });
         });
         return state;
     }
 
     // returns new state
     // todo: deal with prices later
-    setState(tid, itemId2uids) {
+    setState(tid, itemId2userInfos) {
         const state = { items: [] };
-        Object.entries(itemId2uids).forEach(([item_id, uids]) => {
-            state.items.push({ item_id, uids });
-            if (!this.tid2itemId2uids[tid]) {
-                this.tid2itemId2uids[tid] = {};
+        Object.entries(itemId2userInfos).forEach(([item_id, userInfos]) => {
+            state.items.push({ item_id, userInfos });
+            if (!this.tid2itemId2userInfos[tid]) {
+                this.tid2itemId2userInfos[tid] = {};
             }
-            this.tid2itemId2uids[tid][item_id] = new Set(uids);
+            this.tid2itemId2userInfos[tid][item_id] = new Set();
+            userInfos.forEach((userInfoObj) => {
+                this.tid2itemId2userInfos[tid][item_id].add(JSON.stringify(userInfoObj));
+            });
         });
         return state;
     }
 }
 
-module.exports = new Session();
+module.exports = {
+    Session: new Session(),
+    UserInfo
+};

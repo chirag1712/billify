@@ -23,6 +23,7 @@
     <string name="add_receipt">  + Add Receipt</string>
     <string name="view_transactions">  + View Transactions</string>
     <string name="logout">  Logout</string>
+    <string name="billify">  + Billify</string>
 
     <!--Create Group-->
     <string name="create_group_title">Create Group</string>
@@ -40,4 +41,30 @@
     <string name="label">Label</string>
     <string name="back">Back</string>
 
+    <!--  Edit Screens  -->
+    <string-array name="items">
+        <item>Chana</item>
+        <item>Kurkure</item>
+        <item>Sprite</item>
+        <item>Fried Rice</item>
+        <item>Mcdonalds Burger</item>
+        <item>Pizza</item>
+
+    </string-array>
+    <string-array name="prices">
+        <item>200.00</item>
+        <item>150.00</item>
+        <item>30.00</item>
+        <item>45.00</item>
+        <item>15.00</item>
+        <item>20.00</item>
+    </string-array>
+
+    <string name="item_name_key">Item Name:</string>
+    <string name="item_name_value">Example Item Name</string>
+    <string name="item_price_key">Item Price:</string>
+    <string name="item_price_value">Example Item Price</string>
+    <string name="save_progress">Save</string>
+    <string name="swipe_to_delete_item">Swipe to Delete item</string>
+    <string name="confirm">Confirm</string>
 </resources>

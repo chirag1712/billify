@@ -16,7 +16,7 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="498dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="64dp">
@@ -65,12 +65,20 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/add_receipt_button"
             android:layout_marginBottom="30dp"
-            android:text="@string/view_transactions"
+            android:text="@string/view_transactions"/>
+        
+        <Button
+            android:id="@+id/join_billify_session"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/view_transactions_button"
+            android:layout_marginBottom="30dp"
+            android:text="@string/billify"
             app:backgroundTint="@color/cyan_button" />
 
         <Button
             android:id="@+id/logout_button"
-            android:layout_below="@+id/view_transactions_button"
+            android:layout_below="@+id/join_billify_session"
             android:layout_height="wrap_content"
             android:layout_width="124dip"
             android:layout_marginTop="5dip"
