@@ -21,6 +21,8 @@
     <string name="view_all_group">  + View Groups</string>
     <string name="create_group">  + Create Group</string>
     <string name="add_receipt">  + Add Receipt</string>
+    <string name="view_transactions">  + View Transactions</string>
+    <string name="logout">  Logout</string>
 
     <!--Create Group-->
     <string name="create_group_title">Create Group</string>
@@ -33,5 +35,9 @@
     <!-- Upload Receipt -->
     <string name="take_photo">Take Photo</string>
     <string name="gallery">Gallery</string>
+
+    <!-- View transactions -->
+    <string name="label">Label</string>
+    <string name="back">Back</string>
 
 </resources>

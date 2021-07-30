@@ -37,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/textView"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="30dp"
             android:text="@string/view_all_group"
             app:backgroundTint="@color/cyan_button" />
 
@@ -46,7 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/view_all_group"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="30dp"
             android:text="@string/create_group"
             app:backgroundTint="@color/cyan_button" />
 
@@ -55,18 +55,27 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/create_group_button"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="30dp"
             android:text="@string/add_receipt"
             app:backgroundTint="@color/cyan_button" />
 
         <Button
+            android:id="@+id/view_transactions_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/add_receipt_button"
+            android:layout_marginBottom="30dp"
+            android:text="@string/view_transactions"
+            app:backgroundTint="@color/cyan_button" />
+
+        <Button
             android:id="@+id/logout_button"
-            android:layout_below="@+id/add_receipt_button"
+            android:layout_below="@+id/view_transactions_button"
             android:layout_height="wrap_content"
             android:layout_width="124dip"
             android:layout_marginTop="5dip"
             android:layout_centerHorizontal="true"
-            android:text="Logout" />
+            android:text="@string/logout" />
 
     </RelativeLayout>
 

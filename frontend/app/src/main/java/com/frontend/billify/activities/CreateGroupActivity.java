@@ -67,7 +67,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         emailLayouts.add(rowView.findViewById(R.id.member_text_input));
         emailTexts.add(rowView.findViewById(R.id.member_edit_text));
 
-        // Convert from 50 dp
+        // Convert from 60 dp
         int dp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 60,
                 getResources().getDisplayMetrics());
 
