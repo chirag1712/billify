@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.frontend.billify.R;
 import com.frontend.billify.models.Item;
 import com.frontend.billify.models.Transaction;
-import com.frontend.billify.activities.EditSpecificItemActivity;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -72,53 +72,13 @@ public class EditItemsActivity extends AppCompatActivity {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                System.out.println("YES: In onClick of Confirm button");
                 if (
                         (currTransaction.getCurrPhotoFile() != null) &&
                         (currTransaction.getNumItems() > 0)
                 ) {
-                    createTransactionRequestProgressBar.setVisibility(View.VISIBLE);
-                    confirmButton.setVisibility(View.INVISIBLE);
-                    createTransaction();
-
-                } else if (currTransaction.getCurrPhotoFile() == null) {
-                    Toast.makeText(
-                            EditItemsActivity.this,
-                            "Can't Confirm since there's no Receipt selected to upload",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                } else if (currTransaction.getNumItems() == 0) {
-                    Toast.makeText(
-                            EditItemsActivity.this,
-                            "Can't Confirm since there are no items in this Transaction",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                } else {
-                    Toast.makeText(
-                            EditItemsActivity.this,
-                            "Was not able to create Transaction since number of items are either" +
-                                    "0 or there is no receipt image",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                }
-            }
-        });
-
-        // NOTE: The below Transaction object is for the case when we use "Edit Sample Items" button for testing
-        ArrayList<String> itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
-        ArrayList<String> strPrices = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.prices)));
-        currTransaction = new Transaction(1, 4, "2004-01-01", "NOT_STARTED",
-                "None", "empty_url");
-
-        for (int i = 0; i < itemNames.size(); ++i) {
-            currTransaction.addItem(new Item(itemNames.get(i), Float.valueOf(strPrices.get(i))));
-        }
-
-        confirmButton = findViewById(R.id.confirm_items_button);
-
-        confirmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (currTransaction.getCurrPhotoFile() != null) {
+                    System.out.println(currTransaction.getNumItems());
+                    currTransaction.printItems();
                     createTransactionRequestProgressBar.setVisibility(View.VISIBLE);
                     confirmButton.setVisibility(View.INVISIBLE);
                     createTransaction();
@@ -160,15 +120,6 @@ public class EditItemsActivity extends AppCompatActivity {
         if (i.hasExtra("TransactionBundle")) {
             Bundle b = i.getBundleExtra("TransactionBundle");
             currTransaction = (Transaction) b.getSerializable("SerializedTransaction");
-        }
-
-        ArrayList<String> itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
-        ArrayList<String> strPrices = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.prices)));
-        transaction = new Transaction(1, 4, "2004-01-01", "NOT_STARTED",
-                "None", "empty_url");
-
-        for (int i = 0; i < itemNames.size(); ++i) {
-            transaction.addItem(new Item(itemNames.get(i), Float.valueOf(strPrices.get(i))));
         }
 
         addNewItemButton = findViewById(R.id.add_new_item_button);
@@ -286,27 +237,19 @@ public class EditItemsActivity extends AppCompatActivity {
                         System.out.println("Successful item confirm and create transaction request with return value: "
                                 + currTransaction.getName()
                         );
-                        Intent moveToEditAndConfirmItemsActivityIntent = new Intent(
+                        Intent moveBackToHomepageIntent = new Intent(
                                 EditItemsActivity.this,
-                                ItemizedViewActivity.class
+                                HomepageActivity.class
                         );
-                        /* Commenting out this code for now since we go back to homepage and not start billify
-                         session for now. */
-                        Bundle transactionBundle = new Bundle();
-                        transactionBundle.putSerializable("SerializedTransaction", currTransaction);
-                        moveToEditAndConfirmItemsActivityIntent.putExtra(
-                                "TransactionBundle",
-                                transactionBundle
-                        );
-                        /* Commenting out this code for now since we go back to homepage and not start billify
-                         session for now. */
-                        Bundle transactionBundle = new Bundle();
-                        transactionBundle.putSerializable("SerializedTransaction", currTransaction);
-                        moveToEditAndConfirmItemsActivityIntent.putExtra(
-                                "TransactionBundle",
-                                transactionBundle
-                        );
-                        startActivity(moveToEditAndConfirmItemsActivityIntent);
+//                        /* Commenting out this code for now since we go back to homepage and not start billify
+//                         session for now. */
+//                        Bundle transactionBundle = new Bundle();
+//                        transactionBundle.putSerializable("SerializedTransaction", currTransaction);
+//                        moveToEditAndConfirmItemsActivityIntent.putExtra(
+//                                "TransactionBundle",
+//                                transactionBundle
+//                        );
+                        startActivity(moveBackToHomepageIntent);
 
                     }
 
@@ -382,41 +325,6 @@ public class EditItemsActivity extends AppCompatActivity {
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         }
 
-        @Override
-        public void onChildDraw(@NonNull @NotNull Canvas c, @NonNull @NotNull RecyclerView recyclerView,
-                                @NonNull @NotNull RecyclerView.ViewHolder viewHolder,
-                                float dX, float dY, int actionState, boolean isCurrentlyActive) {
-
-            // Code adapted from https://github.com/kitek/android-rv-swipe-delete/blob/master/app/src/main/java/pl/kitek/rvswipetodelete/SwipeToDeleteCallback.kt
-            ColorDrawable background = new ColorDrawable();
-
-            Drawable deleteIcon = ContextCompat.getDrawable(
-                    EditItemsActivity.this,
-                    R.drawable.ic_baseline_delete_24
-            );
-            int inHeight = deleteIcon.getIntrinsicHeight();
-            int inWidth = deleteIcon.getIntrinsicWidth();
-
-            View itemView = viewHolder.itemView;
-            float itemHeight = itemView.getBottom() - itemView.getTop();
-            int backgroundColor = Color.parseColor("#FF0000");
-            background.setColor(backgroundColor);
-            background.setBounds(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
-            background.draw(c);
-
-
-            // Calculate position of delete icon
-            int iconTop = (int) (itemView.getTop() + (itemHeight - inHeight) / 2);
-            int iconMargin = (int) ((itemHeight - inHeight) / 2);
-            int iconLeft = itemView.getRight() - iconMargin - inWidth;
-            int iconRight = itemView.getRight() - iconMargin;
-            int iconBottom = iconTop + inHeight;
-
-            deleteIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
-            deleteIcon.draw(c);
-
-            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-        }
     };
 
 }

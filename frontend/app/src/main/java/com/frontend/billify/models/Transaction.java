@@ -40,7 +40,6 @@ public class Transaction implements Serializable {
         // deep copy
         this.items = new ArrayList<Item>();
         for (Item item: t.items) {
-            System.out.println(item.getItem_id());
             this.items.add(new Item(item.getItem_id(), item.getTid(), item.getName(), item.getPrice()));
         }
     }
