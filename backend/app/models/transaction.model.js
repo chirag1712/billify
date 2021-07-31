@@ -1,3 +1,4 @@
+const { TokenFileWebIdentityCredentials } = require("aws-sdk");
 const sql = require("./db.js");
 const {Group, MemberOf} = require("./group.model.js");
 
@@ -36,7 +37,6 @@ class TransactionModel {
     }
 
     
-
     getTransactionsForGroup(gid) {
         if (gid !== undefined) {
             return new Promise((resolve, reject) => {
