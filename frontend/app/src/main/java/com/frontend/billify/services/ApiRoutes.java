@@ -42,6 +42,7 @@ public interface ApiRoutes {
     @POST("api/transactions/parse-receipt")
     Call<Transaction> parseReceipt(
             @Part("gid") RequestBody gid,
+            @Part("transaction_name") RequestBody transaction_name,
             @Part MultipartBody.Part file);
 
     @GET("api/transactions/transaction/{tid}")

@@ -32,7 +32,7 @@ public class AddEditItemActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
 
-        itemNameEditText = findViewById(R.id.add_item_name);
+        itemNameEditText = findViewById(R.id.transaction_name_edit_text);
         itemPriceEditText = findViewById(R.id.add_item_price);
 
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close_24);

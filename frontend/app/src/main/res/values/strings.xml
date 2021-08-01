@@ -36,6 +36,7 @@
     <!-- Upload Receipt -->
     <string name="take_photo">Take Photo</string>
     <string name="gallery">Gallery</string>
+    <string name="upload_receipt">Upload Receipt</string>
 
     <!-- View transactions -->
     <string name="label">Label</string>
@@ -70,4 +71,5 @@
 
 
     <string name="success_transaction_message">Successfully created new transaction!</string>
+    <string name="transaction_name">Transaction Name: </string>
 </resources>

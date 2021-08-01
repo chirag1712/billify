@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -49,7 +50,9 @@ public class UploadReceiptActivity extends AppCompatActivity {
     private final TransactionController transactionController = new TransactionController(retrofitService);
 
     private ProgressBar uploadProgress;
+    private EditText transactionNameEditText;
 
+    private Button uploadReceiptButton;
     ActivityResultLauncher<Intent> cameraResultLauncher;
     ActivityResultLauncher<Intent> galleryResultLauncher;
     @Override
@@ -62,6 +65,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
         final Button showGalleryButton = findViewById(R.id.show_gallery);
         final ProgressBar uploadProgress = findViewById(R.id.uploadProgressBar);
         final Button editItemsButton = findViewById(R.id.edit_items_button);
+        transactionNameEditText = findViewById(R.id.transaction_name_edit_text);
 
         this.uploadProgress = uploadProgress;
 
@@ -73,6 +77,34 @@ public class UploadReceiptActivity extends AppCompatActivity {
             }
         });
 
+        uploadReceiptButton = findViewById(R.id.upload_receipt_button);
+
+        uploadReceiptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String transactionName = transactionNameEditText.getText().toString().trim();
+                if (transactionName.equals("")) {
+                    Toast.makeText(
+                            UploadReceiptActivity.this,
+                            "Add a Transaction Name",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (UploadReceiptActivity.this.currPhotoFile == null) {
+                    Toast.makeText(
+                            UploadReceiptActivity.this,
+                            "Pick a photo first",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+
+                }
+
+                // TODO: Add dropdown for gid
+                int gid = getIntent().getIntExtra("gid", 4);
+                parseReceipt(gid, transactionName);
+            }
+        });
 
         takePhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,8 +163,10 @@ public class UploadReceiptActivity extends AppCompatActivity {
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             try {
-                                uploadProgress.setVisibility(View.VISIBLE);
-                                parseReceipt(Integer.parseInt(getIntent().getStringExtra("gid")));
+                                Toast.makeText(
+                                        UploadReceiptActivity.this,
+                                        "Chose a picture from the camera",
+                                        Toast.LENGTH_SHORT).show();
                             } catch (Exception e) {
                                 Log.d(TAG, "onActivityResult: " + e.toString());
                             }
@@ -162,9 +196,11 @@ public class UploadReceiptActivity extends AppCompatActivity {
                                 copyStream(inputStream, outputStream);
                                 outputStream.close();
                                 inputStream.close();
-                                uploadProgress.setVisibility(View.VISIBLE);
                                 System.out.println("In upload image ");
-                                parseReceipt(Integer.parseInt(getIntent().getStringExtra("gid")));
+                                Toast.makeText(
+                                        UploadReceiptActivity.this,
+                                        "Chose a picture from the gallery",
+                                        Toast.LENGTH_SHORT).show();
                             } catch (Exception e) {
                                 Log.d(TAG, "onActivityResult: " + e.toString());
                             }
@@ -196,13 +232,17 @@ public class UploadReceiptActivity extends AppCompatActivity {
     }
 
     private void parseReceipt(
-            int gid
+            int gid,
+            String transactionName
     ) {
         /*
         Creates a new Group Transaction by making a call to the API, can specify a callback.
          */
+        // TODO: add toast in case transaction name is empty
+        uploadProgress.setVisibility(View.VISIBLE);
         transactionController.parseReceipt(
                 gid,
+                transactionName,
                 this.currPhotoFile
         ).enqueue(new Callback<Transaction>() {
 

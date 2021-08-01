@@ -9,7 +9,7 @@
     tools:context=".activities.AddEditItemActivity">
 
     <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/add_item_name"
+        android:id="@+id/transaction_name_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Item Name"
