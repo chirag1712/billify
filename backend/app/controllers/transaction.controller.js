@@ -31,17 +31,22 @@ const createNewTransaction = async (request, response) => {
             const imgData = request.files["file"]["data"];
             const gid = parsedReceiptJson["gid"];
             const transactionName = parsedReceiptJson["transaction_name"];
+            const transactionLabelId = parsedReceiptJson["label_id"];
 
-            if (gid === undefined) {
-                return response.status(500).send({error: "Error: gid (Group ID) has not been provided in POST request"});
-            }
-            if (transactionName === undefined) {
-                return response.status(500).send({error: "Error: Transaction Name not provided"});
+            if (
+                (gid === undefined) || 
+                (transactionName === undefined) || 
+                (transactionLabelId === undefined)
+                ) {
+                return response.status(500).send({
+                    error: "Error: gid (Group ID) or transactionName or labelId has not been provided in POST request"
+                });
             }
             
             jsonResponse = await TransactionService.insertTransactionsAndItemsToDB(
                 gid, 
                 transactionName,
+                transactionLabelId,
                 imgData,
                 request.files["file"].name,
                 parsedReceiptJson

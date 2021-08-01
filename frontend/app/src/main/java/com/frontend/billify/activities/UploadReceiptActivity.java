@@ -295,6 +295,8 @@ public class UploadReceiptActivity extends AppCompatActivity {
                         System.out.println("Successful upload request with return value: "
                                 + currTransaction.getName()
                         );
+                        currTransaction.setLabel_id(labelTextView.getText().toString());
+                        
                         Intent moveToEditAndConfirmItemsActivityIntent = new Intent(
                                 UploadReceiptActivity.this,
                                 EditItemsActivity.class
