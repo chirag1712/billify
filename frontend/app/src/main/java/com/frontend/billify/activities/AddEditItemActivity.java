@@ -105,13 +105,11 @@ public class AddEditItemActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.save_item:
-                saveItem();
-                return true;
-            default:
-                goBackToPrevActivity();
-                return true;
+        if (item.getItemId() == R.id.save_item) {
+            saveItem();
+        } else {
+            goBackToPrevActivity();
         }
+        return true;
     }
 }

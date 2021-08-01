@@ -1,6 +1,9 @@
 package com.frontend.billify.adapters;
 
+import android.animation.AnimatorInflater;
+import android.animation.StateListAnimator;
 import android.content.Context;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +19,8 @@ import com.frontend.billify.models.Transaction;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-
 public class EditItemsRecViewAdapter extends RecyclerView.Adapter<EditItemsRecViewAdapter.EditItemsViewHolder> {
 
-//    ArrayList<String> itemNames;
-//    ArrayList<Float> itemPrices;
     Transaction transaction;
     Context context;
     private OnItemClickListener onItemClickListener;
@@ -29,8 +28,6 @@ public class EditItemsRecViewAdapter extends RecyclerView.Adapter<EditItemsRecVi
     public EditItemsRecViewAdapter(Context context, Transaction transaction) {
         this.context = context;
         this.transaction = transaction;
-//        this.itemNames = itemNames;
-//        this.itemPrices = itemPrices;
     }
 
     @NonNull
