@@ -37,6 +37,8 @@ public class Transaction implements Serializable {
     }
 
     private File currPhotoFile;
+
+
     public Transaction(int tid, int gid, String t_date, String t_state,
                        String transaction_name, String receipt_img) {
         this.tid = tid;
@@ -46,6 +48,10 @@ public class Transaction implements Serializable {
         this.items = new ArrayList<Item>();
         this.transaction_name = transaction_name;
         this.receipt_img = receipt_img;
+    }
+
+    public Transaction() {
+        this.items = new ArrayList<Item>();
     }
 
     public Transaction(Transaction t) {

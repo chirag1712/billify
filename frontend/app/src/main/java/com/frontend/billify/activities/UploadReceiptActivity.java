@@ -333,14 +333,10 @@ public class UploadReceiptActivity extends AppCompatActivity {
                 new Callback<Transaction>() {
                     @Override
                     public void onResponse(@NotNull Call<Transaction> call, @NotNull Response<Transaction> response) {
+                        Transaction currTransaction = new Transaction();
                         uploadProgress.setVisibility(View.GONE);
                         if (!response.isSuccessful()) {
                             try {
-                                Toast.makeText(
-                                        UploadReceiptActivity.this,
-                                        "Couldn't Parse Receipt",
-                                        Toast.LENGTH_SHORT
-                                ).show();
                                 System.out.println("Error code onResponse "
                                         + response.code()
                                         + " "
@@ -350,16 +346,16 @@ public class UploadReceiptActivity extends AppCompatActivity {
                                         "Exception occurred during response callback from receipt parser API: "
                                                 + e);
                             }
-                            return;
+                        } else {
+                            if (response.body() == null) {
+                                Toast.makeText(
+                                        UploadReceiptActivity.this,
+                                        "Parse Receipt Response body is null",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            currTransaction = new Transaction(response.body());
                         }
-                        if (response.body() == null) {
-                            Toast.makeText(
-                                    UploadReceiptActivity.this,
-                                    "Parse Receipt Response body is null",
-                                    Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        Transaction currTransaction = new Transaction(response.body());
                         currTransaction.setGid(currUser.getGidFromGroupName(groupTextView.getText().toString()));
                         String transactionName = transactionNameEditText.getText().toString().trim();
                         // TODO: Possible problem when user edits Transaction Name after uploading receipt?

@@ -145,6 +145,13 @@ public class EditItemsActivity extends AppCompatActivity {
             currTransaction = (Transaction) b.getSerializable("SerializedTransaction");
         }
 
+        if (currTransaction.getNumItems() == 0) {
+            Toast.makeText(
+                    this,
+                    "Couldn't parse any items from receipt. You can add items manually.",
+                    Toast.LENGTH_SHORT).show();
+        }
+
         transactionNameTextView = findViewById(R.id.transaction_name_edit_screen_textview);
         transactionNameTextView.setText(currTransaction.getName());
         addNewItemButton = findViewById(R.id.add_new_item_button);
