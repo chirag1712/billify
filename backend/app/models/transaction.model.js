@@ -1,4 +1,3 @@
-const { TokenFileWebIdentityCredentials } = require("aws-sdk");
 const sql = require("./db.js");
 const {Group, MemberOf} = require("./group.model.js");
 
