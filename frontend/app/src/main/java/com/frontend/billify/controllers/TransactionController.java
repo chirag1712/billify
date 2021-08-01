@@ -18,17 +18,7 @@ public class TransactionController {
         this.apiRoutes = retrofitService.retrofit.create(ApiRoutes.class);
     }
 
-    public Call<Transaction> parseReceipt(int gid, String transactionName, File img) {
-        RequestBody requestGid = RequestBody.create(
-                MediaType.parse("multipart/form-data"),
-                String.valueOf(gid)
-        );
-
-        RequestBody requestTransactionName = RequestBody.create(
-                MediaType.parse("multipart/form-data"),
-                transactionName
-        );
-
+    public Call<Transaction> parseReceipt(File img) {
 
         RequestBody requestImg = RequestBody.create(
                 MediaType.parse("multipart/form-data"),
@@ -41,8 +31,6 @@ public class TransactionController {
         );
 
         Call<Transaction> call = this.apiRoutes.parseReceipt(
-                requestGid,
-                requestTransactionName,
                 file
         );
         return call;

@@ -1,5 +1,9 @@
 package com.frontend.billify.models;
 
+import android.telephony.gsm.GsmCellLocation;
+
+import com.google.gson.Gson;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -81,18 +85,9 @@ public class Transaction implements Serializable {
     }
 
     public String getTransactionJSONString() {
-        String jsonString = "{\"gid\": " + gid + ",";
-        jsonString += "\"items\": [";
-        for (Item item: items) {
-            jsonString += "{" + "\"name\": " + "\"" + item.getName() + "\"" + ", \"price\": " + item.getStrPrice() + "},";
-        }
-        if (jsonString.charAt(jsonString.length() - 1) == ',') {
-            jsonString = jsonString.substring(0, jsonString.length() - 1);
-        }
-        jsonString += "]}";
-
-        return jsonString;
-
+        Gson gson = new Gson();
+        String json = gson.toJson(this);
+        return json;
     }
 
     public File getCurrPhotoFile() {
@@ -101,5 +96,13 @@ public class Transaction implements Serializable {
 
     public void setCurrPhotoFile(File currPhotoFile) {
         this.currPhotoFile = currPhotoFile;
+    }
+
+    public void setTransaction_name(String transactionName) {
+        this.transaction_name = transactionName;
+    }
+
+    public void setGid(int gid) {
+        this.gid = gid;
     }
 }

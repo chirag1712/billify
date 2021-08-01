@@ -61,6 +61,8 @@ public class UploadReceiptActivity extends AppCompatActivity {
     private Button uploadReceiptButton;
     ActivityResultLauncher<Intent> cameraResultLauncher;
     ActivityResultLauncher<Intent> galleryResultLauncher;
+    private int gid; // TODO: Replace this with dropdown
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,8 +127,8 @@ public class UploadReceiptActivity extends AppCompatActivity {
                 }
 
                 // TODO: Add dropdown for gid
-                int gid = getIntent().getIntExtra("gid", 4);
-                parseReceipt(gid, transactionName);
+                UploadReceiptActivity.this.gid = getIntent().getIntExtra("gid", 4);
+                parseReceipt();
             }
         });
 
@@ -255,71 +257,69 @@ public class UploadReceiptActivity extends AppCompatActivity {
         return false;
     }
 
-    private void parseReceipt(
-            int gid,
-            String transactionName
-    ) {
+    private void parseReceipt() {
         /*
         Creates a new Group Transaction by making a call to the API, can specify a callback.
          */
-        // TODO: add toast in case transaction name is empty
         uploadProgress.setVisibility(View.VISIBLE);
-        Toast.makeText(this, labelTextView.getText(), Toast.LENGTH_SHORT).show();
-        transactionController.parseReceipt(
-                gid,
-                transactionName,
-                this.currPhotoFile
-        ).enqueue(new Callback<Transaction>() {
-
-            @Override
-            public void onResponse(Call<Transaction> call, Response<Transaction> response) {
-                uploadProgress.setVisibility(View.GONE);
-                if (!response.isSuccessful()) {
-                    try {
-                        Toast parseReceiptErrorToast = Toast.makeText(
+        transactionController.parseReceipt(this.currPhotoFile).enqueue(
+                new Callback<Transaction>() {
+                    @Override
+                    public void onResponse(Call<Transaction> call, Response<Transaction> response) {
+                        uploadProgress.setVisibility(View.GONE);
+                        if (!response.isSuccessful()) {
+                            try {
+                                Toast parseReceiptErrorToast = Toast.makeText(
+                                        UploadReceiptActivity.this,
+                                        "Couldn't Parse Receipt",
+                                        Toast.LENGTH_SHORT
+                                );
+                                parseReceiptErrorToast.show();
+                                System.out.println("Error code onResponse "
+                                        + response.code()
+                                        + " "
+                                        + response.errorBody().string());
+                            } catch (Exception e) {
+                                System.out.println(
+                                        "Exception occurred during response callback from receipt parser API: "
+                                                + e);
+                            }
+                            return;
+                        }
+                        Transaction currTransaction = new Transaction(response.body());
+                        currTransaction.setGid(UploadReceiptActivity.this.gid);
+                        String transactionName = transactionNameEditText.getText().toString().trim();
+                        // TODO: Possible problem when user edits Transaction Name after uploading receipt?
+                        currTransaction.setTransaction_name(transactionName);
+                        currTransaction.setCurrPhotoFile(UploadReceiptActivity.this.currPhotoFile);
+                        System.out.println("Successful upload request with return value: "
+                                + currTransaction.getName()
+                        );
+                        Intent moveToEditAndConfirmItemsActivityIntent = new Intent(
                                 UploadReceiptActivity.this,
-                                "Couldn't Parse Receipt",
-                                Toast.LENGTH_SHORT
+                                EditItemsActivity.class
                         );
-                        parseReceiptErrorToast.show();
-                        System.out.println("Error code onResponse "
-                                + response.code()
-                                + " "
-                                + response.errorBody().string());
-                    } catch (Exception e) {
-                        System.out.println(
-                                "Exception occurred during response callback from receipt parser API: "
-                                        + e);
+                        Bundle transactionBundle = new Bundle();
+                        transactionBundle.putSerializable("SerializedTransaction", currTransaction);
+                        moveToEditAndConfirmItemsActivityIntent.putExtra(
+                                "TransactionBundle",
+                                transactionBundle
+                        );
+                        startActivity(moveToEditAndConfirmItemsActivityIntent);
+
                     }
-                    return;
-                }
-                Transaction currTransaction = new Transaction(response.body());
-                currTransaction.setCurrPhotoFile(UploadReceiptActivity.this.currPhotoFile);
-                System.out.println("Successful upload request with return value: "
-                        + currTransaction.getName()
-                );
-                Intent moveToEditAndConfirmItemsActivityIntent = new Intent(
-                        UploadReceiptActivity.this,
-                        EditItemsActivity.class
-                );
-                Bundle transactionBundle = new Bundle();
-                transactionBundle.putSerializable("SerializedTransaction", currTransaction);
-                moveToEditAndConfirmItemsActivityIntent.putExtra(
-                        "TransactionBundle",
-                        transactionBundle
-                        );
-                startActivity(moveToEditAndConfirmItemsActivityIntent);
 
-            }
-
-            @Override
-            public void onFailure(Call<Transaction> call, Throwable t) {
-                uploadProgress.setVisibility(View.GONE);
-                System.out.println("Error: " + t.getMessage());
-                Toast.makeText(UploadReceiptActivity.this, "Failed Parsing Receipt since API request failed", Toast.LENGTH_SHORT).show();
-                t.printStackTrace();
-            }
-        });
+                    @Override
+                    public void onFailure(Call<Transaction> call, Throwable t) {
+                        uploadProgress.setVisibility(View.GONE);
+                        System.out.println("Error: " + t.getMessage());
+                        Toast.makeText(
+                                UploadReceiptActivity.this,
+                                "Failed Parsing Receipt since API request failed",
+                                Toast.LENGTH_SHORT).show();
+                        t.printStackTrace();
+                    }
+                });
     }
 
     private void requestCameraPermission() {
@@ -351,8 +351,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
         return image;
 
     }
-
-
 
 
     private void copyStream(InputStream inputStream, FileOutputStream outputStream) throws IOException {
