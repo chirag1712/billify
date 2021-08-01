@@ -38,6 +38,11 @@ import com.frontend.billify.models.Item;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.services.RetrofitService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+<<<<<<< HEAD
+=======
+
+import com.google.android.material.textview.MaterialTextView;
+>>>>>>> Add Transaction Name to top of Edit Screen
 
 import org.jetbrains.annotations.NotNull;
 
@@ -61,6 +66,7 @@ public class EditItemsActivity extends AppCompatActivity {
     Button confirmButton;
     ProgressBar createTransactionRequestProgressBar;
     Dialog successfulCreationTransactionPopup;
+    MaterialTextView transactionNameTextView;
 
     private final RetrofitService retrofitService = new RetrofitService();
     private final TransactionController transactionController = new TransactionController(retrofitService);
@@ -127,7 +133,7 @@ public class EditItemsActivity extends AppCompatActivity {
         ArrayList<String> itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
         ArrayList<String> strPrices = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.prices)));
         currTransaction = new Transaction(1, 4, "2004-01-01", "NOT_STARTED",
-                "None", "empty_url");
+                "Walmart Shopping", "empty_url");
 
         for (int i = 0; i < itemNames.size(); ++i) {
             currTransaction.addItem(new Item(itemNames.get(i), Float.valueOf(strPrices.get(i))));
@@ -138,6 +144,10 @@ public class EditItemsActivity extends AppCompatActivity {
             Bundle b = i.getBundleExtra("TransactionBundle");
             currTransaction = (Transaction) b.getSerializable("SerializedTransaction");
         }
+
+        transactionNameTextView = findViewById(R.id.transaction_name_edit_screen_textview);
+        transactionNameTextView.setText(currTransaction.getName());
+        addNewItemButton = findViewById(R.id.add_new_item_button);
 
         addItemActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),

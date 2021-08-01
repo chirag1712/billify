@@ -23,6 +23,7 @@ public class Transaction implements Serializable {
     or creating a new transaction
     */
 
+    // Static because all transactions share same label mapping
     private static final HashMap<String, Integer> labelNameToLabelId = new HashMap<>();
 
     static {
@@ -132,4 +133,5 @@ public class Transaction implements Serializable {
         this.label_id = labelNameToLabelId.get(labelName);
         System.out.println("Label ID is: " + String.valueOf(this.label_id));
     }
+
 }
