@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.EditItemsActivity"
-    android:background="@drawable/homepage_background"
+    android:background="@drawable/purple_green_background"
     >
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -22,6 +22,7 @@
         app:layout_constraintStart_toEndOf="@+id/confirm_items_button"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout"
         app:layout_constraintVertical_bias="0.967"
+        android:tint="#8c52ff"
         app:srcCompat="@drawable/ic_baseline_add_24"
         />
 

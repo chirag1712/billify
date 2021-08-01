@@ -4,7 +4,8 @@
     android:id="@+id/item_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="2dp">
+    android:padding="2dp"
+    >
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/item_card"
@@ -20,14 +21,16 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:strokeWidth="0dp">
+        app:strokeWidth="0dp"
+        >
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout2"
             android:layout_width="match_parent"
-            android:background="?attr/selectableItemBackground"
             android:stateListAnimator="@anim/animation"
-            android:layout_height="45dp">
+            android:foreground="?attr/selectableItemBackground"
+            android:layout_height="45dp"
+            >
 
             <TextView
                 android:id="@+id/edit_item_name"
@@ -39,7 +42,7 @@
                 android:maxLines="1"
                 android:text="@string/item_name_value"
                 android:textSize="16sp"
-                android:textStyle="bold"
+                android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/edit_item_price"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -55,6 +58,7 @@
                 android:layout_marginRight="16dp"
                 android:text="@string/item_price_value"
                 android:textSize="16sp"
+                android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
