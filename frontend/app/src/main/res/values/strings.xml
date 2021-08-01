@@ -37,7 +37,8 @@
     <string name="take_photo">Take Photo</string>
     <string name="gallery">Gallery</string>
     <string name="upload_receipt">Upload Receipt</string>
-    <string name="label">Transaction Label</string>
+    <string name="choose_transaction_label">Transaction Label</string>
+    <string name="choose_transaction_group">Group</string>
 
     <!-- View transactions -->
     <string name="label">Label</string>

@@ -29,16 +29,24 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.frontend.billify.R;
+import com.frontend.billify.controllers.GroupService;
 import com.frontend.billify.controllers.TransactionController;
+import com.frontend.billify.models.Group;
 import com.frontend.billify.models.Transaction;
+import com.frontend.billify.models.User;
+import com.frontend.billify.persistence.Persistence;
 import com.frontend.billify.services.RetrofitService;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -52,16 +60,22 @@ public class UploadReceiptActivity extends AppCompatActivity {
     private static final String TAG = UploadReceiptActivity.class.getName();
     private final RetrofitService retrofitService = new RetrofitService();
     private final TransactionController transactionController = new TransactionController(retrofitService);
+    private final GroupService groupService = new GroupService(retrofitService);
 
     private ProgressBar uploadProgress;
     private EditText transactionNameEditText;
     private AutoCompleteTextView labelTextView;
     private ArrayAdapter<String> labelArrayAdapter;
 
+    private AutoCompleteTextView groupTextView;
+    private ArrayAdapter<String> groupArrayAdapter;
+
+
     private Button uploadReceiptButton;
     ActivityResultLauncher<Intent> cameraResultLauncher;
     ActivityResultLauncher<Intent> galleryResultLauncher;
-    private int gid; // TODO: Replace this with dropdown
+
+    private User currUser;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -69,6 +83,8 @@ public class UploadReceiptActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_receipt);
+        int uid = Persistence.getUserId(this);
+        getUserGroups(uid);
 
         final Button takePhotoButton = findViewById(R.id.take_photo);
         final Button showGalleryButton = findViewById(R.id.show_gallery);
@@ -126,8 +142,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
 
                 }
 
-                // TODO: Add dropdown for gid
-                UploadReceiptActivity.this.gid = getIntent().getIntExtra("gid", 4);
                 parseReceipt();
             }
         });
@@ -257,6 +271,59 @@ public class UploadReceiptActivity extends AppCompatActivity {
         return false;
     }
 
+
+    private void getUserGroups(int uid) {
+        groupService.getGroups(uid).enqueue(new Callback<User>() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (!response.isSuccessful()) {
+                    try {
+                        Toast.makeText(
+                                UploadReceiptActivity.this,
+                                "Couldn't get user Groups successful response from API",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        System.out.println("Error code onResponse "
+                                + response.code()
+                                + " "
+                                + response.errorBody().string());
+                    } catch (Exception e) {
+                        System.out.println(
+                                "Exception occurred during response callback from API request to user groups: "
+                                        + e);
+                    }
+                    return;
+                }
+                currUser = response.body(); // only userId is returned
+                ArrayList<String> groupNames = currUser.getGroupNames();
+
+                currUser.initGroupNameToGidMap();
+
+                groupTextView = findViewById(R.id.auto_complete_groups_text_view);
+
+                groupArrayAdapter = new ArrayAdapter<>(
+                        UploadReceiptActivity.this,
+                        R.layout.list_group,
+                        groupNames
+                );
+
+                groupTextView.setAdapter(groupArrayAdapter);
+                groupTextView.setText(groupArrayAdapter.getItem(0).toString(), false);
+
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<User> call, @NotNull Throwable t) {
+                Toast.makeText(
+                        UploadReceiptActivity.this,
+                        "Failed to make API request for getting Groups",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
     private void parseReceipt() {
         /*
         Creates a new Group Transaction by making a call to the API, can specify a callback.
@@ -265,16 +332,15 @@ public class UploadReceiptActivity extends AppCompatActivity {
         transactionController.parseReceipt(this.currPhotoFile).enqueue(
                 new Callback<Transaction>() {
                     @Override
-                    public void onResponse(Call<Transaction> call, Response<Transaction> response) {
+                    public void onResponse(@NotNull Call<Transaction> call, @NotNull Response<Transaction> response) {
                         uploadProgress.setVisibility(View.GONE);
                         if (!response.isSuccessful()) {
                             try {
-                                Toast parseReceiptErrorToast = Toast.makeText(
+                                Toast.makeText(
                                         UploadReceiptActivity.this,
                                         "Couldn't Parse Receipt",
                                         Toast.LENGTH_SHORT
-                                );
-                                parseReceiptErrorToast.show();
+                                ).show();
                                 System.out.println("Error code onResponse "
                                         + response.code()
                                         + " "
@@ -286,8 +352,15 @@ public class UploadReceiptActivity extends AppCompatActivity {
                             }
                             return;
                         }
+                        if (response.body() == null) {
+                            Toast.makeText(
+                                    UploadReceiptActivity.this,
+                                    "Parse Receipt Response body is null",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         Transaction currTransaction = new Transaction(response.body());
-                        currTransaction.setGid(UploadReceiptActivity.this.gid);
+                        currTransaction.setGid(currUser.getGidFromGroupName(groupTextView.getText().toString()));
                         String transactionName = transactionNameEditText.getText().toString().trim();
                         // TODO: Possible problem when user edits Transaction Name after uploading receipt?
                         currTransaction.setTransaction_name(transactionName);
@@ -296,7 +369,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
                                 + currTransaction.getName()
                         );
                         currTransaction.setLabel_id(labelTextView.getText().toString());
-                        
+
                         Intent moveToEditAndConfirmItemsActivityIntent = new Intent(
                                 UploadReceiptActivity.this,
                                 EditItemsActivity.class
@@ -312,7 +385,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<Transaction> call, Throwable t) {
+                    public void onFailure(@NotNull Call<Transaction> call, @NotNull Throwable t) {
                         uploadProgress.setVisibility(View.GONE);
                         System.out.println("Error: " + t.getMessage());
                         Toast.makeText(
