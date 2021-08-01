@@ -2,7 +2,7 @@ const aws = require("aws-sdk");
 const TransactionModel = require("../models/transaction.model.js");
 const { Item } = require("../models/item.model.js");
 const {Group, MemberOf} = require("../models/group.model.js");
-
+const {UserTransaction} = require("../models/UserTransaction.model.js");
 aws.config.update({
     accessKeyId: process.env.AWS_AccessKeyId,
     secretAccessKey: process.env.AWS_SecretAccessKey,
@@ -225,8 +225,28 @@ function uploadReceiptImgToS3(params) {
     });
 }
 
+
+async function createUserTransactionForUsersInGroup(tid, gid) {
+
+    /*
+    Inserts a Transaction entry corresponding to tid
+    for each uid in the group of gid into the UserTransaction Table.
+    */
+
+    try {
+        const usersInGroup = await Group.getUsersForGroup(gid);
+        const createUserTransactionPromises = usersInGroup.map(async (user) => {
+            const userTransaction = new UserTransaction(tid, user.uid);
+            await userTransaction.createUserTransaction();
+        });
+        await Promise.all(createUserTransactionPromises);
+    } catch (error) {
+        console.log("Internal error: ", error);
+    }
+}
+
 async function insertTransactionToDB(gid, transactionName, imgData, imgFileName, parsedReceiptJson) {
-    const transactionService = new TransactionModel(gid);
+    const transactionModel = new TransactionModel(gid);
     const imgFileExtension = imgFileName.split(".")[1];
     const groupDetails = await Group.getGroupDetails(gid);
     const groupName = groupDetails[0].group_name;
@@ -243,7 +263,8 @@ async function insertTransactionToDB(gid, transactionName, imgData, imgFileName,
     // NOTE: Goal is to add transaction during receipt parsing stage, but we only add items after
     // user edits items on their mobile app and confirms right set of items to add.
     const receiptImgS3URI = await uploadReceiptImgToS3(params);
-    const transactionObj = await transactionService.createTransaction(gid, transactionName, receiptImgS3URI);
+    const transactionObj = await transactionModel.createTransaction(gid, transactionName, receiptImgS3URI);
+    await createUserTransactionForUsersInGroup(transactionObj["tid"], gid);
     parsedReceiptJson = {
         "items": parsedReceiptJson["items"],
         "tid": transactionObj["tid"],

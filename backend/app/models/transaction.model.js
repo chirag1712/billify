@@ -36,7 +36,6 @@ class TransactionModel {
     }
 
     
-
     getTransactionsForGroup(gid) {
         if (gid !== undefined) {
             return new Promise((resolve, reject) => {
