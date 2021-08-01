@@ -5,11 +5,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -19,6 +22,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -51,10 +55,13 @@ public class UploadReceiptActivity extends AppCompatActivity {
 
     private ProgressBar uploadProgress;
     private EditText transactionNameEditText;
+    private AutoCompleteTextView labelTextView;
+    private ArrayAdapter<String> labelArrayAdapter;
 
     private Button uploadReceiptButton;
     ActivityResultLauncher<Intent> cameraResultLauncher;
     ActivityResultLauncher<Intent> galleryResultLauncher;
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -68,6 +75,23 @@ public class UploadReceiptActivity extends AppCompatActivity {
         transactionNameEditText = findViewById(R.id.transaction_name_edit_text);
 
         this.uploadProgress = uploadProgress;
+
+        String[] labels = new String[]{
+                "Unlabelled", "Food", "Entertainment", "Groceries",
+                "Shopping", "Electronics", "Housing"
+        };
+
+        labelTextView = findViewById(R.id.auto_complete_label_text_view);
+
+        labelArrayAdapter = new ArrayAdapter<>(
+                UploadReceiptActivity.this,
+                R.layout.list_label,
+                labels
+        );
+
+        labelTextView.setAdapter(labelArrayAdapter);
+        labelTextView.setText(labelArrayAdapter.getItem(0).toString(), false);
+
 
         editItemsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -240,6 +264,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
          */
         // TODO: add toast in case transaction name is empty
         uploadProgress.setVisibility(View.VISIBLE);
+        Toast.makeText(this, labelTextView.getText(), Toast.LENGTH_SHORT).show();
         transactionController.parseReceipt(
                 gid,
                 transactionName,
