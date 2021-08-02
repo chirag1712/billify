@@ -15,18 +15,19 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.frontend.billify.R;
 import com.frontend.billify.models.Label;
+import com.frontend.billify.models.UserTransaction;
 
 import java.util.List;
 
 
 public class LabelDropdownAdapter extends ArrayAdapter<Label> {
-    public LabelDropdownAdapter(@NonNull Context context, @NonNull List<Label> labels) {
-        super(context, 0, labels);
+    public LabelDropdownAdapter(@NonNull Context context, @NonNull List<Label> labelsToDisplay) {
+        super(context, 0, labelsToDisplay);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Label current_label = getItem(position);
+        Label currLabel = getItem(position);
         // Check if the existing view is being reused, otherwise inflate the view
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(
@@ -35,14 +36,14 @@ public class LabelDropdownAdapter extends ArrayAdapter<Label> {
 
         // Populate label name in dropdown list
         TextView nameTextView = convertView.findViewById(R.id.label_option);
-        nameTextView.setText(current_label.getLabel_name());
+        nameTextView.setText(currLabel.getLabel_name());
 
         // The colored circle next to label name in dropdown list
         // This is setting the color of the circle according to the label's color
         ImageView labelColor = convertView.findViewById(R.id.label_color);
         Drawable colorCircle = labelColor.getDrawable();
         colorCircle = DrawableCompat.wrap(colorCircle);
-        DrawableCompat.setTint(colorCircle, Color.parseColor(current_label.getLabel_color()));
+        DrawableCompat.setTint(colorCircle, Color.parseColor(currLabel.getLabel_color()));
         labelColor.setBackground(colorCircle);
 
         return convertView;

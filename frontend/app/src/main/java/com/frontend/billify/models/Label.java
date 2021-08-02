@@ -2,29 +2,25 @@ package com.frontend.billify.models;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+
 public class Label {
     private int lid;
     private String label_name;
     private String label_color;
-    private int tid;
-    private String transaction_name;
-    private float transaction_total;
+//    private int tid;
+//    private String transaction_name;
+//    private float transaction_total;
+    public static ArrayList<Label> uniqueLabels = new ArrayList<>();
 
-    public Label(int lid, String label_name, String label_color, int tid) {
-        this.lid = lid;
-        this.label_name = label_name;
-        this.label_color = label_color;
-        this.tid = tid;
-    }
-
-    public Label(int lid, String label_name, String label_color, int tid, String transaction_name,
-                 float transaction_total) {
-        this.lid = lid;
-        this.label_name = label_name;
-        this.label_color = label_color;
-        this.tid = tid;
-        this.transaction_name = transaction_name;
-        this.transaction_total = transaction_total;
+    static {
+        uniqueLabels.add(new Label(1, "Unlabelled" ,"#F0A500"));
+        uniqueLabels.add(new Label(2, "Food" ,"#FF4848"));
+        uniqueLabels.add(new Label(3, "Entertainment" ,"#035397"));
+        uniqueLabels.add(new Label(4, "Groceries" ,"#1EAE98"));
+        uniqueLabels.add(new Label(5, "Shopping" ,"#334756"));
+        uniqueLabels.add(new Label(6, "Electronics" ,"#D62AD0"));
+        uniqueLabels.add(new Label(7, "Housing" ,"#6930C3"));
     }
 
     public Label(int lid, String label_name, String label_color) {
@@ -32,6 +28,14 @@ public class Label {
         this.label_name = label_name;
         this.label_color = label_color;
     }
+
+
+    public Label(Label label) {
+        this.lid = label.lid;
+        this.label_name = label.label_name;
+        this.label_color = label.label_color;
+    }
+
 
     public int getLId() {
         return lid;
@@ -57,34 +61,14 @@ public class Label {
         this.label_color = label_color;
     }
 
-    public int getTId() {
-        return tid;
-    }
-
-    public void setTId(int tid) {
-        this.tid = tid;
-    }
-
-    public String getTransaction_name() {
-        return transaction_name;
-    }
-
-    public void setTransaction_name(String transaction_name) {
-        this.transaction_name = transaction_name;
-    }
-
-    public float getTransaction_total() {
-        return transaction_total;
-    }
-
-    public void setTransaction_total(float transaction_total) {
-        this.transaction_total = transaction_total;
-    }
-
     // To display label on view transaction screen
     @NotNull
     @Override
     public String toString() {
         return label_name;
+    }
+
+    public static ArrayList<Label> getUniqueLabels() {
+        return uniqueLabels;
     }
 }

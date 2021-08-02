@@ -13,9 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.frontend.billify.R;
 import com.frontend.billify.helpers.callback.ICallback;
 import com.frontend.billify.models.Label;
+import com.frontend.billify.models.UserTransaction;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionLabelAdapter extends
@@ -40,25 +42,26 @@ public class TransactionLabelAdapter extends
         }
     }
 
-    // Names of all transactions
-    private final List<String> transactionNames;
-
-    // Transaction - label data
-    // For example, a member can mean transaction tid 1 is mapped to label tid 2
-    // Each member has lid, label_name, label_color, tid, transaction_name populated
-    private final List<Label> transactionLabels;
-
-    // Pure label data. Contains all labels for dropdown list
-    // Each member has lid, label_name and label_color populated
+//    // Names of all transactions
+//    private final List<String> transactionNames;
+//
+//    // Transaction - label data
+//    // For example, a member can mean transaction tid 1 is mapped to label tid 2
+//    // Each member has lid, label_name, label_color, tid, transaction_name populated
+//    private final List<UserTransaction> transactionLabels;
+//
+//    // Pure label data. Contains all labels for dropdown list
+//    // Each member has lid, label_name and label_color populated
     private final List<Label> labelsToDisplay;
+
+    private final ArrayList<UserTransaction> userTransactions;
 
     // Callback function to notify that a label is selected on dropdown list
     private final ICallback onLabelChanged;
 
-    public TransactionLabelAdapter(List<String> transactionNames, List<Label> transactionLabels,
-                                   List<Label> labelsToDisplay, ICallback onLabelChanged)  {
-        this.transactionNames = transactionNames;
-        this.transactionLabels = transactionLabels;
+    public TransactionLabelAdapter(ArrayList<UserTransaction> userTransactions, List<Label> labelsToDisplay,
+                                   ICallback onLabelChanged)  {
+        this.userTransactions = userTransactions;
         this.onLabelChanged = onLabelChanged;
         this.labelsToDisplay = labelsToDisplay;
     }
@@ -82,8 +85,8 @@ public class TransactionLabelAdapter extends
     public void onBindViewHolder(TransactionLabelAdapter.ViewHolder holder, int position) {
 
         // Set item views based on views and data model
-        holder.transactionName.setText(transactionNames.get(position));
-        holder.transactionLabel.setText(transactionLabels.get(position).getLabel_name());
+        holder.transactionName.setText(userTransactions.get(position).getTransaction_name());
+        holder.transactionLabel.setText(userTransactions.get(position).getLabel().getLabel_name());
 
         // Set label adapter for label dropdown
         LabelDropdownAdapter adapter = new LabelDropdownAdapter(holder.itemView.getContext(), labelsToDisplay);
@@ -93,19 +96,21 @@ public class TransactionLabelAdapter extends
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                // TransactionLabel being changed
-                Label selectedTransactionLabel = transactionLabels.get(position);
+                /* Making a copy of selected UserTransaction whose label we clicked on,
+                and updating it with new label so we can pass it
+                 */
+                UserTransaction updatedUserTransaction = new UserTransaction(userTransactions.get(position));
 
                 // New label selected
                 Label selectedNewLabel = labelsToDisplay.get(i);
+                updatedUserTransaction.setLabel(selectedNewLabel);
 
                 // set transaction info to make API call to change label of given tid
                 // and update pie chart
-                selectedNewLabel.setTId(selectedTransactionLabel.getTId());
-                selectedNewLabel.setTransaction_total(selectedTransactionLabel.getTransaction_total());
 
                 // Notify a label is changed
-                onLabelChanged.callback(selectedNewLabel);
+                // We pass the updated user transaction with new label
+                onLabelChanged.callback(updatedUserTransaction);
             }
         });
     }
@@ -114,6 +119,6 @@ public class TransactionLabelAdapter extends
     // Needed for recycler view
     @Override
     public int getItemCount() {
-        return transactionNames.size();
+        return userTransactions.size();
     }
 }
