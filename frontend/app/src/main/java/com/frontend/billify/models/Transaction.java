@@ -24,17 +24,33 @@ public class Transaction implements Serializable {
     */
 
     // Static because all transactions share same label mapping
-    private static final HashMap<String, Integer> labelNameToLabelId = new HashMap<>();
+    static final HashMap<String, Integer> labelNameToLabelId = new HashMap<>();
+    public static final ArrayList<String> labelNames = new ArrayList<>();
 
     static {
+        labelNames.add("Unlabelled");
         labelNameToLabelId.put("Unlabelled", 1);
+
+        labelNames.add("Food");
         labelNameToLabelId.put("Food", 2);
+
+        labelNames.add("Entertainment");
         labelNameToLabelId.put("Entertainment", 3);
+
+        labelNames.add("Groceries");
         labelNameToLabelId.put("Groceries", 4);
+
+        labelNames.add("Shopping");
         labelNameToLabelId.put("Shopping", 5);
+
+        labelNames.add("Electronics");
         labelNameToLabelId.put("Electronics", 6);
+
+        labelNames.add("Housing");
         labelNameToLabelId.put("Housing", 7);
+
     }
+
 
     private File currPhotoFile;
 

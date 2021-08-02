@@ -72,6 +72,10 @@ public class UploadReceiptActivity extends AppCompatActivity {
 
 
     private Button uploadReceiptButton;
+    private Button takePhotoButton;
+    private Button showGalleryButton;
+    private Button editItemsButton;
+
     ActivityResultLauncher<Intent> cameraResultLauncher;
     ActivityResultLauncher<Intent> galleryResultLauncher;
 
@@ -83,34 +87,30 @@ public class UploadReceiptActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_receipt);
+
+
         int uid = Persistence.getUserId(this);
         getUserGroups(uid);
 
-        final Button takePhotoButton = findViewById(R.id.take_photo);
-        final Button showGalleryButton = findViewById(R.id.show_gallery);
-        final ProgressBar uploadProgress = findViewById(R.id.uploadProgressBar);
-        final Button editItemsButton = findViewById(R.id.edit_items_button);
+        takePhotoButton = findViewById(R.id.take_photo);
+        showGalleryButton = findViewById(R.id.show_gallery);
+        uploadProgress = findViewById(R.id.uploadProgressBar);
+        uploadReceiptButton = findViewById(R.id.upload_receipt_button);
+        editItemsButton = findViewById(R.id.edit_items_button);
         transactionNameEditText = findViewById(R.id.transaction_name_edit_text);
-
-        this.uploadProgress = uploadProgress;
-
-        String[] labels = new String[]{
-                "Unlabelled", "Food", "Entertainment", "Groceries",
-                "Shopping", "Electronics", "Housing"
-        };
-
         labelTextView = findViewById(R.id.auto_complete_label_text_view);
 
+        // Add Labels
         labelArrayAdapter = new ArrayAdapter<>(
                 UploadReceiptActivity.this,
                 R.layout.list_label,
-                labels
+                Transaction.labelNames
         );
-
         labelTextView.setAdapter(labelArrayAdapter);
         labelTextView.setText(labelArrayAdapter.getItem(0).toString(), false);
 
 
+        // Add on click listeners for buttons
         editItemsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -118,8 +118,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        uploadReceiptButton = findViewById(R.id.upload_receipt_button);
 
         uploadReceiptButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -196,6 +194,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
             }
         });
 
+        // Add StartActivityForResult callbacks for Camera and Gallery launcher intents
         cameraResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -251,6 +250,8 @@ public class UploadReceiptActivity extends AppCompatActivity {
 
     }
 
+
+    // Below are camera and gallery related helper methods
     private Uri getPhotoURI(File photoFile) {
         /*
         Gets PhotoURI for a given File
@@ -271,8 +272,52 @@ public class UploadReceiptActivity extends AppCompatActivity {
         return false;
     }
 
+    private void requestCameraPermission() {
+        /*
+        Request camera for permission
+         */
+        System.out.println("Ask permission!");
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.CAMERA},
+                CAMERA_PIC_REQUEST);
+    }
+
+    private File createImageFile() throws IOException {
+        /*
+        Create a Temporary file to store an image in
+         */
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "jpg_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+
+    }
+
+
+    private void copyStream(InputStream inputStream, FileOutputStream outputStream) throws IOException {
+        /*
+        A method to copy data from an input stream to a file output stream
+         */
+
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, bytesRead);
+        }
+    }
+
 
     private void getUserGroups(int uid) {
+        // A method that makes a GET request to get user's groups
         groupService.getGroups(uid).enqueue(new Callback<User>() {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
             @Override
@@ -322,7 +367,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private void parseReceipt() {
         /*
@@ -391,49 +435,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
                         t.printStackTrace();
                     }
                 });
-    }
-
-    private void requestCameraPermission() {
-        /*
-        Request camera for permission
-         */
-        System.out.println("Ask permission!");
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.CAMERA},
-                CAMERA_PIC_REQUEST);
-    }
-
-    private File createImageFile() throws IOException {
-        /*
-        Create a Temporary file to store an image in
-         */
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "jpg_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        currentPhotoPath = image.getAbsolutePath();
-        return image;
-
-    }
-
-
-    private void copyStream(InputStream inputStream, FileOutputStream outputStream) throws IOException {
-        /*
-        A method to copy data from an input stream to a file output stream
-         */
-
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-        while ((bytesRead = inputStream.read(buffer)) != -1) {
-            outputStream.write(buffer, 0, bytesRead);
-        }
     }
 
 }
