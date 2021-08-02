@@ -161,7 +161,6 @@ class Session {
     //      price_shares: {[uid] -> userPriceInfo}, 
     //      items: [{item_id, userInfos}]
     // }
-
     getState(tid) {
         /* gets current state */
         const state = { items: [], price_shares: {} };
