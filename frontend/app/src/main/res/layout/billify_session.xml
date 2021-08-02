@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activities.ItemizedViewActivity"
+    android:layout_height="match_parent"
+    android:background = "@drawable/homepage_background"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    android:padding="10dp">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/recipeItems" />
+
+    <!--    add component for user price share here -->
+    <!--    each row of the user price share should have a settle button (only for the transaction creator or anyone (easier)?) that can be pressed only once (DB logic for this) -->
+    <GridLayout
+        android:id="@+id/user_shares"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/recipeItems" />
+
+    <Button
+        android:id="@+id/save_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/user_shares"
+        android:layout_centerHorizontal="true"
+        android:text="@string/save_session" />
+
+</RelativeLayout>
