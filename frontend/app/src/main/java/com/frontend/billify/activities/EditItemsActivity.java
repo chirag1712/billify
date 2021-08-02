@@ -66,9 +66,12 @@ public class EditItemsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_items);
+
         createTransactionRequestProgressBar = findViewById(R.id.create_transaction_request_progress_bar);
         confirmButton = findViewById(R.id.confirm_items_button);
+        addNewItemButton = findViewById(R.id.add_new_item_button);
 
+        // adding OnClick event listeners to buttons on this activity
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -106,6 +109,16 @@ public class EditItemsActivity extends AppCompatActivity {
             }
         });
 
+        addNewItemButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EditItemsActivity.this, AddEditItemActivity.class);
+                intent.putExtra(AddEditItemActivity.ADD_MODE, 1);
+                addItemActivityResultLauncher.launch(intent);
+            }
+        });
+
+
         // NOTE: The below Transaction object is for the case when we use "Edit Sample Items" button for testing
         ArrayList<String> itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
         ArrayList<String> strPrices = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.prices)));
@@ -121,8 +134,6 @@ public class EditItemsActivity extends AppCompatActivity {
             Bundle b = i.getBundleExtra("TransactionBundle");
             currTransaction = (Transaction) b.getSerializable("SerializedTransaction");
         }
-
-        addNewItemButton = findViewById(R.id.add_new_item_button);
 
         addItemActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -140,27 +151,19 @@ public class EditItemsActivity extends AppCompatActivity {
                 }
         );
 
-        addNewItemButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(EditItemsActivity.this, AddEditItemActivity.class);
-                intent.putExtra(AddEditItemActivity.ADD_MODE, 1);
-                addItemActivityResultLauncher.launch(intent);
-            }
-        });
-
+        // Setting up recycler view
         recyclerView = findViewById(R.id.edit_items_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-
         editItemsAdapter = new EditItemsRecViewAdapter(
                 this,
                 currTransaction
         );
         recyclerView.setAdapter(editItemsAdapter);
+        // Adding Swipe left to Delete Item functionality
         new ItemTouchHelper(swipeDeleteCallback).attachToRecyclerView(recyclerView);
 
 
@@ -205,7 +208,9 @@ public class EditItemsActivity extends AppCompatActivity {
 
     }
 
+
     public void createTransaction() {
+        // Method that makes POST request to create a Transaction
         transactionController.createTransaction(
                 currTransaction.getTransactionJSONString(),
                 currTransaction.getCurrPhotoFile()).enqueue(
@@ -269,6 +274,7 @@ public class EditItemsActivity extends AppCompatActivity {
     }
 
 
+    // Adding swipe left to delete functionality
     ItemTouchHelper.SimpleCallback swipeDeleteCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
         @Override
