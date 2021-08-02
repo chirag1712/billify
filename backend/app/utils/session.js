@@ -10,11 +10,11 @@ class UserInfo {
 class Session {
     constructor() {
         // TRANSACTION STATE
-        // stores tid to itemid to set of uids - state of transaction items
-        this.tid2itemId2userInfos = {};
+        // stores tid to itemid to itemInfo (price and corresponding userInfos)
+        this.tid2itemInfos = {};
 
-        // stores tid to uid to price owed for that transaction - state of user prices
-        this.tid2uid2price = {}; // if we want running totals even when transaction not final
+        // stores tid to uid to price owed for that transaction
+        this.tid2uid2price = {};
 
         // SOCKET ROOM STATE
         // socket id to uid (since disconnect only sends socket id)
@@ -42,11 +42,8 @@ class Session {
     }
 
     userSelect(uid, username, tid, item_id) {
-        if (!this.tid2itemId2userInfos[tid][item_id]) {
-            this.tid2itemId2userInfos[tid][item_id] = new Set();
-        }
-        this.tid2itemId2userInfos[tid][item_id].add(JSON.stringify(new UserInfo(uid, username)));
-        const userInfos = Array.from(this.tid2itemId2userInfos[tid][item_id]);
+        this.tid2itemInfos[tid][item_id].add(JSON.stringify(new UserInfo(uid, username)));
+        const userInfos = Array.from(this.tid2itemInfos[tid][item_id]);
 
         // parse to JSONs before returning
         const userInfoObjs = [];
@@ -57,10 +54,10 @@ class Session {
     }
 
     userDeselect(uid, username, tid, item_id) {
-        if (!this.tid2itemId2userInfos[tid][item_id].delete(JSON.stringify(new UserInfo(uid, username)))) {
+        if (!this.tid2itemInfos[tid][item_id].delete(JSON.stringify(new UserInfo(uid, username)))) {
             throw Error(uid + " did not select " + item_id + " to begin with");
         }
-        const userInfos = Array.from(this.tid2itemId2userInfos[tid][item_id]);
+        const userInfos = Array.from(this.tid2itemInfos[tid][item_id]);
 
         // parse to JSONs before returning
         const userInfoObjs = [];
@@ -82,7 +79,7 @@ class Session {
 
             // using option 1 for now
             await UserItem.deleteAll(tid);
-            Object.entries(this.tid2itemId2userInfos[tid]).forEach(([item_id, userInfos]) => {
+            Object.entries(this.tid2itemInfos[tid]).forEach(([item_id, userInfos]) => {
                 userInfos.forEach((userInfoString) => {
                     const { uid } = JSON.parse(userInfoString);
                     const userItem = new UserItem(tid, uid, item_id);
@@ -92,7 +89,7 @@ class Session {
 
             // clearing socket state
             // might not need to clear it as it can save db trip later
-            delete this.tid2itemId2userInfos[tid];
+            delete this.tid2itemInfos[tid];
         }
 
         // update room state
@@ -108,7 +105,7 @@ class Session {
     // }
     getState(tid) {
         const state = { items: [] };
-        Object.entries(this.tid2itemId2userInfos[tid]).forEach(([item_id, userInfos]) => {
+        Object.entries(this.tid2itemInfos[tid]).forEach(([item_id, userInfos]) => {
             const arr = [];
             userInfos.forEach((userInfoString) => {
                 arr.push(JSON.parse(userInfoString));
@@ -120,16 +117,16 @@ class Session {
 
     // returns new state
     // todo: deal with prices later
-    setState(tid, itemId2userInfos) {
+    setState(tid, itemInfos) {
         const state = { items: [] };
-        Object.entries(itemId2userInfos).forEach(([item_id, userInfos]) => {
+        Object.entries(itemInfos).forEach(([item_id, userInfos]) => {
             state.items.push({ item_id, userInfos });
-            if (!this.tid2itemId2userInfos[tid]) {
-                this.tid2itemId2userInfos[tid] = {};
+            if (!this.tid2itemInfos[tid]) {
+                this.tid2itemInfos[tid] = {};
             }
-            this.tid2itemId2userInfos[tid][item_id] = new Set();
+            this.tid2itemInfos[tid][item_id] = new Set();
             userInfos.forEach((userInfoObj) => {
-                this.tid2itemId2userInfos[tid][item_id].add(JSON.stringify(userInfoObj));
+                this.tid2itemInfos[tid][item_id].add(JSON.stringify(userInfoObj));
             });
         });
         return state;

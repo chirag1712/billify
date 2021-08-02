@@ -28,7 +28,7 @@ class SocketHandler {
             if (isFirst) {
                 // fetch state from db
                 try {
-                    const itemId2userInfos = {};
+                    const itemInfos = {};
                     const items = await Transaction.getTransactionItems(tid);
                     const fetchPromises = items.map(async (item) => {
                         const res = await UserItem.getUserInfoForItem(item.item_id);
@@ -36,12 +36,13 @@ class SocketHandler {
                         res.map((row) => {
                             userInfos.push(new UserInfo(row.uid, row.user_name));
                         });
-                        itemId2userInfos[item.item_id] = userInfos;
+                        // itemInfos[item.item_id] = { price: item.price, userInfos: userInfos };
+                        itemInfos[item.item_id] = userInfos;
                     });
 
                     // update current socket state
                     await Promise.all(fetchPromises);
-                    state = Session.setState(tid, itemId2userInfos);
+                    state = Session.setState(tid, itemInfos);
                 } catch (err) {
                     console.log("Internal error: Couldn't fetch transaction state: " + err);
                 }
@@ -62,7 +63,7 @@ class SocketHandler {
             const obj = Session.userSelect(uid, username, tid, item_id);
             console.log("selected ", item_id, " userInfos: ", obj.userInfoObjs);
             // broadcast to everyone in the room {item_id, userInfos}
-            this.server.to(tid).emit("itemUpdated", {item_id: item_id, userInfos: obj.userInfoObjs});
+            this.server.to(tid).emit("itemUpdated", { item_id: item_id, userInfos: obj.userInfoObjs });
         });
 
         // event listener: "deselectItem"
@@ -71,7 +72,7 @@ class SocketHandler {
             const obj = Session.userDeselect(uid, username, tid, item_id);
             console.log("deselected ", item_id, " userInfos: ", obj.userInfoObjs);
             // broadcast to everyone in the room {item_id, userInfos}
-            this.server.to(tid).emit("itemUpdated", {item_id: item_id, userInfos: obj.userInfoObjs});
+            this.server.to(tid).emit("itemUpdated", { item_id: item_id, userInfos: obj.userInfoObjs });
         });
 
         // event listener: "disconnect"
