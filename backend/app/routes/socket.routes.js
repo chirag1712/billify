@@ -36,8 +36,7 @@ class SocketHandler {
                         res.map((row) => {
                             userInfos.push(new UserInfo(row.uid, row.user_name));
                         });
-                        // itemInfos[item.item_id] = { price: item.price, userInfos: userInfos };
-                        itemInfos[item.item_id] = userInfos;
+                        itemInfos[item.item_id] = { price: item.price, userInfos: userInfos };
                     });
 
                     // update current socket state
@@ -64,6 +63,7 @@ class SocketHandler {
             console.log("selected ", item_id, " userInfos: ", obj.userInfoObjs);
             // broadcast to everyone in the room {item_id, userInfos}
             this.server.to(tid).emit("itemUpdated", { item_id: item_id, userInfos: obj.userInfoObjs });
+            // broadcast priceShares for price share component
         });
 
         // event listener: "deselectItem"
@@ -73,6 +73,7 @@ class SocketHandler {
             console.log("deselected ", item_id, " userInfos: ", obj.userInfoObjs);
             // broadcast to everyone in the room {item_id, userInfos}
             this.server.to(tid).emit("itemUpdated", { item_id: item_id, userInfos: obj.userInfoObjs });
+            // broadcast priceShares for price share component
         });
 
         // event listener: "disconnect"

@@ -103,6 +103,7 @@ class Session {
     //      user_prices: [{uid, price}], 
     //      items: [{item_id, price, uids: [uid]}]
     // }
+    // TODO: get priceShares here
     getState(tid) {
         const state = { items: [] };
         Object.entries(this.tid2itemInfos[tid]).forEach(([item_id, userInfos]) => {
@@ -116,7 +117,7 @@ class Session {
     }
 
     // returns new state
-    // todo: deal with prices later
+    // TODO: set priceShares here
     setState(tid, itemInfos) {
         const state = { items: [] };
         Object.entries(itemInfos).forEach(([item_id, userInfos]) => {
@@ -131,6 +132,10 @@ class Session {
         });
         return state;
     }
+
+    // method for price share calculation here
+    // should be called on select, deselect and start session for the first user
+    //  (from userSelect, userDeselect and setState)
 }
 
 module.exports = { Session: new Session(), UserInfo };
