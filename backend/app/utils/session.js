@@ -14,7 +14,7 @@ class Session {
         this.tid2itemId2userInfos = {};
 
         // stores tid to uid to price owed for that transaction - state of user prices
-        // this.tid2uid2price = {}; // if we want running totals even when transaction not final
+        this.tid2uid2price = {}; // if we want running totals even when transaction not final
 
         // SOCKET ROOM STATE
         // socket id to uid (since disconnect only sends socket id)
@@ -136,7 +136,4 @@ class Session {
     }
 }
 
-module.exports = {
-    Session: new Session(),
-    UserInfo
-};
+module.exports = { Session: new Session(), UserInfo };

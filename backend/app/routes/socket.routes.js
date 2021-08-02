@@ -61,8 +61,8 @@ class SocketHandler {
             // add validation s.t. user not in session cant do this
             const obj = Session.userSelect(uid, username, tid, item_id);
             console.log("selected ", item_id, " userInfos: ", obj.userInfoObjs);
-            // broadcast to everyone except sender {item_id, userInfos}
-            client.broadcast.to(tid).emit("itemUpdated", {item_id: item_id, userInfos: obj.userInfoObjs});
+            // broadcast to everyone in the room {item_id, userInfos}
+            this.server.to(tid).emit("itemUpdated", {item_id: item_id, userInfos: obj.userInfoObjs});
         });
 
         // event listener: "deselectItem"
@@ -70,8 +70,8 @@ class SocketHandler {
             // add validation s.t. user not in session cant do this
             const obj = Session.userDeselect(uid, username, tid, item_id);
             console.log("deselected ", item_id, " userInfos: ", obj.userInfoObjs);
-            // broadcast to everyone except sender {item_id, userInfos}
-            client.broadcast.to(tid).emit("itemUpdated", {item_id: item_id, userInfos: obj.userInfoObjs});
+            // broadcast to everyone in the room {item_id, userInfos}
+            this.server.to(tid).emit("itemUpdated", {item_id: item_id, userInfos: obj.userInfoObjs});
         });
 
         // event listener: "disconnect"
