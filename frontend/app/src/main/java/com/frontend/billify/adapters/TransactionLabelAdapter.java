@@ -99,8 +99,10 @@ public class TransactionLabelAdapter extends
                 // New label selected
                 Label selectedNewLabel = labelsToDisplay.get(i);
 
-                // set tid to make API call to change label of given tid
+                // set transaction info to make API call to change label of given tid
+                // and update pie chart
                 selectedNewLabel.setTId(selectedTransactionLabel.getTId());
+                selectedNewLabel.setTransaction_total(selectedTransactionLabel.getTransaction_total());
 
                 // Notify a label is changed
                 onLabelChanged.callback(selectedNewLabel);

@@ -8,6 +8,7 @@ public class Label {
     private String label_color;
     private int tid;
     private String transaction_name;
+    private float transaction_total;
 
     public Label(int lid, String label_name, String label_color, int tid) {
         this.lid = lid;
@@ -16,12 +17,14 @@ public class Label {
         this.tid = tid;
     }
 
-    public Label(int lid, String label_name, String label_color, int tid, String transaction_name) {
+    public Label(int lid, String label_name, String label_color, int tid, String transaction_name,
+                 float transaction_total) {
         this.lid = lid;
         this.label_name = label_name;
         this.label_color = label_color;
         this.tid = tid;
         this.transaction_name = transaction_name;
+        this.transaction_total = transaction_total;
     }
 
     public Label(int lid, String label_name, String label_color) {
@@ -68,6 +71,14 @@ public class Label {
 
     public void setTransaction_name(String transaction_name) {
         this.transaction_name = transaction_name;
+    }
+
+    public float getTransaction_total() {
+        return transaction_total;
+    }
+
+    public void setTransaction_total(float transaction_total) {
+        this.transaction_total = transaction_total;
     }
 
     // To display label on view transaction screen

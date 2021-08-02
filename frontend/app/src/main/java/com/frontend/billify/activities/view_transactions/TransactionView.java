@@ -21,14 +21,14 @@ public class TransactionView extends Subject implements ICallback {
 
     public TransactionView(RecyclerView view, Context context,
                            Map<Integer, Label> transactionLabelMap,
-                           Map<Integer, Pair<Label, Integer>> labelCountMap) {
+                           Map<Integer, Pair<Label, Float>> labelTotalMap) {
         this.view = view;
         this.context = context;
-        populateView(transactionLabelMap, labelCountMap);
+        populateView(transactionLabelMap, labelTotalMap);
     }
 
     private void populateView(Map<Integer, Label> transactionLabelMap,
-                              Map<Integer, Pair<Label, Integer>> labelCountMap){
+                              Map<Integer, Pair<Label, Float>> labelTotalMap){
 
         // Look at TransactionLabelAdapter.java for description
         ArrayList<String> transactionNames = new ArrayList<>();
@@ -39,7 +39,7 @@ public class TransactionView extends Subject implements ICallback {
             transactionNames.add(label.getTransaction_name());
         }
 
-        for (Pair<Label, Integer> entry : labelCountMap.values()) {
+        for (Pair<Label, Float> entry : labelTotalMap.values()) {
             labelsToDisplay.add(entry.first);
         }
 
