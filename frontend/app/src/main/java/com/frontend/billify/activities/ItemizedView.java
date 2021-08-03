@@ -98,8 +98,7 @@ public class ItemizedView {
                                 Item item = items.get(i);
                                 if (item.getItem_id() == item_id) {
                                     item.updateSelectedBy((JSONArray) data.get("userInfos"));
-                                    items.set(i, item);
-                                    adapter.setItems(items);
+                                    adapter.notifyDataSetChanged();
                                     break;
                                 }
                             }
