@@ -22,10 +22,10 @@ function main() {
                         socket2.emit('startSession', { uid: uid, userName: username, tid: tid });
                         break;
                     case "select":
-                        socket2.emit("selectItem", { uid: uid, userName: username, tid: tid, item_id: 337 });
+                        socket2.emit("selectItem", { uid: uid, userName: username, tid: tid, item_id: 3284 });
                         break;
                     case "deselect":
-                        socket2.emit("deselectItem", { uid: uid, userName: username, tid: tid, item_id: 337 });
+                        socket2.emit("deselectItem", { uid: uid, userName: username, tid: tid, item_id: 3284 });
                         break;
                     case "quit":
                         socket2.disconnect();

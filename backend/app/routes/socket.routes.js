@@ -41,7 +41,7 @@ class SocketHandler {
 
                     // update current socket state
                     await Promise.all(fetchPromises);
-                    state = Session.setState(tid, itemInfos);
+                    state = await Session.setState(tid, itemInfos);
                 } catch (err) {
                     console.log("Internal error: Couldn't fetch transaction state: " + err);
                 }
@@ -52,6 +52,7 @@ class SocketHandler {
             // return state by emitting events to this client socket
             console.log(state);
             this.server.to(client.id).emit("currentState", state);
+            // think about price shares here
         });
 
         // event listener: "selectItem"
@@ -64,6 +65,7 @@ class SocketHandler {
             // broadcast to everyone in the room {item_id, userInfos}
             this.server.to(tid).emit("itemUpdated", { item_id: item_id, userInfos: obj.userInfoObjs });
             // broadcast priceShares for price share component
+            console.log("new price shares", obj.priceShares);
         });
 
         // event listener: "deselectItem"
@@ -74,6 +76,7 @@ class SocketHandler {
             // broadcast to everyone in the room {item_id, userInfos}
             this.server.to(tid).emit("itemUpdated", { item_id: item_id, userInfos: obj.userInfoObjs });
             // broadcast priceShares for price share component
+            console.log("new price shares", obj.priceShares);
         });
 
         // event listener: "disconnect"

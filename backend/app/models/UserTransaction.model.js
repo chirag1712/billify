@@ -26,6 +26,21 @@ class UserTransaction {
         });
     }
 
+     // returns user information for users who have selected this item
+     static getUserInfosForTransaction(tid) {
+        return new Promise((resolve, reject) => {
+            sql.query("SELECT u.uid, u.user_name FROM UserTransaction ut, User u WHERE u.uid = ut.uid and ut.tid = ?", tid, (err, res) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                } else {
+                    console.log("users found for tid=", tid, ": ", res);
+                    resolve(res);
+                }
+            });
+        })
+    }
+
 }
 
 module.exports = {UserTransaction};
