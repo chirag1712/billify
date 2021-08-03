@@ -85,7 +85,11 @@ class Session {
         this.subtractOldPriceShare(tid, this.tid2itemInfos[tid][item_id]);
 
         // add the new user
+<<<<<<< HEAD
         this.tid2itemInfos[tid][item_id].userInfos.add(JSON.stringify(userInfo));
+=======
+        this.tid2itemInfos[tid][item_id].userInfos.add(JSON.stringify(new UserInfo(uid, username)));
+>>>>>>> got deselect to work for price totals, also added persistence for price shares when last user leaves and now fetches are made from the db from last persisted price shares when the first user joins
         const itemInfo = this.tid2itemInfos[tid][item_id];
 
         // parse to JSONs before returning
@@ -97,11 +101,19 @@ class Session {
         return { priceShares, userInfoObjs };
     }
 
+<<<<<<< HEAD
     userDeselect(userInfo, tid, item_id) {
         // this should never happen
         const userInfoStr = JSON.stringify(userInfo);
         if (!this.tid2itemInfos[tid][item_id].userInfos.has(userInfoStr)) {
             throw Error(userInfo.uid + "can not deselect " + item_id + " because they didn't select it first");
+=======
+    userDeselect(uid, username, tid, item_id) {
+        // this should never happen
+        const userInfoStr = JSON.stringify(new UserInfo(uid, username));
+        if (!this.tid2itemInfos[tid][item_id].userInfos.has(userInfoStr)) {
+            throw Error(uid + "can not deselect " + item_id + " because they didn't select it first");
+>>>>>>> got deselect to work for price totals, also added persistence for price shares when last user leaves and now fetches are made from the db from last persisted price shares when the first user joins
         }
 
         // subtract old price shares
@@ -227,6 +239,7 @@ class Session {
         if (itemInfo.userInfos.size == 0) {
             return;
         }
+<<<<<<< HEAD
 
         const userInfoObjs = this.getArrayOfJsonsFromSet(itemInfo.userInfos);
         const oldMinUid = this.findMinUid(userInfoObjs);
@@ -245,6 +258,26 @@ class Session {
         });
     }
 
+=======
+
+        const userInfoObjs = this.getArrayOfJsonsFromSet(itemInfo.userInfos);
+        const oldMinUid = this.findMinUid(userInfoObjs);
+        const old_n = itemInfo.userInfos.size;
+        const [old_share, old_last_share] = this.dividePrice(itemInfo.price, old_n);
+
+        userInfoObjs.forEach(({ uid, _ }) => {
+            const old = this.tid2uid2userPriceInfo[tid][uid].price_share;
+            if (uid == oldMinUid) {
+                const val = parseFloat((old - old_last_share).toFixed(2));
+                this.tid2uid2userPriceInfo[tid][uid].price_share = val;
+            } else {
+                const val = parseFloat((old - old_share).toFixed(2));
+                this.tid2uid2userPriceInfo[tid][uid].price_share = val;
+            }
+        });
+    }
+
+>>>>>>> got deselect to work for price totals, also added persistence for price shares when last user leaves and now fetches are made from the db from last persisted price shares when the first user joins
     // used by userSelect and userDeselect
     updatePriceShares(tid, price, userInfoObjs) {
         if (userInfoObjs.length == 0) {
