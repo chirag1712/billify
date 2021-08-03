@@ -51,7 +51,9 @@ class Session {
 
     userSelect(uid, username, tid, item_id) {
         // subtract old price shares
-        this.subtractCosts(tid, this.tid2itemInfos[tid][item_id]);
+        this.subtractOldPriceShare(tid, this.tid2itemInfos[tid][item_id]);
+
+        // add the new user
         this.tid2itemInfos[tid][item_id].userInfos.add(JSON.stringify(new UserInfo(uid, username)));
         const itemInfo = this.tid2itemInfos[tid][item_id];
 
@@ -64,51 +66,25 @@ class Session {
         return { priceShares, userInfoObjs };
     }
 
-    getArrayOfJsonsFromSet(userInfos) {
-        const userInfoObjs = [];
-        Array.from(userInfos).forEach((userInfoStr) => {
-            userInfoObjs.push(JSON.parse(userInfoStr));
-        });
-        return userInfoObjs;
-    }
-
-    subtractCosts(tid, itemInfo) {
-        if (itemInfo.userInfos.size == 0) {
-            return;
-        }
-
-        const userInfoObjs = this.getArrayOfJsonsFromSet(itemInfo.userInfos);
-        const oldMinUid = this.findMinUid(userInfoObjs);
-        const old_n = itemInfo.userInfos.size;
-        const [old_share, old_last_share] = this.dividePrice(itemInfo.price, old_n);
-
-        userInfoObjs.forEach(({ uid, _ }) => {
-            const old = this.tid2uid2userPriceInfo[tid][uid].price_share;
-            if (uid == oldMinUid) {
-                const val = parseFloat((old - old_last_share).toFixed(2));
-                this.tid2uid2userPriceInfo[tid][uid].price_share = val;
-            } else {
-                const val = parseFloat((old - old_share).toFixed(2));
-                this.tid2uid2userPriceInfo[tid][uid].price_share = val;
-            }
-        });
-    }
-
     userDeselect(uid, username, tid, item_id) {
-        const oldMinUid = this.findMinUid(this.tid2itemInfos[tid][item_id].userInfos);
-        if (!this.tid2itemInfos[tid][item_id].userInfos.delete(JSON.stringify(new UserInfo(uid, username)))) {
-            throw Error(uid + " did not select " + item_id + " to begin with");
+        // this should never happen
+        const userInfoStr = JSON.stringify(new UserInfo(uid, username));
+        if (!this.tid2itemInfos[tid][item_id].userInfos.has(userInfoStr)) {
+            throw Error(uid + "can not deselect " + item_id + " because they didn't select it first");
         }
+
+        // subtract old price shares
+        this.subtractOldPriceShare(tid, this.tid2itemInfos[tid][item_id]);
+
+        // remove the user
+        this.tid2itemInfos[tid][item_id].userInfos.delete(userInfoStr);
+        const itemInfo = this.tid2itemInfos[tid][item_id];
 
         // parse to JSONs before returning
-        const userInfos = Array.from(this.tid2itemInfos[tid][item_id].userInfos);
-        const userInfoObjs = [];
-        userInfos.forEach((userInfoStr) => {
-            userInfoObjs.push(JSON.parse(userInfoStr));
-        });
+        const userInfoObjs = this.getArrayOfJsonsFromSet(itemInfo.userInfos);
 
-        // update price shares
-        const priceShares = this.updatePriceShares(tid, itemInfo.price, userInfoObjs, oldMinUid, itemInfo.userInfos.length + 1, itemInfo.userInfos.length);
+        // update new price shares
+        const priceShares = this.updatePriceShares(tid, itemInfo.price, userInfoObjs);
 
         return { priceShares, userInfoObjs };
     }
@@ -128,7 +104,7 @@ class Session {
 
             // using option 1 for now
             await UserItem.deleteAll(tid);
-            Object.entries(this.tid2itemInfos[tid]).forEach(([item_id, userInfos]) => {
+            Object.entries(this.tid2itemInfos[tid]).forEach(([item_id, { price, userInfos }]) => {
                 userInfos.forEach((userInfoString) => {
                     const { uid } = JSON.parse(userInfoString);
                     const userItem = new UserItem(tid, uid, item_id);
@@ -136,7 +112,10 @@ class Session {
                 });
             });
 
-            // TODO: persist price shares to db as well (update price_share in usertransaction table)
+            // TODO: persist price shares to db
+            Object.entries(this.tid2uid2userPriceInfo[tid]).forEach(([uidStr, userPriceInfo]) => {
+                UserTransaction.updatePriceShare(tid, uidStr, userPriceInfo.price_share);  
+            })
 
             // clearing socket state
             // might not need to clear it as it can save db trip later
@@ -180,34 +159,67 @@ class Session {
             this.tid2uid2userPriceInfo[tid] = {};
         }
 
-        // initialize price_shares for all members of the group
-        const allUserInfos = await UserTransaction.getUserInfosForTransaction(tid);
-        allUserInfos.forEach((userInfo) => {
-            state.price_shares[userInfo.uid] = { userName: userInfo.user_name, price_share: 0 };
-            this.tid2uid2userPriceInfo[tid][userInfo.uid] = new UserPriceInfo(userInfo.user_name, 0);
+        // fetch price_shares for all members using UserTransaction table
+        const allUserTransactionInfos = await UserTransaction.getUserTransactionInfosForTransaction(tid);
+        allUserTransactionInfos.forEach((userTransactionInfo) => {
+            state.price_shares[userTransactionInfo.uid] = {
+                userName: userTransactionInfo.user_name,
+                price_share: userTransactionInfo.price_share
+            };
+            this.tid2uid2userPriceInfo[tid][userTransactionInfo.uid] = new UserPriceInfo(
+                userTransactionInfo.user_name,
+                userTransactionInfo.price_share
+            );
         });
 
         Object.entries(itemInfos).forEach(([item_id, { price, userInfos }]) => {
             state.items.push({ item_id, userInfos });
             this.tid2itemInfos[tid][item_id] = { price: price, userInfos: new Set() };
             userInfos.forEach((userInfoObj) => {
-                this.tid2itemInfos[tid][item_id].add(JSON.stringify(userInfoObj));
+                this.tid2itemInfos[tid][item_id].userInfos.add(JSON.stringify(userInfoObj));
             });
         });
 
-        // set tid2uid2userPriceInfo and also update state
-        state.price_shares = this.calculatePriceShares(tid, itemInfos, state);
         return state;
     }
 
-    // method for price share calculation here
-    // should be called on select, deselect and start session for the first user
-    //  (from userSelect, userDeselect and setState)
+    // ==== utility functions ====
+    getArrayOfJsonsFromSet(userInfos) {
+        /* converts an array of json strings to an array of JSON parsed objects */
+        const userInfoObjs = [];
+        Array.from(userInfos).forEach((userInfoStr) => {
+            userInfoObjs.push(JSON.parse(userInfoStr));
+        });
+        return userInfoObjs;
+    }
 
-    // should be used for select and deselect
+    subtractOldPriceShare(tid, itemInfo) {
+        /* subtracts an item's old price share from all it's selectors */
+        if (itemInfo.userInfos.size == 0) {
+            return;
+        }
+
+        const userInfoObjs = this.getArrayOfJsonsFromSet(itemInfo.userInfos);
+        const oldMinUid = this.findMinUid(userInfoObjs);
+        const old_n = itemInfo.userInfos.size;
+        const [old_share, old_last_share] = this.dividePrice(itemInfo.price, old_n);
+
+        userInfoObjs.forEach(({ uid, _ }) => {
+            const old = this.tid2uid2userPriceInfo[tid][uid].price_share;
+            if (uid == oldMinUid) {
+                const val = parseFloat((old - old_last_share).toFixed(2));
+                this.tid2uid2userPriceInfo[tid][uid].price_share = val;
+            } else {
+                const val = parseFloat((old - old_share).toFixed(2));
+                this.tid2uid2userPriceInfo[tid][uid].price_share = val;
+            }
+        });
+    }
+
+    // used by userSelect and userDeselect
     updatePriceShares(tid, price, userInfoObjs) {
         if (userInfoObjs.length == 0) {
-            return;
+            return this.tid2uid2userPriceInfo[tid];
         }
 
         const new_n = userInfoObjs.length;
@@ -227,31 +239,6 @@ class Session {
             this.tid2uid2userPriceInfo[tid][uid].price_share = val;
         });
         return this.tid2uid2userPriceInfo[tid];
-    }
-
-    // should be used for setState
-    calculatePriceShares(tid, itemInfos, state) {
-        Object.entries(itemInfos).forEach(([_, { price, userInfos }]) => {
-            const [share, last_share] = this.dividePrice(price, userInfos.length);
-            if (userInfos.length == 0) {
-                return; // skip this iteration
-            }
-            const minUid = this.findMinUid(userInfos);
-            console.log("Min UID:", minUid);
-            for (let i = 0; i < n; i++) {
-                const userInfoObj = userInfos[i];
-                const old = this.tid2uid2userPriceInfo[tid][userInfoObj.uid].price_share;
-                var val;
-                if (userInfoObj.uid == minUid) {
-                    val = parseFloat((old + last_share).toFixed(2));
-                } else {
-                    val = parseFloat((old + share).toFixed(2));
-                }
-                this.tid2uid2userPriceInfo[tid][userInfoObj.uid].price_share = val;
-                state.price_shares[userInfoObj.uid].price_share = val;
-            }
-        });
-        return state.price_shares;
     }
 
     findMinUid(userInfoObjs) {
