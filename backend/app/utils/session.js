@@ -242,6 +242,7 @@ class Session {
     }
 
     findMinUid(userInfoObjs) {
+        // https://stackoverflow.com/questions/8864430/compare-javascript-array-of-objects-to-get-min-max used this for reference
         return userInfoObjs.reduce((prev, curr) => {
             return prev.uid < curr.uid ? prev : curr;
         }).uid;
