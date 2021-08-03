@@ -61,7 +61,7 @@
             android:label="Upload a New Receipt"
             />
         <activity android:name=".activities.ItemizedViewActivity" />
-        <activity android:name=".activities.MainActivity">
+        <activity android:name=".activities.AuthenticationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

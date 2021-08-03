@@ -111,7 +111,7 @@ public class HomepageActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Persistence.clearLoginDetails(HomepageActivity.this);
-                Intent loginActivityIntent = new Intent(HomepageActivity.this, MainActivity.class);
+                Intent loginActivityIntent = new Intent(HomepageActivity.this, AuthenticationActivity.class);
                 startActivity(loginActivityIntent);
             }
         });
