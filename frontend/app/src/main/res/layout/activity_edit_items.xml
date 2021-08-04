@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.EditItemsActivity"
-    android:background="@drawable/purple_green_background"
+    tools:context=".activities.edit_and_confirm_items.EditItemsActivity"
+    android:background="@drawable/homepage_background"
     >
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

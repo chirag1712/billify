@@ -1,4 +1,4 @@
-package com.frontend.billify.activities;
+package com.frontend.billify.activities.edit_and_confirm_items;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;

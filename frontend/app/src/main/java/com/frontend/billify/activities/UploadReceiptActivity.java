@@ -29,9 +29,9 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.frontend.billify.R;
+import com.frontend.billify.activities.edit_and_confirm_items.EditItemsActivity;
 import com.frontend.billify.controllers.GroupService;
 import com.frontend.billify.controllers.TransactionController;
-import com.frontend.billify.models.Group;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.models.User;
 import com.frontend.billify.persistence.Persistence;
@@ -46,7 +46,6 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -140,7 +139,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
 
                 }
 
-                parseReceipt();
+                uploadAndParseReceipt();
             }
         });
 
@@ -368,7 +367,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
         });
     }
 
-    private void parseReceipt() {
+    public void uploadAndParseReceipt() {
         /*
         Creates a new Group Transaction by making a call to the API, can specify a callback.
          */

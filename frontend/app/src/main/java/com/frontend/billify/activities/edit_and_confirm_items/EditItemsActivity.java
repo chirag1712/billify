@@ -1,4 +1,4 @@
-package com.frontend.billify.activities;
+package com.frontend.billify.activities.edit_and_confirm_items;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -32,6 +32,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.frontend.billify.R;
+import com.frontend.billify.activities.HomepageActivity;
 import com.frontend.billify.adapters.EditItemsRecViewAdapter;
 import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.models.Item;
