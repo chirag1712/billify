@@ -85,16 +85,6 @@ public class EditItemsActivity extends AppCompatActivity {
         addConfirmButtonClickListener();
         addAddNewItemButtonClickListener();
 
-        // NOTE: The below Transaction object is for the case when we use "Edit Sample Items" button for testing
-        ArrayList<String> itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
-        ArrayList<String> strPrices = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.prices)));
-        currTransaction = new Transaction(1, 4, "2004-01-01", "NOT_STARTED",
-                "Walmart Shopping", "empty_url");
-
-        for (int i = 0; i < itemNames.size(); ++i) {
-            currTransaction.addItem(new Item(itemNames.get(i), Float.valueOf(strPrices.get(i))));
-        }
-
         Intent i = getIntent();
         if (i.hasExtra("TransactionBundle")) {
             Bundle b = i.getBundleExtra("TransactionBundle");

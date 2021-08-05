@@ -11,7 +11,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -37,7 +36,6 @@ import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.models.Label;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.models.User;
-import com.frontend.billify.models.UserTransaction;
 import com.frontend.billify.persistence.Persistence;
 import com.frontend.billify.services.RetrofitService;
 
@@ -48,8 +46,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -101,7 +97,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
         showGalleryButton = findViewById(R.id.show_gallery);
         uploadProgress = findViewById(R.id.uploadProgressBar);
         uploadReceiptButton = findViewById(R.id.upload_receipt_button);
-        editItemsButton = findViewById(R.id.edit_items_button);
         transactionNameEditText = findViewById(R.id.transaction_name_edit_text);
         labelTextView = findViewById(R.id.auto_complete_label_text_view);
 
@@ -122,7 +117,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
         transactionNameEditText.setText(defaultTransactionName);
 
         // Add on click listeners for buttons on this activity
-        addEditButtonClickListener();
         addCameraButtonClickListener();
         addGalleryButtonClickListener();
         addUploadButtonClickListener();
@@ -235,18 +229,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
                     }
                 }
         );
-
-    }
-
-    private void addEditButtonClickListener() {
-        editItemsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(UploadReceiptActivity.this, EditItemsActivity.class);
-                startActivity(intent);
-            }
-        });
-
     }
 
     private void addUploadButtonClickListener() {
@@ -431,12 +413,15 @@ public class UploadReceiptActivity extends AppCompatActivity {
                                         Toast.LENGTH_SHORT).show();
                                 return;
                             }
-                            Transaction newTransactionWithParsedItems = createNewTransactionWithParsedItems(
-                                    response.body()
-                            );
-                            moveToEditItemsActivity(newTransactionWithParsedItems);
+                            parsedItemsTransaction = response.body();
                         }
-
+                        /* NOTE: createNewTransactionFromParsedItems creates a new Transaction
+                        that fills parsedItemsTransaction with gid, label_id and other information.
+                         */
+                        parsedItemsTransaction = createNewTransactionFromParsedItems(
+                                parsedItemsTransaction
+                        );
+                        moveToEditItemsActivity(parsedItemsTransaction);
                     }
 
                     @Override
@@ -452,16 +437,22 @@ public class UploadReceiptActivity extends AppCompatActivity {
                 });
     }
 
-    private Transaction createNewTransactionWithParsedItems(Transaction parsedItemsTransaction) {
+    private Transaction createNewTransactionFromParsedItems(Transaction parsedItemsTransaction) {
         /*
         parsedItemsTransaction is the response from the API that only contains parsed items.
         We create a new transaction from it and populate it with extra fields such as
         gid, transaction name and label id.
          */
+
+        /* We call copy constructor since parsedItemsTransaction argument is constructed
+         using gson library when it is assigned to response.body(). The GSON library
+         skips the developer-defined constructors and builds the parsedItemsTransaction object
+         via reflection:
+         https://stackoverflow.com/questions/40441460/does-googles-gson-use-constructors.
+         */
         Transaction newTransaction = new Transaction(parsedItemsTransaction);
         newTransaction.setGid(currUser.getGidFromGroupName(groupTextView.getText().toString()));
         String transactionName = transactionNameEditText.getText().toString().trim();
-        // TODO: Possible problem when user edits Transaction Name after uploading receipt?
         newTransaction.setTransaction_name(transactionName);
         newTransaction.setCurrPhotoFile(UploadReceiptActivity.this.currPhotoFile);
         System.out.println("Successful upload request with return value: "
