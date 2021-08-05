@@ -82,13 +82,132 @@ public class EditItemsActivity extends AppCompatActivity {
         successfulCreationTransactionPopup = new Dialog(this);
 
         // adding OnClick event listeners to buttons on this activity
+        addConfirmButtonClickListener();
+        addAddNewItemButtonClickListener();
+
+        // NOTE: The below Transaction object is for the case when we use "Edit Sample Items" button for testing
+        ArrayList<String> itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
+        ArrayList<String> strPrices = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.prices)));
+        currTransaction = new Transaction(1, 4, "2004-01-01", "NOT_STARTED",
+                "Walmart Shopping", "empty_url");
+
+        for (int i = 0; i < itemNames.size(); ++i) {
+            currTransaction.addItem(new Item(itemNames.get(i), Float.valueOf(strPrices.get(i))));
+        }
+
+        Intent i = getIntent();
+        if (i.hasExtra("TransactionBundle")) {
+            Bundle b = i.getBundleExtra("TransactionBundle");
+            currTransaction = (Transaction) b.getSerializable("SerializedTransaction");
+        }
+
+        if (currTransaction.getNumItems() == 0) {
+            Toast.makeText(
+                    this,
+                    "Couldn't parse any items from receipt. You can add items manually.",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        transactionNameTextView = findViewById(R.id.transaction_name_edit_screen_textview);
+        transactionNameTextView.setText(currTransaction.getName());
+        addNewItemButton = findViewById(R.id.add_new_item_button);
+
+        setUpEditItemsRecyclerView();
+
+    }
+
+    private void setUpEditItemsRecyclerView() {
+        // Setting up recycler view and the EditItemsRecViewAdapter for items
+        recyclerView = findViewById(R.id.edit_items_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setItemViewCacheSize(20);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        editItemsAdapter = new EditItemsRecViewAdapter(
+                this,
+                currTransaction
+        );
+        recyclerView.setAdapter(editItemsAdapter);
+        // Adding Swipe left to Delete Item functionality
+        new ItemTouchHelper(swipeDeleteCallback).attachToRecyclerView(recyclerView);
+
+        editItemsAdapter.setOnItemClickListener(new EditItemsRecViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Item item, int itemIndex) {
+                Intent intent = new Intent(EditItemsActivity.this, AddEditItemActivity.class);
+                intent.putExtra(AddEditItemActivity.OLD_ITEM, item);
+                intent.putExtra(AddEditItemActivity.EDITED_ITEM_INDEX, itemIndex);
+                // The number 2 below doesn't matter. Adding extra attribute to intent just to check
+                // if the extra attribute is EDIT_MODE or ADD_MODE
+                intent.putExtra(AddEditItemActivity.EDIT_MODE, 2);
+                editItemActivityResultLauncher.launch(intent);
+
+            }
+        });
+
+        editItemActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            Intent data = result.getData();
+                            Item editedItem = (Item) data.getSerializableExtra(AddEditItemActivity.EDITED_ITEM);
+                            int editedItemIndex = data.getIntExtra(AddEditItemActivity.EDITED_ITEM_INDEX, -1);
+                            if (editedItemIndex != -1) {
+                                currTransaction.getItems().set(editedItemIndex, editedItem);
+                                editItemsAdapter.notifyItemChanged(editedItemIndex);
+                            } else {
+                                Toast.makeText(
+                                        EditItemsActivity.this,
+                                        "Something wrong went wrong with editing",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                            }
+                        }
+                    }
+                }
+        );
+
+    }
+
+    private void addAddNewItemButtonClickListener() {
+        addNewItemButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EditItemsActivity.this, AddEditItemActivity.class);
+                intent.putExtra(AddEditItemActivity.ADD_MODE, 1);
+                addItemActivityResultLauncher.launch(intent);
+            }
+        });
+
+        addItemActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            Intent data = result.getData();
+                            Item newItem = (Item) data.getSerializableExtra(AddEditItemActivity.ADDED_ITEM);
+                            int insertIndex = 0;
+                            currTransaction.addItem(insertIndex, newItem);
+                            editItemsAdapter.notifyItemInserted(insertIndex);
+                        }
+                    }
+                }
+        );
+
+    }
+
+    private void addConfirmButtonClickListener() {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 System.out.println("YES: In onClick of Confirm button");
                 if (
                         (currTransaction.getCurrPhotoFile() != null) &&
-                        (currTransaction.getNumItems() > 0)
+                                (currTransaction.getNumItems() > 0)
                 ) {
                     System.out.println(currTransaction.getNumItems());
                     currTransaction.printItems();
@@ -118,117 +237,7 @@ public class EditItemsActivity extends AppCompatActivity {
                 }
             }
         });
-
-        addNewItemButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(EditItemsActivity.this, AddEditItemActivity.class);
-                intent.putExtra(AddEditItemActivity.ADD_MODE, 1);
-                addItemActivityResultLauncher.launch(intent);
-            }
-        });
-
-
-        // NOTE: The below Transaction object is for the case when we use "Edit Sample Items" button for testing
-        ArrayList<String> itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
-        ArrayList<String> strPrices = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.prices)));
-        currTransaction = new Transaction(1, 4, "2004-01-01", "NOT_STARTED",
-                "Walmart Shopping", "empty_url");
-
-        for (int i = 0; i < itemNames.size(); ++i) {
-            currTransaction.addItem(new Item(itemNames.get(i), Float.valueOf(strPrices.get(i))));
-        }
-
-        Intent i = getIntent();
-        if (i.hasExtra("TransactionBundle")) {
-            Bundle b = i.getBundleExtra("TransactionBundle");
-            currTransaction = (Transaction) b.getSerializable("SerializedTransaction");
-        }
-
-        if (currTransaction.getNumItems() == 0) {
-            Toast.makeText(
-                    this,
-                    "Couldn't parse any items from receipt. You can add items manually.",
-                    Toast.LENGTH_SHORT).show();
-        }
-
-        transactionNameTextView = findViewById(R.id.transaction_name_edit_screen_textview);
-        transactionNameTextView.setText(currTransaction.getName());
-        addNewItemButton = findViewById(R.id.add_new_item_button);
-
-        addItemActivityResultLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if (result.getResultCode() == Activity.RESULT_OK) {
-                            Intent data = result.getData();
-                            Item newItem = (Item) data.getSerializableExtra(AddEditItemActivity.ADDED_ITEM);
-                            int insertIndex = 0;
-                            currTransaction.addItem(insertIndex, newItem);
-                            editItemsAdapter.notifyItemInserted(insertIndex);
-                        }
-                    }
-                }
-        );
-
-        // Setting up recycler view
-        recyclerView = findViewById(R.id.edit_items_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setItemViewCacheSize(20);
-        recyclerView.setDrawingCacheEnabled(true);
-        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        editItemsAdapter = new EditItemsRecViewAdapter(
-                this,
-                currTransaction
-        );
-        recyclerView.setAdapter(editItemsAdapter);
-        // Adding Swipe left to Delete Item functionality
-        new ItemTouchHelper(swipeDeleteCallback).attachToRecyclerView(recyclerView);
-
-
-        editItemActivityResultLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if (result.getResultCode() == Activity.RESULT_OK) {
-                            Intent data = result.getData();
-                            Item editedItem = (Item) data.getSerializableExtra(AddEditItemActivity.EDITED_ITEM);
-                            int editedItemIndex = data.getIntExtra(AddEditItemActivity.EDITED_ITEM_INDEX, -1);
-                            if (editedItemIndex != -1) {
-                                currTransaction.getItems().set(editedItemIndex, editedItem);
-                                editItemsAdapter.notifyItemChanged(editedItemIndex);
-                            } else {
-                                Toast.makeText(
-                                        EditItemsActivity.this,
-                                        "Something wrong went wrong with editing",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-                            }
-                        }
-                    }
-                }
-        );
-
-        editItemsAdapter.setOnItemClickListener(new EditItemsRecViewAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Item item, int itemIndex) {
-                Intent intent = new Intent(EditItemsActivity.this, AddEditItemActivity.class);
-                intent.putExtra(AddEditItemActivity.OLD_ITEM, item);
-                intent.putExtra(AddEditItemActivity.EDITED_ITEM_INDEX, itemIndex);
-                // The number 2 below doesn't matter. Adding extra attribute to intent just to check
-                // if the extra attribute is EDIT_MODE or ADD_MODE
-                intent.putExtra(AddEditItemActivity.EDIT_MODE, 2);
-                editItemActivityResultLauncher.launch(intent);
-
-            }
-        });
-
-
     }
-
 
     public void createTransaction() {
         // Method that makes POST request to create a Transaction
