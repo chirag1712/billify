@@ -70,4 +70,29 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout"
         app:layout_constraintVertical_bias="0.914" />
 
+    <ImageView
+        android:id="@+id/green_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/circle"
+        android:visibility="gone"
+        tools:visibility = "visible" />
+
+    <ImageView
+        android:id="@+id/create_transaction_success_animation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/green_background"
+        app:layout_constraintEnd_toEndOf="@+id/green_background"
+        app:layout_constraintStart_toStartOf="@+id/green_background"
+        app:layout_constraintTop_toTopOf="@+id/green_background"
+        app:srcCompat="@drawable/avd_done_animation"
+        android:visibility="gone"
+        tools:visibility = "visible" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -61,4 +61,7 @@
     <string name="save_progress">Save</string>
     <string name="swipe_to_delete_item">Swipe to Delete item</string>
     <string name="confirm">Confirm</string>
+
+
+    <string name="success_transaction_message">Successfully created new transaction!</string>
 </resources>
