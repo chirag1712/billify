@@ -110,7 +110,7 @@ public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsIt
         notifyDataSetChanged();
     }
 
-    public static class ViewHolder  extends  RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder{
         private final TextView item_name, price;
         private final CardView parent;
         private final GridLayout grid;

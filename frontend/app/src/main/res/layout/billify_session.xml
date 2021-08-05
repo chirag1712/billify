@@ -15,9 +15,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/recipeItems" />
 
-    <!--    add component for user price share here -->
-    <!--    each row of the user price share should have a settle button (only for the transaction creator or anyone (easier)?) that can be pressed only once (DB logic for this) -->
-    <GridLayout
+    <!--    each row of the user price share should have a settle button (DB logic for this) -->
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/user_shares"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -70,7 +70,7 @@ public class HomepageActivity extends AppCompatActivity {
         join_billify_session.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                transactionController.getTransaction(280).enqueue(new Callback<Transaction>() {
+                transactionController.getTransaction(349).enqueue(new Callback<Transaction>() {
                     @Override
                     public void onResponse(Call<Transaction> call, Response<Transaction> response) {
                         Transaction currTransaction = new Transaction(response.body());

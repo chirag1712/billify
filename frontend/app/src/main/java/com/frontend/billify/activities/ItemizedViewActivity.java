@@ -47,10 +47,12 @@ public class ItemizedViewActivity extends Activity {
         Transaction currTransaction = (Transaction) b.getSerializable("SerializedTransaction");
 
         // price share view
-        userPriceShare = new UserPriceShare(findViewById(R.id.user_shares), currTransaction.getItems());
+        userPriceShare = new UserPriceShare(findViewById(R.id.user_shares), this);
 
         // itemized view
         itemizedView = new ItemizedView(findViewById(R.id.recipeItems), this, mSocket, currTransaction);
+
+        // move socket listeners here in parent class how? -> dispatch to class specific event handlers somehow
 
         saveButton.setOnClickListener(view -> {
             mSocket.disconnect();
