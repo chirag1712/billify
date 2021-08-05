@@ -44,6 +44,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -110,39 +112,13 @@ public class UploadReceiptActivity extends AppCompatActivity {
 
 
         // Add on click listeners for buttons
-        editItemsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(UploadReceiptActivity.this, EditItemsActivity.class);
-                startActivity(intent);
-            }
-        });
+        addEditButtonClickListener();
+        addCameraButtonClickListener();
+        addGalleryButtonClickListener();
+        addUploadButtonClickListener();
+    }
 
-        uploadReceiptButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String transactionName = transactionNameEditText.getText().toString().trim();
-                if (transactionName.equals("")) {
-                    Toast.makeText(
-                            UploadReceiptActivity.this,
-                            "Add a Transaction Name",
-                            Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (UploadReceiptActivity.this.currPhotoFile == null) {
-                    Toast.makeText(
-                            UploadReceiptActivity.this,
-                            "Pick a photo first",
-                            Toast.LENGTH_SHORT).show();
-                    return;
-
-                }
-
-                uploadAndParseReceipt();
-            }
-        });
-
+    private void addCameraButtonClickListener() {
         takePhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -176,23 +152,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
             }
         });
 
-        showGalleryButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                try {
-                    Intent imagePickerIntent = new Intent(Intent.ACTION_PICK,
-                            MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-
-                    if (imagePickerIntent.resolveActivity(getPackageManager()) != null) {
-                        galleryResultLauncher.launch(imagePickerIntent);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
         // Add StartActivityForResult callbacks for Camera and Gallery launcher intents
         cameraResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -212,6 +171,26 @@ public class UploadReceiptActivity extends AppCompatActivity {
                     }
                 }
         );
+
+    }
+
+    private void addGalleryButtonClickListener() {
+        showGalleryButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent imagePickerIntent = new Intent(Intent.ACTION_PICK,
+                            MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+
+                    if (imagePickerIntent.resolveActivity(getPackageManager()) != null) {
+                        galleryResultLauncher.launch(imagePickerIntent);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         galleryResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -247,6 +226,45 @@ public class UploadReceiptActivity extends AppCompatActivity {
                 }
         );
 
+    }
+
+    private void addEditButtonClickListener() {
+        editItemsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(UploadReceiptActivity.this, EditItemsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+    }
+
+    private void addUploadButtonClickListener() {
+
+        uploadReceiptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String transactionName = transactionNameEditText.getText().toString().trim();
+                if (transactionName.equals("")) {
+                    Toast.makeText(
+                            UploadReceiptActivity.this,
+                            "Add a Transaction Name",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (UploadReceiptActivity.this.currPhotoFile == null) {
+                    Toast.makeText(
+                            UploadReceiptActivity.this,
+                            "Pick a photo first",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+
+                }
+
+                uploadAndParseReceipt();
+            }
+        });
     }
 
 
@@ -353,8 +371,13 @@ public class UploadReceiptActivity extends AppCompatActivity {
                 );
 
                 groupTextView.setAdapter(groupArrayAdapter);
-                groupTextView.setText(groupArrayAdapter.getItem(0).toString(), false);
+                String firstGroupName = groupArrayAdapter.getItem(0).toString();
+                groupTextView.setText(firstGroupName, false);
 
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm z");
+                Date date = new Date(System.currentTimeMillis());
+                String defaultTransactionName = "New Transaction " + formatter.format(date);
+                transactionNameEditText.setText(defaultTransactionName);
             }
 
             @Override
