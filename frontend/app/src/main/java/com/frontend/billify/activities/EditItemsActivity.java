@@ -5,21 +5,29 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -29,12 +37,6 @@ import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.models.Item;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.services.RetrofitService;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import android.os.Bundle;
-import android.view.View;
-
-import com.frontend.billify.R;
-import com.frontend.billify.adapters.EditItemsRecViewAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.jetbrains.annotations.NotNull;
@@ -58,6 +60,7 @@ public class EditItemsActivity extends AppCompatActivity {
     EditItemsRecViewAdapter editItemsAdapter;
     Button confirmButton;
     ProgressBar createTransactionRequestProgressBar;
+    Dialog successfulCreationTransactionPopup;
 
     private final RetrofitService retrofitService = new RetrofitService();
     private final TransactionController transactionController = new TransactionController(retrofitService);
@@ -66,9 +69,13 @@ public class EditItemsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_items);
+
         createTransactionRequestProgressBar = findViewById(R.id.create_transaction_request_progress_bar);
         confirmButton = findViewById(R.id.confirm_items_button);
+        addNewItemButton = findViewById(R.id.add_new_item_button);
+        successfulCreationTransactionPopup = new Dialog(this);
 
+        // adding OnClick event listeners to buttons on this activity
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -106,6 +113,16 @@ public class EditItemsActivity extends AppCompatActivity {
             }
         });
 
+        addNewItemButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(EditItemsActivity.this, AddEditItemActivity.class);
+                intent.putExtra(AddEditItemActivity.ADD_MODE, 1);
+                addItemActivityResultLauncher.launch(intent);
+            }
+        });
+
+
         // NOTE: The below Transaction object is for the case when we use "Edit Sample Items" button for testing
         ArrayList<String> itemNames = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.items)));
         ArrayList<String> strPrices = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.prices)));
@@ -121,8 +138,6 @@ public class EditItemsActivity extends AppCompatActivity {
             Bundle b = i.getBundleExtra("TransactionBundle");
             currTransaction = (Transaction) b.getSerializable("SerializedTransaction");
         }
-
-        addNewItemButton = findViewById(R.id.add_new_item_button);
 
         addItemActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -140,27 +155,19 @@ public class EditItemsActivity extends AppCompatActivity {
                 }
         );
 
-        addNewItemButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(EditItemsActivity.this, AddEditItemActivity.class);
-                intent.putExtra(AddEditItemActivity.ADD_MODE, 1);
-                addItemActivityResultLauncher.launch(intent);
-            }
-        });
-
+        // Setting up recycler view
         recyclerView = findViewById(R.id.edit_items_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
         recyclerView.setItemViewCacheSize(20);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-
         editItemsAdapter = new EditItemsRecViewAdapter(
                 this,
                 currTransaction
         );
         recyclerView.setAdapter(editItemsAdapter);
+        // Adding Swipe left to Delete Item functionality
         new ItemTouchHelper(swipeDeleteCallback).attachToRecyclerView(recyclerView);
 
 
@@ -205,11 +212,14 @@ public class EditItemsActivity extends AppCompatActivity {
 
     }
 
+
     public void createTransaction() {
+        // Method that makes POST request to create a Transaction
         transactionController.createTransaction(
                 currTransaction.getTransactionJSONString(),
                 currTransaction.getCurrPhotoFile()).enqueue(
                 new Callback<Transaction>() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                     @Override
                     public void onResponse(Call<Transaction> call, Response<Transaction> response) {
                         createTransactionRequestProgressBar.setVisibility(View.GONE);
@@ -237,19 +247,39 @@ public class EditItemsActivity extends AppCompatActivity {
                         System.out.println("Successful item confirm and create transaction request with return value: "
                                 + currTransaction.getName()
                         );
-                        Intent moveBackToHomepageIntent = new Intent(
-                                EditItemsActivity.this,
-                                HomepageActivity.class
-                        );
-//                        /* Commenting out this code for now since we go back to homepage and not start billify
-//                         session for now. */
-//                        Bundle transactionBundle = new Bundle();
-//                        transactionBundle.putSerializable("SerializedTransaction", currTransaction);
-//                        moveToEditAndConfirmItemsActivityIntent.putExtra(
-//                                "TransactionBundle",
-//                                transactionBundle
-//                        );
-                        startActivity(moveBackToHomepageIntent);
+
+
+                        ImageView SuccessImageView = findViewById(R.id.create_transaction_success_animation);
+                        ImageView greenBackground = findViewById(R.id.green_background);
+                        recyclerView.setVisibility(View.GONE);
+                        greenBackground.setVisibility(View.VISIBLE);
+                        SuccessImageView.setVisibility(View.VISIBLE);
+                        AnimatedVectorDrawableCompat avd;
+                        AnimatedVectorDrawable avd2;
+
+                        Drawable drawable = SuccessImageView.getDrawable();
+                        if (drawable instanceof AnimatedVectorDrawableCompat) {
+                            avd = (AnimatedVectorDrawableCompat) drawable;
+                            avd.start();
+                        } else if (drawable instanceof AnimatedVectorDrawable) {
+                            avd2 = (AnimatedVectorDrawable) drawable;
+                            avd2.start();
+                        }
+
+                        confirmButton.setVisibility(View.GONE);
+                        addNewItemButton.setVisibility(View.GONE);
+                        final Handler handler = new Handler(Looper.getMainLooper());
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent moveBackToHomepageIntent = new Intent(
+                                        EditItemsActivity.this,
+                                        HomepageActivity.class
+                                );
+                                startActivity(moveBackToHomepageIntent);
+                            }
+                        }, 1000);
+
 
                     }
 
@@ -269,6 +299,7 @@ public class EditItemsActivity extends AppCompatActivity {
     }
 
 
+    // Adding swipe left to delete functionality
     ItemTouchHelper.SimpleCallback swipeDeleteCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
         @Override
