@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,7 +17,9 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
@@ -65,6 +69,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
 
     private ProgressBar uploadProgress;
     private EditText transactionNameEditText;
+    private TextView selectPhotoTextView;
     private AutoCompleteTextView labelTextView;
     private ArrayAdapter<String> labelArrayAdapter;
 
@@ -75,10 +80,11 @@ public class UploadReceiptActivity extends AppCompatActivity {
     private Button uploadReceiptButton;
     private Button takePhotoButton;
     private Button showGalleryButton;
-    private Button editItemsButton;
 
     ActivityResultLauncher<Intent> cameraResultLauncher;
     ActivityResultLauncher<Intent> galleryResultLauncher;
+
+    private ImageView receiptImageView;
 
     private User currUser;
 
@@ -99,6 +105,8 @@ public class UploadReceiptActivity extends AppCompatActivity {
         uploadReceiptButton = findViewById(R.id.upload_receipt_button);
         transactionNameEditText = findViewById(R.id.transaction_name_edit_text);
         labelTextView = findViewById(R.id.auto_complete_label_text_view);
+        receiptImageView = findViewById(R.id.receipt_image_view);
+        selectPhotoTextView = findViewById(R.id.select_photo_textview);
 
         // Add Label dropdown
         LabelDropdownAdapter labelDropdownAdapter = new LabelDropdownAdapter(
@@ -156,7 +164,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
             }
         });
 
-        // Add StartActivityForResult callbacks for Camera and Gallery launcher intents
+        // Add StartActivityForResult callbacks for Camera launcher intent
         cameraResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -168,6 +176,10 @@ public class UploadReceiptActivity extends AppCompatActivity {
                                         UploadReceiptActivity.this,
                                         "Chose a picture from the camera",
                                         Toast.LENGTH_SHORT).show();
+                                selectPhotoTextView.setVisibility(View.GONE);
+                                receiptImageView.setVisibility(View.VISIBLE);
+                                Bitmap myBitmap = BitmapFactory.decodeFile(currPhotoFile.getAbsolutePath());
+                                receiptImageView.setImageBitmap(myBitmap);
                             } catch (Exception e) {
                                 Log.d(TAG, "onActivityResult: " + e.toString());
                             }
@@ -196,6 +208,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
             }
         });
 
+        // Add StartActivityForResult callbacks for Gallery launcher intent
         galleryResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -222,6 +235,10 @@ public class UploadReceiptActivity extends AppCompatActivity {
                                         UploadReceiptActivity.this,
                                         "Chose a picture from the gallery",
                                         Toast.LENGTH_SHORT).show();
+                                selectPhotoTextView.setVisibility(View.GONE);
+                                receiptImageView.setVisibility(View.VISIBLE);
+                                Bitmap myBitmap = BitmapFactory.decodeFile(currPhotoFile.getAbsolutePath());
+                                receiptImageView.setImageBitmap(myBitmap);
                             } catch (Exception e) {
                                 Log.d(TAG, "onActivityResult: " + e.toString());
                             }
@@ -388,6 +405,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
         Creates a new Group Transaction by making a call to the API, can specify a callback.
          */
         uploadProgress.setVisibility(View.VISIBLE);
+        uploadReceiptButton.setVisibility(View.GONE);
         transactionController.parseReceipt(this.currPhotoFile).enqueue(
                 new Callback<Transaction>() {
                     @Override

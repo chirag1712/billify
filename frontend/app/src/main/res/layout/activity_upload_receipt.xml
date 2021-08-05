@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background = "@drawable/backgroundimage"
+    android:layout_marginTop="30dp"
+    android:background="@drawable/backgroundimage"
     tools:context=".activities.UploadReceiptActivity">
 
     <Button
@@ -14,10 +15,10 @@
         android:text="@string/take_photo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.2"
+        app:layout_constraintHorizontal_bias="0.200"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintVertical_bias="0.607" />
 
     <Button
         android:id="@+id/show_gallery"
@@ -29,7 +30,7 @@
         app:layout_constraintHorizontal_bias="0.8"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintVertical_bias="0.606" />
 
     <ProgressBar
         android:id="@+id/uploadProgressBar"
@@ -39,40 +40,40 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.500"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/upload_receipt_button"
-        app:layout_constraintVertical_bias="0.129"
+        app:layout_constraintTop_toBottomOf="@+id/take_photo"
+        app:layout_constraintVertical_bias="0.062"
         tools:visibility="visible" />
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="375dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/take_photo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/member_text_input"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/member_text_input"
+            android:layout_width="match_parent"
+            android:layout_height="66dp"
+            android:layout_weight="1"
+            android:hint="@string/transaction_name"
+            app:errorEnabled="true">
+
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/transaction_name_edit_text"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:hint="@string/transaction_name"
-                app:errorEnabled="true">
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textSize="16sp" />
 
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/transaction_name_edit_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:textSize="16sp" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/label_text_input_layout"
@@ -85,8 +86,7 @@
                 android:id="@+id/auto_complete_label_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="none"
-                />
+                android:inputType="none" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -102,8 +102,7 @@
                 android:id="@+id/auto_complete_groups_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="none"
-                />
+                android:inputType="none" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -113,7 +112,7 @@
         android:id="@+id/upload_receipt_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:foregroundGravity="center"
         android:gravity="center"
         android:text="@string/upload_receipt"
@@ -121,4 +120,35 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/take_photo" />
+
+    <ImageView
+        android:id="@+id/receipt_image_view"
+        android:layout_width="195dp"
+        android:layout_height="141dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/show_gallery"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        app:layout_constraintVertical_bias="0.66"
+        app:srcCompat="@drawable/circle"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/select_photo_textview"
+        android:layout_width="311dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="84dp"
+        android:fontFamily="@font/roboto"
+        android:gravity="center"
+        android:text="@string/select_photo_text"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/take_photo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        app:layout_constraintVertical_bias="0.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -74,4 +74,6 @@
 
     <string name="success_transaction_message">Successfully created new transaction!</string>
     <string name="transaction_name">Transaction Name: </string>
+
+    <string name="select_photo_text">Take a Photo or Select an Image and Then Click Upload</string>
 </resources>
