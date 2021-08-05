@@ -14,7 +14,7 @@ import com.frontend.billify.R;
 import com.frontend.billify.fragments.LoginFragment;
 import com.frontend.billify.persistence.Persistence;
 
-public class MainActivity extends AppCompatActivity implements NavigationHost {
+public class AuthenticationActivity extends AppCompatActivity implements NavigationHost {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
 
         // Auto-login
         if (Persistence.getUserId(this) != -1) {
-            startActivity(new Intent(MainActivity.this, HomepageActivity.class));
+            startActivity(new Intent(AuthenticationActivity.this, HomepageActivity.class));
         }
 
         if (savedInstanceState == null) {

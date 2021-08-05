@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.frontend.billify.R;
+import com.frontend.billify.activities.view_transactions.ViewTransactionsActivity;
 import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.persistence.Persistence;
@@ -27,6 +28,7 @@ public class HomepageActivity extends AppCompatActivity {
         Button view_group_button = findViewById(R.id.view_all_group);
         Button add_receipt_button = findViewById(R.id.add_receipt_button);
         Button create_group_button = findViewById(R.id.create_group_button);
+        Button view_transactions_button = findViewById(R.id.view_transactions_button);
         Button join_billify_session = findViewById(R.id.join_billify_session);
         Button logoutButton = findViewById(R.id.logout_button);
         RetrofitService retrofitService = new RetrofitService();
@@ -58,6 +60,14 @@ public class HomepageActivity extends AppCompatActivity {
             }
         });
 
+        view_transactions_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(HomepageActivity.this, ViewTransactionsActivity.class);
+                startActivity(intent);
+            }
+        });
+            
         join_billify_session.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,7 +111,7 @@ public class HomepageActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Persistence.clearLoginDetails(HomepageActivity.this);
-                Intent loginActivityIntent = new Intent(HomepageActivity.this, MainActivity.class);
+                Intent loginActivityIntent = new Intent(HomepageActivity.this, AuthenticationActivity.class);
                 startActivity(loginActivityIntent);
             }
         });

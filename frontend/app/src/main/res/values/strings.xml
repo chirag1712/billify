@@ -21,6 +21,8 @@
     <string name="view_all_group">  + View Groups</string>
     <string name="create_group">  + Create Group</string>
     <string name="add_receipt">  + Add Receipt</string>
+    <string name="view_transactions">  + View Transactions</string>
+    <string name="logout">  Logout</string>
     <string name="billify">  + Billify</string>
 
     <!--Create Group-->
@@ -34,6 +36,10 @@
     <!-- Upload Receipt -->
     <string name="take_photo">Take Photo</string>
     <string name="gallery">Gallery</string>
+
+    <!-- View transactions -->
+    <string name="label">Label</string>
+    <string name="back">Back</string>
 
     <!--  Edit Screens  -->
     <string-array name="items">
