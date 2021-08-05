@@ -8,9 +8,6 @@ public class Label {
     private int lid;
     private String label_name;
     private String label_color;
-//    private int tid;
-//    private String transaction_name;
-//    private float transaction_total;
     public static ArrayList<Label> uniqueLabels = new ArrayList<>();
 
     static {
