@@ -2,6 +2,7 @@ const { UserItem } = require("../models/item.model");
 const { UserTransaction } = require("../models/UserTransaction.model");
 const Transaction = require("../models/transaction.model.js");
 
+// ==== Data classes ====
 class UserInfo {
     constructor(uid, username) {
         this.uid = uid;
@@ -16,16 +17,24 @@ class UserPriceInfo {
     }
 }
 
+class ItemInfo {
+    constructor(price, userInfos) {
+        this.price = price;
+        this.userInfos = userInfos;
+    }
+}
+
+// ==== socket session state handler ====
 class Session {
     constructor() {
-        // TRANSACTION STATE
+        // ==== TRANSACTION STATE ====
         // stores tid to itemid to itemInfo (price and corresponding userInfos)
         this.tid2itemInfos = {};
 
         // stores tid to uid to price owed for that transaction
         this.tid2uid2userPriceInfo = {};
 
-        // SOCKET ROOM STATE
+        // ==== SOCKET ROOM STATE ====
         // socket id to uid (since disconnect only sends socket id)
         this.socketId2userInfo = {};
 
@@ -39,9 +48,9 @@ class Session {
     }
 
     // returns true if first user
-    async userJoin(socketId, uid, username, tid) {
-        this.socketId2userInfo[socketId] = new UserInfo(uid, username);
-        this.uid2Tid[uid] = tid;
+    async userJoin(socketId, userInfo, tid) {
+        this.socketId2userInfo[socketId] = userInfo;
+        this.uid2Tid[userInfo.uid] = tid;
         if (this.tid2num[tid]) {
             // not the first user to join the session
             this.tid2num[tid]++;
@@ -74,12 +83,12 @@ class Session {
         }
     }
 
-    userSelect(uid, username, tid, item_id) {
+    userSelect(userInfo, tid, item_id) {
         // subtract old price shares
         this.subtractOldPriceShare(tid, this.tid2itemInfos[tid][item_id]);
 
         // add the new user
-        this.tid2itemInfos[tid][item_id].userInfos.add(JSON.stringify(new UserInfo(uid, username)));
+        this.tid2itemInfos[tid][item_id].userInfos.add(JSON.stringify(userInfo));
         const itemInfo = this.tid2itemInfos[tid][item_id];
 
         // parse to JSONs before returning
@@ -91,11 +100,11 @@ class Session {
         return { priceShares, userInfoObjs };
     }
 
-    userDeselect(uid, username, tid, item_id) {
+    userDeselect(userInfo, tid, item_id) {
         // this should never happen
-        const userInfoStr = JSON.stringify(new UserInfo(uid, username));
+        const userInfoStr = JSON.stringify(userInfo);
         if (!this.tid2itemInfos[tid][item_id].userInfos.has(userInfoStr)) {
-            throw Error(uid + "can not deselect " + item_id + " because they didn't select it first");
+            throw Error(userInfo.uid + "can not deselect " + item_id + " because they didn't select it first");
         }
 
         // subtract old price shares

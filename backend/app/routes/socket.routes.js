@@ -45,9 +45,10 @@ class SocketHandler {
     // ==== IMPLEMENTATIONS of socket event handlers ====
     async handleStartSession(client, startSessionRequest) {
         const { uid: uid, username: username, tid: tid } = startSessionRequest;
+        const userInfo = new UserInfo(uid, username);
 
         console.log("startSession from uid =", uid, ", tid =", tid);
-        const state = await Session.userJoin(client.id, uid, username, tid);
+        const state = await Session.userJoin(client.id, userInfo, tid);
         client.join(tid); // socket room identified by tid
 
         // return state by emitting events to this client socket
@@ -57,9 +58,10 @@ class SocketHandler {
 
     handleSelectItem(client, selectItemRequest) {
         const { uid: uid, userName: username, tid: tid, item_id: item_id } = selectItemRequest;
+        const userInfo = new UserInfo(uid, username);
 
         // TODO: add validation s.t. user not in session cant do this
-        const obj = Session.userSelect(uid, username, tid, item_id);
+        const obj = Session.userSelect(userInfo, tid, item_id);
         console.log("selected ", item_id, " userInfos: ", obj.userInfoObjs);
 
         // broadcast to everyone in the room {item_id, userInfos}
@@ -71,9 +73,10 @@ class SocketHandler {
 
     handleDeselectItem(client, deselectItemRequest) {
         const { uid: uid, userName: username, tid: tid, item_id: item_id } = deselectItemRequest;
+        const userInfo = new UserInfo(uid, username);
 
         // TODO: add validation s.t. user not in session cant do this
-        const obj = Session.userDeselect(uid, username, tid, item_id);
+        const obj = Session.userDeselect(userInfo, tid, item_id);
         console.log("deselected ", item_id, " userInfos: ", obj.userInfoObjs);
 
         // broadcast to everyone in the room {item_id, userInfos}
