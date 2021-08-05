@@ -38,12 +38,9 @@ import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.models.Item;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.services.RetrofitService;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-<<<<<<< HEAD
-=======
-
 import com.google.android.material.textview.MaterialTextView;
->>>>>>> Add Transaction Name to top of Edit Screen
 
 import org.jetbrains.annotations.NotNull;
 
@@ -68,6 +65,7 @@ public class EditItemsActivity extends AppCompatActivity {
     ProgressBar createTransactionRequestProgressBar;
     Dialog successfulCreationTransactionPopup;
     MaterialTextView transactionNameTextView;
+    MaterialCardView transactionNameCardView;
 
     private final RetrofitService retrofitService = new RetrofitService();
     private final TransactionController transactionController = new TransactionController(retrofitService);
@@ -80,6 +78,7 @@ public class EditItemsActivity extends AppCompatActivity {
         createTransactionRequestProgressBar = findViewById(R.id.create_transaction_request_progress_bar);
         confirmButton = findViewById(R.id.confirm_items_button);
         addNewItemButton = findViewById(R.id.add_new_item_button);
+        transactionNameCardView = findViewById(R.id.transaction_name_edit_screen_cardview);
         successfulCreationTransactionPopup = new Dialog(this);
 
         // adding OnClick event listeners to buttons on this activity
@@ -266,38 +265,8 @@ public class EditItemsActivity extends AppCompatActivity {
                                 + currTransaction.getName()
                         );
 
-
-                        ImageView SuccessImageView = findViewById(R.id.create_transaction_success_animation);
-                        ImageView greenBackground = findViewById(R.id.green_background);
-                        recyclerView.setVisibility(View.GONE);
-                        greenBackground.setVisibility(View.VISIBLE);
-                        SuccessImageView.setVisibility(View.VISIBLE);
-                        AnimatedVectorDrawableCompat avd;
-                        AnimatedVectorDrawable avd2;
-
-                        Drawable drawable = SuccessImageView.getDrawable();
-                        if (drawable instanceof AnimatedVectorDrawableCompat) {
-                            avd = (AnimatedVectorDrawableCompat) drawable;
-                            avd.start();
-                        } else if (drawable instanceof AnimatedVectorDrawable) {
-                            avd2 = (AnimatedVectorDrawable) drawable;
-                            avd2.start();
-                        }
-
-                        confirmButton.setVisibility(View.GONE);
-                        addNewItemButton.setVisibility(View.GONE);
-                        final Handler handler = new Handler(Looper.getMainLooper());
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent moveBackToHomepageIntent = new Intent(
-                                        EditItemsActivity.this,
-                                        HomepageActivity.class
-                                );
-                                startActivity(moveBackToHomepageIntent);
-                            }
-                        }, 1000);
-
+                        showSuccessAnimation();
+                        moveBackToHomepageActivity(1000);
 
                     }
 
@@ -315,6 +284,58 @@ public class EditItemsActivity extends AppCompatActivity {
                 }
         );
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void showSuccessAnimation() {
+        /*
+        This method sets all elements on EditItemsActivity to GONE visibility
+        and animates a Success Tick animation. This method is intended to be called
+        when the API response for creating a transaction is successful
+         */
+        ImageView SuccessImageView = findViewById(R.id.create_transaction_success_animation);
+        ImageView greenBackground = findViewById(R.id.green_background);
+        recyclerView.setVisibility(View.GONE);
+        transactionNameTextView.setVisibility(View.GONE);
+        transactionNameTextView.setVisibility(View.GONE);
+        transactionNameCardView.setVisibility(View.GONE);
+        greenBackground.setVisibility(View.VISIBLE);
+        SuccessImageView.setVisibility(View.VISIBLE);
+        AnimatedVectorDrawableCompat avd;
+        AnimatedVectorDrawable avd2;
+
+        Drawable drawable = SuccessImageView.getDrawable();
+        if (drawable instanceof AnimatedVectorDrawableCompat) {
+            avd = (AnimatedVectorDrawableCompat) drawable;
+            avd.start();
+        } else if (drawable instanceof AnimatedVectorDrawable) {
+            avd2 = (AnimatedVectorDrawable) drawable;
+            avd2.start();
+        }
+
+        confirmButton.setVisibility(View.GONE);
+        addNewItemButton.setVisibility(View.GONE);
+    }
+
+    private void moveBackToHomepageActivity(int delay) {
+        /*
+        This method is called to move back to the Homepage Activity after
+        delay ms of delay.
+         */
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent moveBackToHomepageIntent = new Intent(
+                        EditItemsActivity.this,
+                        HomepageActivity.class
+                );
+                startActivity(moveBackToHomepageIntent);
+            }
+        }, delay);
+
+    }
+
+
 
 
     // Adding swipe left to delete functionality
