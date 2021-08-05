@@ -4,35 +4,53 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.frontend.billify.R;
+import com.frontend.billify.activities.edit_and_confirm_items.EditItemsActivity;
+import com.frontend.billify.adapters.LabelDropdownAdapter;
+import com.frontend.billify.controllers.GroupService;
 import com.frontend.billify.controllers.TransactionController;
+import com.frontend.billify.models.Label;
 import com.frontend.billify.models.Transaction;
+import com.frontend.billify.models.User;
+import com.frontend.billify.persistence.Persistence;
 import com.frontend.billify.services.RetrofitService;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import retrofit2.Call;
@@ -47,33 +65,72 @@ public class UploadReceiptActivity extends AppCompatActivity {
     private static final String TAG = UploadReceiptActivity.class.getName();
     private final RetrofitService retrofitService = new RetrofitService();
     private final TransactionController transactionController = new TransactionController(retrofitService);
+    private final GroupService groupService = new GroupService(retrofitService);
 
     private ProgressBar uploadProgress;
+    private EditText transactionNameEditText;
+    private TextView selectPhotoTextView;
+    private AutoCompleteTextView labelTextView;
+    private ArrayAdapter<String> labelArrayAdapter;
+
+    private AutoCompleteTextView groupTextView;
+    private ArrayAdapter<String> groupArrayAdapter;
+
+
+    private Button uploadReceiptButton;
+    private Button takePhotoButton;
+    private Button showGalleryButton;
 
     ActivityResultLauncher<Intent> cameraResultLauncher;
     ActivityResultLauncher<Intent> galleryResultLauncher;
+
+    private ImageView receiptImageView;
+
+    private User currUser;
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_receipt);
 
-        final Button takePhotoButton = findViewById(R.id.take_photo);
-        final Button showGalleryButton = findViewById(R.id.show_gallery);
-        final ProgressBar uploadProgress = findViewById(R.id.uploadProgressBar);
-        final Button editItemsButton = findViewById(R.id.edit_items_button);
 
-        this.uploadProgress = uploadProgress;
+        int uid = Persistence.getUserId(this);
+        getUserGroups(uid);
 
-        editItemsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(UploadReceiptActivity.this, EditItemsActivity.class);
-                startActivity(intent);
-            }
-        });
+        takePhotoButton = findViewById(R.id.take_photo);
+        showGalleryButton = findViewById(R.id.show_gallery);
+        uploadProgress = findViewById(R.id.uploadProgressBar);
+        uploadReceiptButton = findViewById(R.id.upload_receipt_button);
+        transactionNameEditText = findViewById(R.id.transaction_name_edit_text);
+        labelTextView = findViewById(R.id.auto_complete_label_text_view);
+        receiptImageView = findViewById(R.id.receipt_image_view);
+        selectPhotoTextView = findViewById(R.id.select_photo_textview);
 
+        // Add Label dropdown
+        LabelDropdownAdapter labelDropdownAdapter = new LabelDropdownAdapter(
+                this,
+                Label.getUniqueLabels()
+        );
 
+        labelTextView.setAdapter(labelDropdownAdapter);
+        // Set default Label in dropdown
+        labelTextView.setText(labelDropdownAdapter.getItem(0).toString(), false);
+
+        // Set default Transaction Name
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm");
+        Date date = new Date(System.currentTimeMillis());
+        String defaultTransactionName = "Transaction " + formatter.format(date);
+        transactionNameEditText.setText(defaultTransactionName);
+
+        // Add on click listeners for buttons on this activity
+        addCameraButtonClickListener();
+        addGalleryButtonClickListener();
+        addUploadButtonClickListener();
+    }
+
+    private void addCameraButtonClickListener() {
         takePhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,6 +164,33 @@ public class UploadReceiptActivity extends AppCompatActivity {
             }
         });
 
+        // Add StartActivityForResult callbacks for Camera launcher intent
+        cameraResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            try {
+                                Toast.makeText(
+                                        UploadReceiptActivity.this,
+                                        "Chose a picture from the camera",
+                                        Toast.LENGTH_SHORT).show();
+                                selectPhotoTextView.setVisibility(View.GONE);
+                                receiptImageView.setVisibility(View.VISIBLE);
+                                Bitmap myBitmap = BitmapFactory.decodeFile(currPhotoFile.getAbsolutePath());
+                                receiptImageView.setImageBitmap(myBitmap);
+                            } catch (Exception e) {
+                                Log.d(TAG, "onActivityResult: " + e.toString());
+                            }
+                        }
+                    }
+                }
+        );
+
+    }
+
+    private void addGalleryButtonClickListener() {
         showGalleryButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -124,23 +208,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
             }
         });
 
-        cameraResultLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        if (result.getResultCode() == Activity.RESULT_OK) {
-                            try {
-                                uploadProgress.setVisibility(View.VISIBLE);
-                                parseReceipt(Integer.parseInt(getIntent().getStringExtra("gid")));
-                            } catch (Exception e) {
-                                Log.d(TAG, "onActivityResult: " + e.toString());
-                            }
-                        }
-                    }
-                }
-        );
-
+        // Add StartActivityForResult callbacks for Gallery launcher intent
         galleryResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -162,9 +230,15 @@ public class UploadReceiptActivity extends AppCompatActivity {
                                 copyStream(inputStream, outputStream);
                                 outputStream.close();
                                 inputStream.close();
-                                uploadProgress.setVisibility(View.VISIBLE);
                                 System.out.println("In upload image ");
-                                parseReceipt(Integer.parseInt(getIntent().getStringExtra("gid")));
+                                Toast.makeText(
+                                        UploadReceiptActivity.this,
+                                        "Chose a picture from the gallery",
+                                        Toast.LENGTH_SHORT).show();
+                                selectPhotoTextView.setVisibility(View.GONE);
+                                receiptImageView.setVisibility(View.VISIBLE);
+                                Bitmap myBitmap = BitmapFactory.decodeFile(currPhotoFile.getAbsolutePath());
+                                receiptImageView.setImageBitmap(myBitmap);
                             } catch (Exception e) {
                                 Log.d(TAG, "onActivityResult: " + e.toString());
                             }
@@ -172,9 +246,38 @@ public class UploadReceiptActivity extends AppCompatActivity {
                     }
                 }
         );
-
     }
 
+    private void addUploadButtonClickListener() {
+
+        uploadReceiptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String transactionName = transactionNameEditText.getText().toString().trim();
+                if (transactionName.equals("")) {
+                    Toast.makeText(
+                            UploadReceiptActivity.this,
+                            "Add a Transaction Name",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (UploadReceiptActivity.this.currPhotoFile == null) {
+                    Toast.makeText(
+                            UploadReceiptActivity.this,
+                            "Pick a photo first",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+
+                }
+
+                uploadAndParseReceipt();
+            }
+        });
+    }
+
+
+    // Below are camera and gallery related helper methods
     private Uri getPhotoURI(File photoFile) {
         /*
         Gets PhotoURI for a given File
@@ -193,68 +296,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
             return true;
         }
         return false;
-    }
-
-    private void parseReceipt(
-            int gid
-    ) {
-        /*
-        Creates a new Group Transaction by making a call to the API, can specify a callback.
-         */
-        transactionController.parseReceipt(
-                gid,
-                this.currPhotoFile
-        ).enqueue(new Callback<Transaction>() {
-
-            @Override
-            public void onResponse(Call<Transaction> call, Response<Transaction> response) {
-                uploadProgress.setVisibility(View.GONE);
-                if (!response.isSuccessful()) {
-                    try {
-                        Toast parseReceiptErrorToast = Toast.makeText(
-                                UploadReceiptActivity.this,
-                                "Couldn't Parse Receipt",
-                                Toast.LENGTH_SHORT
-                        );
-                        parseReceiptErrorToast.show();
-                        System.out.println("Error code onResponse "
-                                + response.code()
-                                + " "
-                                + response.errorBody().string());
-                    } catch (Exception e) {
-                        System.out.println(
-                                "Exception occurred during response callback from receipt parser API: "
-                                        + e);
-                    }
-                    return;
-                }
-                Transaction currTransaction = new Transaction(response.body());
-                currTransaction.setCurrPhotoFile(UploadReceiptActivity.this.currPhotoFile);
-                System.out.println("Successful upload request with return value: "
-                        + currTransaction.getName()
-                );
-                Intent moveToEditAndConfirmItemsActivityIntent = new Intent(
-                        UploadReceiptActivity.this,
-                        EditItemsActivity.class
-                );
-                Bundle transactionBundle = new Bundle();
-                transactionBundle.putSerializable("SerializedTransaction", currTransaction);
-                moveToEditAndConfirmItemsActivityIntent.putExtra(
-                        "TransactionBundle",
-                        transactionBundle
-                        );
-                startActivity(moveToEditAndConfirmItemsActivityIntent);
-
-            }
-
-            @Override
-            public void onFailure(Call<Transaction> call, Throwable t) {
-                uploadProgress.setVisibility(View.GONE);
-                System.out.println("Error: " + t.getMessage());
-                Toast.makeText(UploadReceiptActivity.this, "Failed Parsing Receipt since API request failed", Toast.LENGTH_SHORT).show();
-                t.printStackTrace();
-            }
-        });
     }
 
     private void requestCameraPermission() {
@@ -288,8 +329,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
     }
 
 
-
-
     private void copyStream(InputStream inputStream, FileOutputStream outputStream) throws IOException {
         /*
         A method to copy data from an input stream to a file output stream
@@ -301,5 +340,166 @@ public class UploadReceiptActivity extends AppCompatActivity {
             outputStream.write(buffer, 0, bytesRead);
         }
     }
+
+
+    private void getUserGroups(int uid) {
+        // A method that makes a GET request to get user's groups
+        groupService.getGroups(uid).enqueue(new Callback<User>() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (!response.isSuccessful()) {
+                    try {
+                        Toast.makeText(
+                                UploadReceiptActivity.this,
+                                "Couldn't get user Groups successful response from API",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        System.out.println("Error code onResponse "
+                                + response.code()
+                                + " "
+                                + response.errorBody().string());
+                    } catch (Exception e) {
+                        System.out.println(
+                                "Exception occurred during response callback from API request to user groups: "
+                                        + e);
+                    }
+                    return;
+                }
+                currUser = response.body(); // only userId is returned
+                updateGroupDropdownOfCurrUser(); // updates UI Group dropdown of current User
+            }
+
+            @Override
+            public void onFailure(@NotNull Call<User> call, @NotNull Throwable t) {
+                Toast.makeText(
+                        UploadReceiptActivity.this,
+                        "Failed to make API request for getting Groups",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void updateGroupDropdownOfCurrUser() {
+        /*
+        This method is called when the Activity receives the current user's groups from the backend
+        API request.
+         */
+        ArrayList<String> groupNames = currUser.getGroupNames();
+        currUser.initGroupNameToGidMap();
+        groupTextView = findViewById(R.id.auto_complete_groups_text_view);
+        groupArrayAdapter = new ArrayAdapter<>(
+                UploadReceiptActivity.this,
+                R.layout.list_group,
+                groupNames
+        );
+
+        groupTextView.setAdapter(groupArrayAdapter);
+        String firstGroupName = groupArrayAdapter.getItem(0).toString();
+        groupTextView.setText(firstGroupName, false);
+    }
+
+    public void uploadAndParseReceipt() {
+        /*
+        Creates a new Group Transaction by making a call to the API, can specify a callback.
+         */
+        uploadProgress.setVisibility(View.VISIBLE);
+        uploadReceiptButton.setVisibility(View.GONE);
+        transactionController.parseReceipt(this.currPhotoFile).enqueue(
+                new Callback<Transaction>() {
+                    @Override
+                    public void onResponse(@NotNull Call<Transaction> call, @NotNull Response<Transaction> response) {
+                        Transaction parsedItemsTransaction = new Transaction();
+                        uploadProgress.setVisibility(View.GONE);
+                        if (!response.isSuccessful()) {
+                            try {
+                                System.out.println("Error code onResponse "
+                                        + response.code()
+                                        + " "
+                                        + response.errorBody().string());
+                            } catch (Exception e) {
+                                System.out.println(
+                                        "Exception occurred during response callback from receipt parser API: "
+                                                + e);
+                            }
+                        } else {
+                            if (response.body() == null) {
+                                Toast.makeText(
+                                        UploadReceiptActivity.this,
+                                        "Parse Receipt Response body is null",
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            parsedItemsTransaction = response.body();
+                        }
+                        /* NOTE: createNewTransactionFromParsedItems creates a new Transaction
+                        that fills parsedItemsTransaction with gid, label_id and other information.
+                         */
+                        parsedItemsTransaction = createNewTransactionFromParsedItems(
+                                parsedItemsTransaction
+                        );
+                        moveToEditItemsActivity(parsedItemsTransaction);
+                    }
+
+                    @Override
+                    public void onFailure(@NotNull Call<Transaction> call, @NotNull Throwable t) {
+                        uploadProgress.setVisibility(View.GONE);
+                        System.out.println("Error: " + t.getMessage());
+                        Toast.makeText(
+                                UploadReceiptActivity.this,
+                                "Failed Parsing Receipt since API request failed",
+                                Toast.LENGTH_SHORT).show();
+                        t.printStackTrace();
+                    }
+                });
+    }
+
+    private Transaction createNewTransactionFromParsedItems(Transaction parsedItemsTransaction) {
+        /*
+        parsedItemsTransaction is the response from the API that only contains parsed items.
+        We create a new transaction from it and populate it with extra fields such as
+        gid, transaction name and label id.
+         */
+
+        /* We call copy constructor since parsedItemsTransaction argument is constructed
+         using gson library when it is assigned to response.body(). The GSON library
+         skips the developer-defined constructors and builds the parsedItemsTransaction object
+         via reflection:
+         https://stackoverflow.com/questions/40441460/does-googles-gson-use-constructors.
+         */
+        Transaction newTransaction = new Transaction(parsedItemsTransaction);
+        newTransaction.setGid(currUser.getGidFromGroupName(groupTextView.getText().toString()));
+        String transactionName = transactionNameEditText.getText().toString().trim();
+        newTransaction.setTransaction_name(transactionName);
+        newTransaction.setCurrPhotoFile(UploadReceiptActivity.this.currPhotoFile);
+        System.out.println("Successful upload request with return value: "
+                + newTransaction.getName()
+        );
+        newTransaction.setLabel_id(labelTextView.getText().toString());
+        return newTransaction;
+    }
+
+    private void moveToEditItemsActivity(Transaction newTransactionWithParsedItems) {
+        /*
+        This method is called after getting parsed receipt items and it moves the newly created
+        transaction from the parsed items onto the EditItemsActivity where the user can edit
+        the items.
+         */
+        Intent moveToEditAndConfirmItemsActivityIntent = new Intent(
+                UploadReceiptActivity.this,
+                EditItemsActivity.class
+        );
+        Bundle transactionBundle = new Bundle();
+        transactionBundle.putSerializable("SerializedTransaction", newTransactionWithParsedItems);
+        moveToEditAndConfirmItemsActivityIntent.putExtra(
+                "TransactionBundle",
+                transactionBundle
+        );
+        uploadReceiptButton.setVisibility(View.VISIBLE);
+        startActivity(moveToEditAndConfirmItemsActivityIntent);
+
+    }
+
 
 }

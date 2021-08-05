@@ -7,15 +7,8 @@ receiptParser = new TransactionService.ReceiptParser();
 const parseReceipt = async (request, response) => {
     if ((request.files) && (request.files["file"])) {
         try {
-            // console.log(request.files["file"].name);
             const imgData = request.files["file"]["data"];
-            const gid = request.body["gid"];
-            if (gid === undefined) {
-                return response.status(500).send({error: "Error: gid (Group ID) has not been provided in POST request"})
-            }
-            const transactionName = request.body["transaction_name"];
             const parsedReceiptJson = await receiptParser.parseReceiptData(imgData);
-            parsedReceiptJson["gid"] = gid;
             console.log("Parsed receipt:");
             console.log(parsedReceiptJson);
             return response.send(parsedReceiptJson);
@@ -30,21 +23,35 @@ const parseReceipt = async (request, response) => {
 const createNewTransaction = async (request, response) => {
     try {
         if ((request.body) && (request.files)) {
-            // const gid = request.body["gid"];
             console.log(request.files);
             const parsedReceiptJsonString = request.body["transaction_details"];
             // NOTE: Sending JSON as string through mobile since we want to send image + JSON data in same request
             const parsedReceiptJson = JSON.parse(parsedReceiptJsonString); 
+
             const imgData = request.files["file"]["data"];
-            // console.log(parsedReceiptJson.gid);
-            console.log(parsedReceiptJson["gid"]);
+            const gid = parsedReceiptJson["gid"];
+            const transactionName = parsedReceiptJson["transaction_name"];
+            const transactionLabelId = parsedReceiptJson["label_id"];
+
+            if (
+                (gid === undefined) || 
+                (transactionName === undefined) || 
+                (transactionLabelId === undefined)
+                ) {
+                return response.status(500).send({
+                    error: "Error: gid (Group ID) or transactionName or labelId has not been provided in POST request"
+                });
+            }
+            
             jsonResponse = await TransactionService.insertTransactionsAndItemsToDB(
-                parsedReceiptJson["gid"], 
-                parsedReceiptJson["transaction_name"],
+                gid, 
+                transactionName,
+                transactionLabelId,
                 imgData,
                 request.files["file"].name,
                 parsedReceiptJson
             );
+
             console.log("Final JSON response:");
             console.log(jsonResponse);
             

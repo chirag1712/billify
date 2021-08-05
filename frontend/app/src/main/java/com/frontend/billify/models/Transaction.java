@@ -1,23 +1,60 @@
 package com.frontend.billify.models;
 
+import android.telephony.gsm.GsmCellLocation;
+
+import com.google.gson.Gson;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Transaction implements Serializable {
     private int tid;
     private int gid;
     private String t_date;
     private String t_state;
-    // TODO: Let DB Schema be fixed and cross-reference names with DB
     private String receipt_img; // NOTE: receipt_img is a URL to the image
     private String transaction_name;
     private ArrayList<Item> items;
+    private int label_id;
 
     /* currPhotoFile is used to store the chosen picture and send it to backend for parsing receipt
     or creating a new transaction
     */
+
+    // Static because all transactions share same label mapping
+    static final HashMap<String, Integer> labelNameToLabelId = new HashMap<>();
+    public static final ArrayList<String> labelNames = new ArrayList<>();
+
+    static {
+        labelNames.add("Unlabelled");
+        labelNameToLabelId.put("Unlabelled", 1);
+
+        labelNames.add("Food");
+        labelNameToLabelId.put("Food", 2);
+
+        labelNames.add("Entertainment");
+        labelNameToLabelId.put("Entertainment", 3);
+
+        labelNames.add("Groceries");
+        labelNameToLabelId.put("Groceries", 4);
+
+        labelNames.add("Shopping");
+        labelNameToLabelId.put("Shopping", 5);
+
+        labelNames.add("Electronics");
+        labelNameToLabelId.put("Electronics", 6);
+
+        labelNames.add("Housing");
+        labelNameToLabelId.put("Housing", 7);
+
+    }
+
+
     private File currPhotoFile;
+
+
     public Transaction(int tid, int gid, String t_date, String t_state,
                        String transaction_name, String receipt_img) {
         this.tid = tid;
@@ -27,6 +64,10 @@ public class Transaction implements Serializable {
         this.items = new ArrayList<Item>();
         this.transaction_name = transaction_name;
         this.receipt_img = receipt_img;
+    }
+
+    public Transaction() {
+        this.items = new ArrayList<Item>();
     }
 
     public Transaction(Transaction t) {
@@ -81,18 +122,9 @@ public class Transaction implements Serializable {
     }
 
     public String getTransactionJSONString() {
-        String jsonString = "{\"gid\": " + gid + ",";
-        jsonString += "\"items\": [";
-        for (Item item: items) {
-            jsonString += "{" + "\"name\": " + "\"" + item.getName() + "\"" + ", \"price\": " + item.getStrPrice() + "},";
-        }
-        if (jsonString.charAt(jsonString.length() - 1) == ',') {
-            jsonString = jsonString.substring(0, jsonString.length() - 1);
-        }
-        jsonString += "]}";
-
-        return jsonString;
-
+        Gson gson = new Gson();
+        String json = gson.toJson(this);
+        return json;
     }
 
     public File getCurrPhotoFile() {
@@ -102,4 +134,26 @@ public class Transaction implements Serializable {
     public void setCurrPhotoFile(File currPhotoFile) {
         this.currPhotoFile = currPhotoFile;
     }
+
+    public void setTransaction_name(String transactionName) {
+        this.transaction_name = transactionName;
+    }
+
+    public void setGid(int gid) {
+        this.gid = gid;
+    }
+
+    public int getLabel_id() {
+        return label_id;
+    }
+
+    public void setLabel_id(int label_id) {
+        this.label_id = label_id;
+    }
+
+    public void setLabel_id(String labelName) {
+        this.label_id = labelNameToLabelId.get(labelName);
+        System.out.println("Label ID is: " + String.valueOf(this.label_id));
+    }
+
 }
