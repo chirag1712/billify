@@ -496,6 +496,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
                 "TransactionBundle",
                 transactionBundle
         );
+        uploadReceiptButton.setVisibility(View.VISIBLE);
         startActivity(moveToEditAndConfirmItemsActivityIntent);
 
     }
