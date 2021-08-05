@@ -127,13 +127,10 @@ class Session {
         const { uid } = this.socketId2userInfo[socketId];
         const tid = this.uid2Tid[uid];
         if (this.tid2num[tid] == 1) {
-            console.log("last user leaving");
-            // TODO: persist to db latest state
-            // option 1: flush userItems for tid and push server state
-            // option 2: search if useritem exists in db and not in state: delete 
-            //      and if useritem does not exist in db but in state: insert
+            console.log("Last user leaving...");
 
-            // using option 1 for now
+            // persisting user item selections to DB by flushing userItems
+            //  for this tid and pushing current server state
             await UserItem.deleteAll(tid);
             Object.entries(this.tid2itemInfos[tid]).forEach(([item_id, { price, userInfos }]) => {
                 userInfos.forEach((userInfoString) => {
@@ -143,13 +140,13 @@ class Session {
                 });
             });
 
-            // TODO: persist price shares to db
+            // persisting price shares to DB
             Object.entries(this.tid2uid2userPriceInfo[tid]).forEach(([uidStr, userPriceInfo]) => {
                 UserTransaction.updatePriceShare(tid, uidStr, userPriceInfo.price_share);
             })
 
             // clearing socket state
-            // might not need to clear it as it can save db trip later
+            // optional TODO: modify s.t. state can be fetched from session when available
             delete this.tid2itemInfos[tid];
         }
 
@@ -164,7 +161,9 @@ class Session {
     //      price_shares: {[uid] -> userPriceInfo}, 
     //      items: [{item_id, userInfos}]
     // }
+
     getState(tid) {
+        /* gets current state */
         const state = { items: [], price_shares: {} };
         Object.entries(this.tid2itemInfos[tid]).forEach(([item_id, { price, userInfos }]) => {
             const arr = [];
@@ -180,8 +179,8 @@ class Session {
         return state;
     }
 
-    // returns new state
     async setState(tid, itemId2itemInfo) {
+        /* sets current state based on given parameters from DB */
         const state = { items: [], price_shares: {} };
         if (!this.tid2itemInfos[tid]) {
             this.tid2itemInfos[tid] = {};
