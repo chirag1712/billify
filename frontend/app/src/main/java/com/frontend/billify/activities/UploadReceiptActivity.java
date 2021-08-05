@@ -105,16 +105,23 @@ public class UploadReceiptActivity extends AppCompatActivity {
         transactionNameEditText = findViewById(R.id.transaction_name_edit_text);
         labelTextView = findViewById(R.id.auto_complete_label_text_view);
 
-        // Add Labels
+        // Add Label dropdown
         LabelDropdownAdapter labelDropdownAdapter = new LabelDropdownAdapter(
                 this,
                 Label.getUniqueLabels()
         );
+
         labelTextView.setAdapter(labelDropdownAdapter);
+        // Set default Label in dropdown
         labelTextView.setText(labelDropdownAdapter.getItem(0).toString(), false);
 
+        // Set default Transaction Name
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm");
+        Date date = new Date(System.currentTimeMillis());
+        String defaultTransactionName = "Transaction " + formatter.format(date);
+        transactionNameEditText.setText(defaultTransactionName);
 
-        // Add on click listeners for buttons
+        // Add on click listeners for buttons on this activity
         addEditButtonClickListener();
         addCameraButtonClickListener();
         addGalleryButtonClickListener();
@@ -361,26 +368,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
                     return;
                 }
                 currUser = response.body(); // only userId is returned
-                ArrayList<String> groupNames = currUser.getGroupNames();
-
-                currUser.initGroupNameToGidMap();
-
-                groupTextView = findViewById(R.id.auto_complete_groups_text_view);
-
-                groupArrayAdapter = new ArrayAdapter<>(
-                        UploadReceiptActivity.this,
-                        R.layout.list_group,
-                        groupNames
-                );
-
-                groupTextView.setAdapter(groupArrayAdapter);
-                String firstGroupName = groupArrayAdapter.getItem(0).toString();
-                groupTextView.setText(firstGroupName, false);
-
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm z");
-                Date date = new Date(System.currentTimeMillis());
-                String defaultTransactionName = "New Transaction " + formatter.format(date);
-                transactionNameEditText.setText(defaultTransactionName);
+                updateGroupDropdownOfCurrUser(); // updates UI Group dropdown of current User
             }
 
             @Override
@@ -393,6 +381,26 @@ public class UploadReceiptActivity extends AppCompatActivity {
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void updateGroupDropdownOfCurrUser() {
+        /*
+        This method is called when the Activity receives the current user's groups from the backend
+        API request.
+         */
+        ArrayList<String> groupNames = currUser.getGroupNames();
+        currUser.initGroupNameToGidMap();
+        groupTextView = findViewById(R.id.auto_complete_groups_text_view);
+        groupArrayAdapter = new ArrayAdapter<>(
+                UploadReceiptActivity.this,
+                R.layout.list_group,
+                groupNames
+        );
+
+        groupTextView.setAdapter(groupArrayAdapter);
+        String firstGroupName = groupArrayAdapter.getItem(0).toString();
+        groupTextView.setText(firstGroupName, false);
+    }
+
     public void uploadAndParseReceipt() {
         /*
         Creates a new Group Transaction by making a call to the API, can specify a callback.
@@ -402,7 +410,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
                 new Callback<Transaction>() {
                     @Override
                     public void onResponse(@NotNull Call<Transaction> call, @NotNull Response<Transaction> response) {
-                        Transaction currTransaction = new Transaction();
+                        Transaction parsedItemsTransaction = new Transaction();
                         uploadProgress.setVisibility(View.GONE);
                         if (!response.isSuccessful()) {
                             try {
@@ -423,29 +431,11 @@ public class UploadReceiptActivity extends AppCompatActivity {
                                         Toast.LENGTH_SHORT).show();
                                 return;
                             }
-                            currTransaction = new Transaction(response.body());
+                            Transaction newTransactionWithParsedItems = createNewTransactionWithParsedItems(
+                                    response.body()
+                            );
+                            moveToEditItemsActivity(newTransactionWithParsedItems);
                         }
-                        currTransaction.setGid(currUser.getGidFromGroupName(groupTextView.getText().toString()));
-                        String transactionName = transactionNameEditText.getText().toString().trim();
-                        // TODO: Possible problem when user edits Transaction Name after uploading receipt?
-                        currTransaction.setTransaction_name(transactionName);
-                        currTransaction.setCurrPhotoFile(UploadReceiptActivity.this.currPhotoFile);
-                        System.out.println("Successful upload request with return value: "
-                                + currTransaction.getName()
-                        );
-                        currTransaction.setLabel_id(labelTextView.getText().toString());
-
-                        Intent moveToEditAndConfirmItemsActivityIntent = new Intent(
-                                UploadReceiptActivity.this,
-                                EditItemsActivity.class
-                        );
-                        Bundle transactionBundle = new Bundle();
-                        transactionBundle.putSerializable("SerializedTransaction", currTransaction);
-                        moveToEditAndConfirmItemsActivityIntent.putExtra(
-                                "TransactionBundle",
-                                transactionBundle
-                        );
-                        startActivity(moveToEditAndConfirmItemsActivityIntent);
 
                     }
 
@@ -461,5 +451,45 @@ public class UploadReceiptActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    private Transaction createNewTransactionWithParsedItems(Transaction parsedItemsTransaction) {
+        /*
+        parsedItemsTransaction is the response from the API that only contains parsed items.
+        We create a new transaction from it and populate it with extra fields such as
+        gid, transaction name and label id.
+         */
+        Transaction newTransaction = new Transaction(parsedItemsTransaction);
+        newTransaction.setGid(currUser.getGidFromGroupName(groupTextView.getText().toString()));
+        String transactionName = transactionNameEditText.getText().toString().trim();
+        // TODO: Possible problem when user edits Transaction Name after uploading receipt?
+        newTransaction.setTransaction_name(transactionName);
+        newTransaction.setCurrPhotoFile(UploadReceiptActivity.this.currPhotoFile);
+        System.out.println("Successful upload request with return value: "
+                + newTransaction.getName()
+        );
+        newTransaction.setLabel_id(labelTextView.getText().toString());
+        return newTransaction;
+    }
+
+    private void moveToEditItemsActivity(Transaction newTransactionWithParsedItems) {
+        /*
+        This method is called after getting parsed receipt items and it moves the newly created
+        transaction from the parsed items onto the EditItemsActivity where the user can edit
+        the items.
+         */
+        Intent moveToEditAndConfirmItemsActivityIntent = new Intent(
+                UploadReceiptActivity.this,
+                EditItemsActivity.class
+        );
+        Bundle transactionBundle = new Bundle();
+        transactionBundle.putSerializable("SerializedTransaction", newTransactionWithParsedItems);
+        moveToEditAndConfirmItemsActivityIntent.putExtra(
+                "TransactionBundle",
+                transactionBundle
+        );
+        startActivity(moveToEditAndConfirmItemsActivityIntent);
+
+    }
+
 
 }
