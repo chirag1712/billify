@@ -28,26 +28,23 @@ class ItemInfo {
 class Session {
     constructor() {
         // ==== TRANSACTION STATE ====
-        // stores tid to itemid to itemInfo (price and corresponding userInfos)
+        // stores tid to itemid to itemInfo
         this.tid2itemInfos = {};
 
-        // stores tid to uid to price owed for that transaction
+        // stores tid to uid to userPriceInfo
         this.tid2uid2userPriceInfo = {};
 
         // ==== SOCKET ROOM STATE ====
-        // socket id to uid (since disconnect only sends socket id)
+        // socket id to userInfo (since disconnect only sends socket id)
         this.socketId2userInfo = {};
 
-        // tid to number of connections
-        // to check if last user left
+        // tid to number of connections (to check if last user left)
         this.tid2num = {};
 
-        // only one active billify session per user
-        // need this to check num connections on disconnect
+        // maps uid to tid for a session
         this.uid2Tid = {};
     }
 
-    // returns true if first user
     async userJoin(socketId, userInfo, tid) {
         this.socketId2userInfo[socketId] = userInfo;
         this.uid2Tid[userInfo.uid] = tid;
@@ -60,7 +57,7 @@ class Session {
         }
 
         // first user to join the session, fetch state from db
-        // optional todo: modify s.t. fetch from session when available
+        // optional TODO: modify s.t. fetch from session when available
         this.tid2num[tid] = 1;
         try {
             const itemInfos = {};
@@ -163,9 +160,9 @@ class Session {
     }
 
     // STATE MANAGEMENT
-    // STATE: {
-    //      price_shares: {[uid] -> {userName, price_share}}, 
-    //      items: [{item_id, price, uids: [uid]}]
+    // state: {
+    //      price_shares: {[uid] -> userPriceInfo}, 
+    //      items: [{item_id, userInfos}]
     // }
     getState(tid) {
         const state = { items: [], price_shares: {} };
