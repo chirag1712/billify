@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS Transaction (
     tid INT NOT NULL AUTO_INCREMENT,
     gid INT NOT NULL,
     transaction_name VARCHAR(200) NOT NULL,
-    receipt_img BLOB NOT NULL,
+    receipt_img VARCHAR(500) NOT NULL,
     t_date DATE NOT NULL,
     t_state ENUM('NOT_STARTED', 'IN_PROGRESS', 'APPROVED'),
     PRIMARY KEY (tid),
@@ -55,8 +55,26 @@ CREATE TABLE IF NOT EXISTS UserItem (
 CREATE TABLE IF NOT EXISTS UserTransaction (
     tid INT NOT NULL,
     uid INT NOT NULL,
-    label VARCHAR(255) NOT NULL,
+    label_id INT NOT NULL,
     PRIMARY KEY (tid, uid),
     FOREIGN KEY (uid) REFERENCES User(uid),
-    FOREIGN KEY (tid) REFERENCES Transaction(tid)
+    FOREIGN KEY (tid) REFERENCES Transaction(tid),
+    FOREIGN KEY (label_id) REFERENCES Label(label_id)
 );
+
+CREATE TABLE IF NOT EXISTS Label (
+    label_id INT NOT NULL,
+    label_name VARCHAR(255) NOT NULL,
+    label_color VARCHAR(255) NOT NULL,
+    PRIMARY KEY (label_id)
+);
+
+INSERT INTO Label (label_id, label_name, label_color)
+VALUES
+(1, "Unlabelled", "#F0A500"),
+(2, "Food", "#FF4848"),
+(3,"Entertainment", "#035397"),
+(4, "Groceries", "#1EAE98"),
+(5, "Shopping", "#334756"),
+(6, "Electronics", "#D62AD0"),
+(7, "Housing", "#6930C3");

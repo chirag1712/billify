@@ -1,5 +1,7 @@
 const sql = require("./db.js");
 const {Group, MemberOf} = require("./group.model.js");
+
+
 class TransactionModel {
 
     constructor(gid) {
@@ -8,19 +10,14 @@ class TransactionModel {
         }
     }
 
-    async createTransaction(gid, transaction_name, receiptImgData) {
+    async createTransaction(gid, transactionName, receiptImgS3URI) {
         this.gid = gid;
-        this.receipt_img = receiptImgData;
+        this.receipt_img = receiptImgS3URI;
         let currDateTime = new Date();
         this.t_date = currDateTime.toISOString().slice(0, 10);
-        const currDateTimeStr = currDateTime.toISOString().slice(0, 16).split("T").join(" ");
         this.t_state = "NOT_STARTED";
-        const groupDetails = await Group.getGroupDetails(gid);
-        const groupName = groupDetails[0].group_name;
-        // TODO: Get better default transaction Name
-        // TODO: Default Transaction name is the String concatenation of group name and DateTime.
-        this.transaction_name = transaction_name ? transaction_name : groupName + " " + currDateTimeStr;
-        console.log(this.transaction_name);
+        // NOTE: Default Transaction name is the String concatenation of group name and DateTime.
+        this.transaction_name = transactionName;
         return new Promise((resolve, reject) => {
             sql.query("INSERT INTO Transaction SET ?", 
             this, (err, res) => {
@@ -39,7 +36,6 @@ class TransactionModel {
     }
 
     
-
     getTransactionsForGroup(gid) {
         if (gid !== undefined) {
             return new Promise((resolve, reject) => {
@@ -78,6 +74,22 @@ class TransactionModel {
         }
     }
 
+    static findTransaction(tid) {
+        if (tid !== undefined) {
+            return new Promise((resolve, reject) => {
+                sql.query("SELECT * FROM Transaction WHERE tid = ?",
+                    tid, (err, res) => {
+                        if (err) {
+                            console.log("error: ", err);
+                            reject(err);
+                        }
+                        resolve(res[0]);
+                    });
+            });
+        } else {
+            throw Error("tid is undefined");
+        }
+    }
 }
 
 module.exports = TransactionModel;

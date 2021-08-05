@@ -6,13 +6,14 @@
     <string name="hint_password">Password</string>
     <string name="login_name">Billify.</string>
     <string name="button_next">Next</string>
+    <string name="button_login">Log In</string>
     <string name="button_cancel">Cancel</string>
     <string name="error_password">Password must contain at least 8 characters.</string>
-    <string name="error_username">Username must not be empty.</string>
 
     <!--Register Fragment-->
     <string name="hint_username">Username</string>
     <string name="error_email">Email must not be empty.</string>
+    <string name="error_username">Username must not be empty.</string>
     <string name="button_signup">Sign Up</string>
     <string name="welcome">Welcome</string>
 
@@ -20,15 +21,53 @@
     <string name="view_all_group">  + View Groups</string>
     <string name="create_group">  + Create Group</string>
     <string name="add_receipt">  + Add Receipt</string>
+    <string name="view_transactions">  + View Transactions</string>
+    <string name="logout">  Logout</string>
+    <string name="billify">  + Billify</string>
 
     <!--Create Group-->
     <string name="create_group_title">Create Group</string>
     <string name="hint_group_name">Group Name</string>
     <string name="hint_member_email">Member Email</string>
     <string name="button_create">Create</string>
+    <string name="button_add_more">Add members</string>
+    <string name="error_group_name">Group name must not be empty.</string>
 
     <!-- Upload Receipt -->
     <string name="take_photo">Take Photo</string>
     <string name="gallery">Gallery</string>
 
+    <!-- View transactions -->
+    <string name="label">Label</string>
+    <string name="back">Back</string>
+
+    <!--  Edit Screens  -->
+    <string-array name="items">
+        <item>Chana Bhatura Chana Bhatura Chana Bhatura Chana Bhatura Chana Bhatura</item>
+        <item>Kurkure</item>
+        <item>Sprite</item>
+        <item>Fried Rice</item>
+        <item>Mcdonalds Burger</item>
+        <item>Pizza</item>
+
+    </string-array>
+    <string-array name="prices">
+        <item>200.00</item>
+        <item>150.00</item>
+        <item>30.00</item>
+        <item>45.00</item>
+        <item>15.00</item>
+        <item>20.00</item>
+    </string-array>
+
+    <string name="item_name_key">Item Name:</string>
+    <string name="item_name_value">Example Item Name</string>
+    <string name="item_price_key">Item Price:</string>
+    <string name="item_price_value">Example Item Price</string>
+    <string name="save_progress">Save</string>
+    <string name="swipe_to_delete_item">Swipe to Delete item</string>
+    <string name="confirm">Confirm</string>
+
+
+    <string name="success_transaction_message">Successfully created new transaction!</string>
 </resources>

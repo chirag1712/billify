@@ -1,4 +1,4 @@
-package com.frontend.billify.login;
+package com.frontend.billify.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,9 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.frontend.billify.HomepageActivity;
+import com.frontend.billify.activities.HomepageActivity;
 import com.frontend.billify.NavigationHost;
-import com.frontend.billify.MainActivity;
 import com.frontend.billify.R;
 import com.frontend.billify.controllers.UserService;
 import com.frontend.billify.models.User;
@@ -63,7 +62,7 @@ public class LoginFragment extends Fragment {
                 }
 
                 if (!isEmailValid(emailEditText.getText())) {
-                    emailTextInput.setError(getString(R.string.error_username));
+                    emailTextInput.setError(getString(R.string.error_email));
                     valid = false;
                 }
 
@@ -100,8 +99,9 @@ public class LoginFragment extends Fragment {
                                     }
                                     return;
                                 }
-                                User user = response.body(); // only userId is returned
+                                User user = response.body(); // userId and userName are returned
                                 Persistence.saveUserId(getActivity(), user.getId());
+                                Persistence.saveUserName(getActivity(), user.getUserName());
                                 openHomepage();
                             }
 

@@ -1,35 +1,30 @@
-package com.frontend.billify;
+package com.frontend.billify.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuInflater;
 
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
+import com.frontend.billify.NavigationHost;
+import com.frontend.billify.R;
+import com.frontend.billify.fragments.LoginFragment;
+import com.frontend.billify.persistence.Persistence;
 
-import com.frontend.billify.controllers.UserService;
-import com.frontend.billify.login.LoginFragment;
-import com.frontend.billify.services.ApiRoutes;
-import com.frontend.billify.models.User;
-import com.frontend.billify.services.RetrofitService;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-public class MainActivity extends AppCompatActivity implements NavigationHost {
+public class AuthenticationActivity extends AppCompatActivity implements NavigationHost {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Auto-login
+        if (Persistence.getUserId(this) != -1) {
+            startActivity(new Intent(AuthenticationActivity.this, HomepageActivity.class));
+        }
 
         if (savedInstanceState == null) {
             getSupportFragmentManager()
@@ -57,5 +52,12 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
         }
 
         transaction.commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
     }
 }

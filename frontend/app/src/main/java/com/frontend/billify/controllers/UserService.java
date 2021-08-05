@@ -22,25 +22,5 @@ public class UserService {
 
     public Call<User> signupUser(User user) {
         return this.apiRoutes.signupUser(user);
-        /*
-        Call<User> call = this.apiRoutes.signupUser(user);
-
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if (!response.isSuccessful()) {
-                    System.out.println("Error code " + response.code() + " " + response.errorBody().toString());
-                    return;
-                }
-                User userResponse = response.body();
-                System.out.println("Successful request with return value: " + userResponse);
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                System.out.println("Error: " + t.getMessage());
-            }
-        });
-         */
     }
 }

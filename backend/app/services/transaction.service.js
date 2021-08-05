@@ -1,6 +1,15 @@
 const aws = require("aws-sdk");
 const TransactionModel = require("../models/transaction.model.js");
 const { Item } = require("../models/item.model.js");
+const {Group, MemberOf} = require("../models/group.model.js");
+const {UserTransaction} = require("../models/UserTransaction.model.js");
+aws.config.update({
+    accessKeyId: process.env.AWS_AccessKeyId,
+    secretAccessKey: process.env.AWS_SecretAccessKey,
+    region: process.env.AWS_region
+});
+
+const s3 = new aws.S3();
 
 // createTable and argmax are utility methods
 function createTable(numRows, numCols) {
@@ -22,11 +31,6 @@ function argmax(arr) {
 
 class ReceiptParser {
     constructor() {
-        aws.config.update({
-            accessKeyId: process.env.AWS_AccessKeyId,
-            secretAccessKey: process.env.AWS_SecretAccessKey,
-            region: process.env.AWS_region
-        });
 
         this.textract = new aws.Textract();
         // Extending Array Proto by adding a none method
@@ -178,37 +182,108 @@ class ReceiptParser {
             FeatureTypes: ["TABLES"]
         };
         let rawItemsTable = await this.extractRawItemsFromReceipt(params);
-        const processed_items = this.processRawItemsTable(rawItemsTable);
-        return processed_items;
+        if (rawItemsTable.length === 0) {
+            console.log("Couldn't parse receipt, no items found.");
+            throw new Error("Couldn't parse receipt, no items found.");
+        }
+        const processedItems = this.processRawItemsTable(rawItemsTable);
+        const parsedReceiptJson = {"items": processedItems};
+        return parsedReceiptJson;
     }
 
 }
 
-async function insertTransactionsAndItemsToDB(gid, transaction_name, img_data, parsedReceiptJson) {
-    parsedReceiptJson = await insertTransactionToDB(gid, transaction_name, img_data, parsedReceiptJson);
-    await insertItemsToDB(parsedReceiptJson["tid"], parsedReceiptJson["items"]);
+async function insertTransactionsAndItemsToDB(gid, transactionName, imgData, imgFileName, parsedReceiptJson) {
+    try {
+        parsedReceiptJson = await insertTransactionToDB(gid, transactionName, imgData, imgFileName, parsedReceiptJson);
+    } catch(err) {
+        console.log("Couldn't insert expense into DB");
+        throw new Error("Couldn't insert expense into DB, could be that provided gid value was invalid");
+    }
+    parsedReceiptJson["items"] = await insertItemsToDB(parsedReceiptJson["tid"], parsedReceiptJson["items"]);
     return parsedReceiptJson;
 }
 
-async function insertTransactionToDB(gid, transaction_name, img_data, parsedReceiptJson) {
-    const transactionService = new TransactionModel(gid);
-    const transactionObj = await transactionService.createTransaction(gid, transaction_name, img_data);
 
+function uploadReceiptImgToS3(params) {
+    /*
+    Uploads receipt image in params to S3
+    */
+    return new Promise((resolve, reject) => {
+        s3.upload(params, (err, data) => {
+            if (err) {
+                console.log("Error uploading image to S3 bucket");
+                reject(err);
+            } else {
+                if (data) {
+                    resolve(data.Location);
+                } else {
+                    throw new Error("S3 didn't return data");
+                }
+            }
+        });
+    });
+}
+
+
+async function createUserTransactionForUsersInGroup(tid, gid) {
+
+    /*
+    Inserts a Transaction entry corresponding to tid
+    for each uid in the group of gid into the UserTransaction Table.
+    */
+
+    try {
+        const usersInGroup = await Group.getUsersForGroup(gid);
+        const createUserTransactionPromises = usersInGroup.map(async (user) => {
+            const userTransaction = new UserTransaction(tid, user.uid);
+            await userTransaction.createUserTransaction();
+        });
+        await Promise.all(createUserTransactionPromises);
+    } catch (error) {
+        console.log("Internal error: ", error);
+    }
+}
+
+async function insertTransactionToDB(gid, transactionName, imgData, imgFileName, parsedReceiptJson) {
+    const transactionModel = new TransactionModel(gid);
+    const imgFileExtension = imgFileName.split(".")[1];
+    const groupDetails = await Group.getGroupDetails(gid);
+    const groupName = groupDetails[0].group_name;
+    let currDateTime = new Date();
+    const currDateTimeStr = currDateTime.toISOString().slice(0, 16).split("T").join(" ");
+    transactionName = transactionName ? transactionName : groupName + " " + currDateTimeStr;
+    const params = {
+        ACL: 'public-read',
+        Bucket: 'billify',
+        Body: imgData,
+        Key: transactionName + "-" + Date.now().toString() +  "." + imgFileExtension
+    }
+    
+    // NOTE: Goal is to add transaction during receipt parsing stage, but we only add items after
+    // user edits items on their mobile app and confirms right set of items to add.
+    const receiptImgS3URI = await uploadReceiptImgToS3(params);
+    const transactionObj = await transactionModel.createTransaction(gid, transactionName, receiptImgS3URI);
+    await createUserTransactionForUsersInGroup(transactionObj["tid"], gid);
     parsedReceiptJson = {
-        "items": parsedReceiptJson,
+        "items": parsedReceiptJson["items"],
         "tid": transactionObj["tid"],
-        "transaction_name": transactionObj["transaction_name"]
+        "transaction_name": transactionObj["transaction_name"],
+        "receipt_img": receiptImgS3URI
     };
     return parsedReceiptJson;
 }
 
 async function insertItemsToDB(tid, receiptItemsJson) {
-    receiptItemsJson.forEach(async itemObject => {
+    const createPromises = receiptItemsJson.map(async itemObject => {
         const itemName = itemObject["name"];
         const itemPrice = itemObject["price"];
         const item = new Item(tid, itemName, itemPrice);
         const insertedItemId = await item.insertItemToDB();
+        itemObject["item_id"] = insertedItemId;
     });
+    await Promise.all(createPromises);
+    return receiptItemsJson;
 }
 
 async function getGroupTransactions(gid) {
@@ -218,8 +293,7 @@ async function getGroupTransactions(gid) {
 }
 
 async function getTransactionItems(tid) {
-    const transactionService = new TransactionModel();
-    const transactionItemsJson = await transactionService.getTransactionItems(tid);
+    const transactionItemsJson = await TransactionModel.getTransactionItems(tid);
     return transactionItemsJson;
 }
 
