@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -30,10 +31,13 @@ import androidx.core.content.FileProvider;
 
 import com.frontend.billify.R;
 import com.frontend.billify.activities.edit_and_confirm_items.EditItemsActivity;
+import com.frontend.billify.adapters.LabelDropdownAdapter;
 import com.frontend.billify.controllers.GroupService;
 import com.frontend.billify.controllers.TransactionController;
+import com.frontend.billify.models.Label;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.models.User;
+import com.frontend.billify.models.UserTransaction;
 import com.frontend.billify.persistence.Persistence;
 import com.frontend.billify.services.RetrofitService;
 
@@ -102,13 +106,12 @@ public class UploadReceiptActivity extends AppCompatActivity {
         labelTextView = findViewById(R.id.auto_complete_label_text_view);
 
         // Add Labels
-        labelArrayAdapter = new ArrayAdapter<>(
-                UploadReceiptActivity.this,
-                R.layout.list_label,
-                Transaction.labelNames
+        LabelDropdownAdapter labelDropdownAdapter = new LabelDropdownAdapter(
+                this,
+                Label.getUniqueLabels()
         );
-        labelTextView.setAdapter(labelArrayAdapter);
-        labelTextView.setText(labelArrayAdapter.getItem(0).toString(), false);
+        labelTextView.setAdapter(labelDropdownAdapter);
+        labelTextView.setText(labelDropdownAdapter.getItem(0).toString(), false);
 
 
         // Add on click listeners for buttons
