@@ -60,7 +60,7 @@ class Session {
         // optional TODO: modify s.t. fetch from session when available
         this.tid2num[tid] = 1;
         try {
-            const itemInfos = {};
+            const itemId2itemInfo = {};
             const items = await Transaction.getTransactionItems(tid);
             const fetchPromises = items.map(async (item) => {
                 const res = await UserItem.getUserInfoForItem(item.item_id);
@@ -68,12 +68,12 @@ class Session {
                 res.map((row) => {
                     userInfos.push(new UserInfo(row.uid, row.user_name));
                 });
-                itemInfos[item.item_id] = { price: item.price, userInfos: userInfos };
+                itemId2itemInfo[item.item_id] = new ItemInfo(item.price, userInfos);
             });
 
             // update current socket state
             await Promise.all(fetchPromises);
-            const state = await this.setState(tid, itemInfos);
+            const state = await this.setState(tid, itemId2itemInfo);
             return state;
         } catch (err) {
             console.log("Internal error: Couldn't fetch transaction state: " + err);
@@ -181,7 +181,7 @@ class Session {
     }
 
     // returns new state
-    async setState(tid, itemInfos) {
+    async setState(tid, itemId2itemInfo) {
         const state = { items: [], price_shares: {} };
         if (!this.tid2itemInfos[tid]) {
             this.tid2itemInfos[tid] = {};
@@ -203,9 +203,9 @@ class Session {
             );
         });
 
-        Object.entries(itemInfos).forEach(([item_id, { price, userInfos }]) => {
+        Object.entries(itemId2itemInfo).forEach(([item_id, { price, userInfos }]) => {
             state.items.push({ item_id, userInfos });
-            this.tid2itemInfos[tid][item_id] = { price: price, userInfos: new Set() };
+            this.tid2itemInfos[tid][item_id] = new ItemInfo(price, new Set());
             userInfos.forEach((userInfoObj) => {
                 this.tid2itemInfos[tid][item_id].userInfos.add(JSON.stringify(userInfoObj));
             });
