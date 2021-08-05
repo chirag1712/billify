@@ -1,5 +1,6 @@
 const { UserItem } = require("../models/item.model");
 const { UserTransaction } = require("../models/UserTransaction.model");
+const Transaction = require("../models/transaction.model.js");
 
 class UserInfo {
     constructor(uid, username) {
@@ -38,15 +39,39 @@ class Session {
     }
 
     // returns true if first user
-    userJoin(socketId, uid, username, tid) {
+    async userJoin(socketId, uid, username, tid) {
         this.socketId2userInfo[socketId] = new UserInfo(uid, username);
         this.uid2Tid[uid] = tid;
         if (this.tid2num[tid]) {
+            // not the first user to join the session
             this.tid2num[tid]++;
-            return false;
+
+            // get current socket state
+            return this.getState(tid);
         }
+
+        // first user to join the session, fetch state from db
+        // optional todo: modify s.t. fetch from session when available
         this.tid2num[tid] = 1;
-        return true;
+        try {
+            const itemInfos = {};
+            const items = await Transaction.getTransactionItems(tid);
+            const fetchPromises = items.map(async (item) => {
+                const res = await UserItem.getUserInfoForItem(item.item_id);
+                const userInfos = [];
+                res.map((row) => {
+                    userInfos.push(new UserInfo(row.uid, row.user_name));
+                });
+                itemInfos[item.item_id] = { price: item.price, userInfos: userInfos };
+            });
+
+            // update current socket state
+            await Promise.all(fetchPromises);
+            const state = await this.setState(tid, itemInfos);
+            return state;
+        } catch (err) {
+            console.log("Internal error: Couldn't fetch transaction state: " + err);
+        }
     }
 
     userSelect(uid, username, tid, item_id) {
@@ -114,7 +139,7 @@ class Session {
 
             // TODO: persist price shares to db
             Object.entries(this.tid2uid2userPriceInfo[tid]).forEach(([uidStr, userPriceInfo]) => {
-                UserTransaction.updatePriceShare(tid, uidStr, userPriceInfo.price_share);  
+                UserTransaction.updatePriceShare(tid, uidStr, userPriceInfo.price_share);
             })
 
             // clearing socket state
@@ -227,9 +252,8 @@ class Session {
         const [new_share, new_last_share] = this.dividePrice(price, new_n);
 
         userInfoObjs.forEach(({ uid, username }) => {
-            console.log("updating:", uid, username);
+            console.log("updating price share:", uid, username);
             const old = this.tid2uid2userPriceInfo[tid][uid].price_share;
-            console.log("old", old);
             var val;
             if (uid == newMinUid) {
                 val = parseFloat((old + new_last_share).toFixed(2));
