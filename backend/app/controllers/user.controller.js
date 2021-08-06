@@ -20,7 +20,7 @@ function validate(request, response) {
 // user signup
 const signup = async (request, response) => {
     validate(request, response);
-    const { email, password, user_name } = request.body;
+    const { email, password, userName } = request.body;
 
     try {
         const existing_user = await User.findUser(email);
@@ -33,7 +33,7 @@ const signup = async (request, response) => {
         const hashed_password = await bcrypt.hash(password, salt);
         const user = new User({
             email: email,
-            user_name: user_name,
+            user_name: userName,
             hashed_password: hashed_password
         });
 
@@ -42,11 +42,11 @@ const signup = async (request, response) => {
 
         // on signup, users are added to a group with a single member 
         // to manage their individual transactions
-        const gid = await Group.createGroup({ group_name: user_name + "'s personal group" })
+        const gid = await Group.createGroup({ group_name: userName + "'s personal group" })
         const newMemberOf = new MemberOf({ uid, gid });
         await MemberOf.addUsers([Object.values(newMemberOf)]);
 
-        return response.send({ id: uid, userName: user_name });
+        return response.send({ id: uid, userName: userName });
     } catch (err) {
         console.log(err);
         return response.status(500).send({ error: "Internal error: signup" });
