@@ -52,7 +52,7 @@ public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsIt
     @Override
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
         holder.item_name.setText(items.get(position).getName());
-        holder.price.setText(items.get(position).getStrPrice());
+        holder.price.setText("$" + items.get(position).getStrPrice());
 
         // setting the grid layout with items
         holder.grid.removeAllViews();

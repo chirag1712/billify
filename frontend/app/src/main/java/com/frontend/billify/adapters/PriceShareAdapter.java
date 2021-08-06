@@ -44,8 +44,8 @@ public class PriceShareAdapter extends ArrayAdapter<UserTransactionShare> {
 
         UserTransactionShare userPriceInfo = this.userPriceInfos.get(position);
 
-        holder.userName.setText(userPriceInfo.getUserName());
-        holder.priceShare.setText(Float.toString(userPriceInfo.getPriceShare()));
+        holder.userName.setText(userPriceInfo.getUserName() + ":");
+        holder.priceShare.setText("$" + userPriceInfo.getPriceShare());
 
         return row;
     }
