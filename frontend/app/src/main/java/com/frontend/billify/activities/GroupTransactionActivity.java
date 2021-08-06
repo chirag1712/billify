@@ -116,7 +116,8 @@ public class GroupTransactionActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ArrayList<Transaction>> call, Throwable t) {
                 Toast.makeText(getApplicationContext(),
-                        "Cannot connect to login server", Toast.LENGTH_LONG).show();
+                        "Cannot connect to backend server", Toast.LENGTH_LONG).show();
+                t.printStackTrace();
             }
         });
     }

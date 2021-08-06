@@ -163,7 +163,8 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
             @Override
             public void onFailure(Call<TransactionSummary> call, Throwable t) {
                 Toast.makeText(context,
-                        "Cannot connect to login server", Toast.LENGTH_LONG).show();
+                        "Cannot connect to backend server", Toast.LENGTH_LONG).show();
+                t.printStackTrace();
             }
         });
 
