@@ -64,7 +64,7 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
             public void onClick(View v) {
 
                 if(user_shares.isEmpty()){
-                    getUserShares(transactions.get(position).getTid());
+                    getUserShares(transactions.get(position).getTid(),holder.hiddenView);
 
                 }
                 System.out.println(user_shares.toString());
@@ -75,17 +75,17 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
 //                user_shares.add(new Pair<String,Integer>("Denis",45));
 //                user_shares.add(new Pair<String,Integer>("Chirag",32));
 //                user_shares.add(new Pair<String,Integer>("Mayank",25));
-                ListView price_share_view = (ListView) holder.hiddenView.getChildAt(0);
-                UserShareListAdapter usersharelistadapter = new UserShareListAdapter ((Activity) context, user_shares);
-                price_share_view.setAdapter(usersharelistadapter);
-                price_share_view.setEnabled(false);
-                ViewGroup vg = price_share_view;
-                View listItem = usersharelistadapter.getView(0,null,vg);
-                listItem.measure(0,0);
-                int listItemHeight = listItem.getMeasuredHeight();
-                ViewGroup.LayoutParams param = price_share_view.getLayoutParams();
-                param.height = listItemHeight*(usersharelistadapter.getCount()) + (price_share_view.getDividerHeight() * (usersharelistadapter.getCount()-1));
-                price_share_view.setLayoutParams(param);
+//                ListView price_share_view = (ListView) holder.hiddenView.getChildAt(0);
+//                UserShareListAdapter usersharelistadapter = new UserShareListAdapter ((Activity) context, user_shares);
+//                price_share_view.setAdapter(usersharelistadapter);
+//                price_share_view.setEnabled(false);
+//                ViewGroup vg = price_share_view;
+//                View listItem = usersharelistadapter.getView(0,null,vg);
+//                listItem.measure(0,0);
+//                int listItemHeight = listItem.getMeasuredHeight();
+//                ViewGroup.LayoutParams param = price_share_view.getLayoutParams();
+//                param.height = listItemHeight*(usersharelistadapter.getCount()) + (price_share_view.getDividerHeight() * (usersharelistadapter.getCount()-1));
+//                price_share_view.setLayoutParams(param);
                 if (holder.hiddenView.getVisibility() == View.VISIBLE) {
 
                     // The transition of the hiddenView is carried out
@@ -129,7 +129,7 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
         }
     }
 
-    public void getUserShares(int tid){
+    public void getUserShares(int tid,RelativeLayout hiddenView){
         System.out.println("tid is "+tid);
         transactionController.getUserTransactionShare(tid).enqueue(new Callback<ArrayList<UserTransactionShare>>() {
             @Override
@@ -149,7 +149,7 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
                     return;
                 }
                 ArrayList<UserTransactionShare> user_share_response = response.body();
-                setUserShares(user_share_response);
+                setUserShares(user_share_response,hiddenView);
             }
 
             @Override
@@ -160,7 +160,33 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
         });
 
     }
-    public void setUserShares(ArrayList<UserTransactionShare> user_share_response){
+    public void setUserShares(ArrayList<UserTransactionShare> user_share_response,RelativeLayout hiddenView){
         user_shares = user_share_response;
+        ListView price_share_view = (ListView) hiddenView.getChildAt(0);
+        UserShareListAdapter usersharelistadapter = new UserShareListAdapter ((Activity) context, user_shares);
+        price_share_view.setAdapter(usersharelistadapter);
+        price_share_view.setEnabled(false);
+        ViewGroup vg = price_share_view;
+        View listItem = usersharelistadapter.getView(0,null,vg);
+        listItem.measure(0,0);
+        int listItemHeight = listItem.getMeasuredHeight();
+        ViewGroup.LayoutParams param = price_share_view.getLayoutParams();
+        param.height = listItemHeight*(usersharelistadapter.getCount()) + (price_share_view.getDividerHeight() * (usersharelistadapter.getCount()-1));
+        price_share_view.setLayoutParams(param);
+        if (hiddenView.getVisibility() == View.VISIBLE) {
+
+            // The transition of the hiddenView is carried out
+            //  by the TransitionManager class.
+            // Here we use an object of the AutoTransition
+            // Class to create a default transition.
+            hiddenView.setVisibility(View.GONE);
+
+        }
+
+        // If the CardView is not expanded, set its visibility
+        // to visible and change the expand more icon to expand less.
+        else {
+            hiddenView.setVisibility(View.VISIBLE);
+        }
     }
 }
