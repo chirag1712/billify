@@ -44,11 +44,11 @@
         tools:targetApi="n">
         <activity android:name=".activities.view_transactions.ViewTransactionsActivity"></activity>
         <activity
-            android:name=".activities.AddEditItemActivity"
+            android:name=".activities.edit_and_confirm_items.AddEditItemActivity"
             android:label="Add New Item"
-            android:parentActivityName=".activities.EditItemsActivity"
+            android:parentActivityName=".activities.edit_and_confirm_items.EditItemsActivity"
             />
-        <activity android:name=".activities.EditItemsActivity"
+        <activity android:name=".activities.edit_and_confirm_items.EditItemsActivity"
             android:label="Edit and Confirm Parsed Items"
             />
         <activity android:name=".activities.CreateGroupActivity" />

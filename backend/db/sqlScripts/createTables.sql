@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS UserTransaction (
     tid INT NOT NULL,
     uid INT NOT NULL,
     label_id INT NOT NULL,
+    settled BIT NOT NULL,
     PRIMARY KEY (tid, uid),
     FOREIGN KEY (uid) REFERENCES User(uid),
     FOREIGN KEY (tid) REFERENCES Transaction(tid),

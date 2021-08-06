@@ -1,6 +1,7 @@
 package com.frontend.billify.models;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class User {
     private String email;
@@ -8,6 +9,8 @@ public class User {
     private String userName;
     private int id;
     private ArrayList<Group> groups;
+
+    private HashMap<String, Integer> groupNameToGid;
 
     public User(String email, String password, String userName) {
         this.email = email;
@@ -61,6 +64,30 @@ public class User {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getGidFromGroupName(String groupName) {
+        return groupNameToGid.get(groupName);
+    }
+
+    public void setGroupNameToGid(HashMap<String, Integer> groupNameToGid) {
+        this.groupNameToGid = groupNameToGid;
+    }
+
+    public ArrayList<String> getGroupNames() {
+        ArrayList<String> groupNames = new ArrayList<>();
+        for (Group group: groups) {
+            groupNames.add(group.getGroup_name());
+        }
+        return groupNames;
+    }
+
+    public void initGroupNameToGidMap() {
+        // This method must be called whenever you want to use the member variable groupNameToGid
+        groupNameToGid = new HashMap<>();
+        for (Group group: groups) {
+            groupNameToGid.put(group.getGroup_name(), group.getGid());
+        }
     }
 
 }

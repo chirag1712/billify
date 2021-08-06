@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.EditItemsActivity"
-    android:background="@drawable/purple_green_background"
+    tools:context=".activities.edit_and_confirm_items.EditItemsActivity"
+    android:background="@drawable/homepage_background"
     >
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -47,6 +47,32 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/transaction_name_edit_screen_cardview"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#FFFFFF"
+            app:cardCornerRadius="6dp"
+            app:cardElevation="4dp"
+            app:cardMaxElevation="0dp"
+            app:cardUseCompatPadding="true"
+            app:contentPadding="0dp"
+            >
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/transaction_name_edit_screen_textview"
+            android:layout_width="match_parent"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:text="@string/transaction_name" />
+
+        </com.google.android.material.card.MaterialCardView>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/edit_items_recycler_view"

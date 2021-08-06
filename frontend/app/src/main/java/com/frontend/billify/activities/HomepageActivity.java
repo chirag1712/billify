@@ -58,7 +58,6 @@ public class HomepageActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(HomepageActivity.this, UploadReceiptActivity.class);
-                intent.putExtra("gid", "4");
                 startActivity(intent);
             }
         });

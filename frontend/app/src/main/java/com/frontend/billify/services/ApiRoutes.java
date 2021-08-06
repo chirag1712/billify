@@ -43,9 +43,7 @@ public interface ApiRoutes {
     // NOTE: parse-receipt endpoint creates transaction
     @Multipart
     @POST("api/transactions/parse-receipt")
-    Call<Transaction> parseReceipt(
-            @Part("gid") RequestBody gid,
-            @Part MultipartBody.Part file);
+    Call<Transaction> parseReceipt(@Part MultipartBody.Part file);
 
     @GET("api/transactions/transaction/{tid}")
     Call<Transaction> getTransaction(@Path("tid") int tid);

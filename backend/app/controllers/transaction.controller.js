@@ -1,5 +1,6 @@
+const { response } = require("express");
 const TransactionModel = require("../models/transaction.model.js");
-const UserTransactionModel = require("../models/UserTransaction.model");
+const { UserTransaction } = require("../models/UserTransaction.model.js");
 const TransactionService = require("../services/transaction.service.js");
 
 receiptParser = new TransactionService.ReceiptParser();
@@ -8,57 +9,64 @@ receiptParser = new TransactionService.ReceiptParser();
 const parseReceipt = async (request, response) => {
     if ((request.files) && (request.files["file"])) {
         try {
-            // console.log(request.files["file"].name);
             const imgData = request.files["file"]["data"];
-            const gid = request.body["gid"];
-            if (gid === undefined) {
-                return response.status(500).send({error: "Error: gid (Group ID) has not been provided in POST request"})
-            }
-            const transactionName = request.body["transaction_name"];
             const parsedReceiptJson = await receiptParser.parseReceiptData(imgData);
-            parsedReceiptJson["gid"] = gid;
             console.log("Parsed receipt:");
             console.log(parsedReceiptJson);
             return response.send(parsedReceiptJson);
         } catch (err) {
-            return response.status(500).send({ error: "Internal error: " + err});
+            return response.status(500).send({ error: "Internal error: " + err });
         }
     } else {
-        response.status(500).send({ error: "Error: Receipt file was not attached"});
+        response.status(500).send({ error: "Error: Receipt file was not attached" });
     }
 }
 
 const createNewTransaction = async (request, response) => {
     try {
         if ((request.body) && (request.files)) {
-            // const gid = request.body["gid"];
             console.log(request.files);
             const parsedReceiptJsonString = request.body["transaction_details"];
             // NOTE: Sending JSON as string through mobile since we want to send image + JSON data in same request
-            const parsedReceiptJson = JSON.parse(parsedReceiptJsonString); 
+            const parsedReceiptJson = JSON.parse(parsedReceiptJsonString);
+
             const imgData = request.files["file"]["data"];
-            // console.log(parsedReceiptJson.gid);
-            console.log(parsedReceiptJson["gid"]);
+            const gid = parsedReceiptJson["gid"];
+            const transactionName = parsedReceiptJson["transaction_name"];
+            const transactionLabelId = parsedReceiptJson["label_id"];
+
+            if (
+                (gid === undefined) ||
+                (transactionName === undefined) ||
+                (transactionLabelId === undefined)
+            ) {
+                return response.status(500).send({
+                    error: "Error: gid (Group ID) or transactionName or labelId has not been provided in POST request"
+                });
+            }
+
             jsonResponse = await TransactionService.insertTransactionsAndItemsToDB(
-                parsedReceiptJson["gid"], 
-                parsedReceiptJson["transaction_name"],
+                gid,
+                transactionName,
+                transactionLabelId,
                 imgData,
                 request.files["file"].name,
                 parsedReceiptJson
             );
+
             console.log("Final JSON response:");
             console.log(jsonResponse);
-            
+
             return response.send(parsedReceiptJson);
         } else {
             const error = "Error: Creating new Transaction failed due to not having request.body or passing a file";
             console.log(error);
-            return response.status(500).send({error});
+            return response.status(500).send({ error });
         }
     } catch (err) {
         const error = "Error: Creating new Transaction failed due to: " + err;
         console.log(error);
-        return response.status(500).send({error})
+        return response.status(500).send({ error })
     }
 }
 
@@ -68,7 +76,7 @@ const getGroupTransactions = async (request, response) => {
         const groupTransactionsJson = await TransactionService.getGroupTransactions(gid);
         return response.send(groupTransactionsJson);
     } catch (err) {
-        return response.status(500).send({error: "Internal error: Couldn't get group transactions: " + err})
+        return response.status(500).send({ error: "Internal error: Couldn't get group transactions: " + err })
     }
 }
 
@@ -78,7 +86,7 @@ const getTransactionItems = async (request, response) => {
         const transactionItemsJson = await TransactionService.getTransactionItems(tid);
         return response.send(transactionItemsJson);
     } catch (err) {
-        return response.status(500).send({error: "Internal error: Couldn't get transaction items: " + err})
+        return response.status(500).send({ error: "Internal error: Couldn't get transaction items: " + err })
     }
 }
 
@@ -137,4 +145,45 @@ const getTransaction = async (request, response) => {
     }
 }
 
-module.exports = { parseReceipt, getGroupTransactions, getTransactionItems, getUserTransactionDetails, getTransaction, createNewTransaction, updateUserTransactionLabels};
+const getPriceShares = async (request, response) => {
+    try {
+        const tid = request.params.tid;
+
+        // get transaction total price
+        const user_price_shares = await UserTransaction.getAllForTid(tid); // user id and username as well
+        var allItems = await TransactionModel.getTransactionItems(tid);
+
+        var total_price = 0;
+        allItems.map((item) => {
+            total_price = parseFloat((total_price + item.price).toFixed(2));
+        });
+        return response.send({
+            total_price: total_price,
+            user_price_shares: user_price_shares
+        });
+    } catch (err) {
+        return response.status(500).send({ error: "Internal error: Couldn't get transaction: " + err })
+    }
+}
+
+const settlePriceShare = async (request, response) => {
+    try {
+        const { uid, tid } = request.body;
+        await UserTransaction.settle(uid, tid);
+        return response.send({ success: "true" });
+    } catch (err) {
+        return response.status(500).send({ error: "Internal error: Couldn't settle transaction: " + err })
+    }
+}
+
+const unsettlePriceShare = async (request, response) => {
+    try {
+        const { uid, tid } = request.body;
+        await UserTransaction.unsettle(uid, tid);
+        return response.send({ success: "true" });
+    } catch (err) {
+        return response.status(500).send({ error: "Internal error: Couldn't unsettle transaction: " + err })
+    }
+}
+
+module.exports = { parseReceipt, getGroupTransactions, getTransactionItems, getTransaction, createNewTransaction, getPriceShares, settlePriceShare, unsettlePriceShare, getUserTransactionDetails, updateUserTransactionLabels};
