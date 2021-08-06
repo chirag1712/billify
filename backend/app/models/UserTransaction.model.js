@@ -113,7 +113,7 @@ class UserTransaction {
                                 "From UserTransaction as ut " +
                                 "Inner Join Transaction as t ON ut.tid = t.tid " +
                                 "Inner Join Label as l on ut.label_id = l.label_id " +
-                                "Where ut.uid = ?";
+                                "WHERE ut.uid = ? AND ut.price_share > 0";
                 sql.query(sqlQuery,
                     uid, (err, res) => {
                         if (err) {
