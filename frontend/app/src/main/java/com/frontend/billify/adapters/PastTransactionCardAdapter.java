@@ -19,6 +19,7 @@ import com.frontend.billify.R;
 import com.frontend.billify.activities.GroupTransactionActivity;
 import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.models.Transaction;
+import com.frontend.billify.models.TransactionSummary;
 import com.frontend.billify.models.UserTransactionShare;
 import com.frontend.billify.services.RetrofitService;
 
@@ -39,6 +40,8 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
     private ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
     private Context context;
+
+    private int first_click_pos = -1;
 
     public PastTransactionCardAdapter(Context context) {
         this.context = context;
@@ -63,11 +66,30 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
             @Override
             public void onClick(View v) {
 
-                if(user_shares.isEmpty()){
+                if(first_click_pos != position){
                     getUserShares(transactions.get(position).getTid(),holder.hiddenView);
-
+                    first_click_pos = position;
                 }
-                System.out.println(user_shares.toString());
+                else{
+                    System.out.println(user_shares.toString());
+                    if (holder.hiddenView.getVisibility() == View.VISIBLE) {
+
+                        // The transition of the hiddenView is carried out
+                        //  by the TransitionManager class.
+                        // Here we use an object of the AutoTransition
+                        // Class to create a default transition.
+                        holder.hiddenView.setVisibility(View.GONE);
+
+                    }
+
+                    // If the CardView is not expanded, set its visibility
+                    // to visible and change the expand more icon to expand less.
+                    else {
+                        holder.hiddenView.setVisibility(View.VISIBLE);
+                    }
+                }
+
+
 //                ArrayList<Pair<String,Integer>> user_shares = new ArrayList<Pair<String,Integer>>();
 //                user_shares.add(new Pair<String,Integer>("Alric",20));
 //                user_shares.add(new Pair<String,Integer>("Huy",40));
@@ -86,21 +108,7 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
 //                ViewGroup.LayoutParams param = price_share_view.getLayoutParams();
 //                param.height = listItemHeight*(usersharelistadapter.getCount()) + (price_share_view.getDividerHeight() * (usersharelistadapter.getCount()-1));
 //                price_share_view.setLayoutParams(param);
-                if (holder.hiddenView.getVisibility() == View.VISIBLE) {
 
-                    // The transition of the hiddenView is carried out
-                    //  by the TransitionManager class.
-                    // Here we use an object of the AutoTransition
-                    // Class to create a default transition.
-                    holder.hiddenView.setVisibility(View.GONE);
-
-                }
-
-                // If the CardView is not expanded, set its visibility
-                // to visible and change the expand more icon to expand less.
-                else {
-                    holder.hiddenView.setVisibility(View.VISIBLE);
-                }
             }
         });
     }
@@ -123,7 +131,7 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             transaction_label = itemView.findViewById(R.id.transaction_label);
-            total = itemView.findViewById(R.id.total_transaction_price);
+            total = itemView.findViewById(R.id.transaction_date);
             hiddenView = itemView.findViewById(R.id.hidden_shares_and_buttons);
             parent = itemView.findViewById(R.id.past_transaction);
         }
@@ -131,9 +139,9 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
 
     public void getUserShares(int tid,RelativeLayout hiddenView){
         System.out.println("tid is "+tid);
-        transactionController.getUserTransactionShare(tid).enqueue(new Callback<ArrayList<UserTransactionShare>>() {
+        transactionController.getUserTransactionShare(tid).enqueue(new Callback<TransactionSummary>() {
             @Override
-            public void onResponse(Call<ArrayList<UserTransactionShare>> call, Response<ArrayList<UserTransactionShare>> response) {
+            public void onResponse(Call<TransactionSummary> call, Response<TransactionSummary> response) {
                 if (!response.isSuccessful()) {
                     try {
                         JSONObject error = new JSONObject(response.errorBody().string());
@@ -148,21 +156,23 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
                     }
                     return;
                 }
-                ArrayList<UserTransactionShare> user_share_response = response.body();
-                setUserShares(user_share_response,hiddenView);
+                TransactionSummary transactionSummary = response.body();
+                setUserShares(transactionSummary,hiddenView);
             }
 
             @Override
-            public void onFailure(Call<ArrayList<UserTransactionShare>> call, Throwable t) {
+            public void onFailure(Call<TransactionSummary> call, Throwable t) {
                 Toast.makeText(context,
                         "Cannot connect to login server", Toast.LENGTH_LONG).show();
             }
         });
 
     }
-    public void setUserShares(ArrayList<UserTransactionShare> user_share_response,RelativeLayout hiddenView){
-        user_shares = user_share_response;
+    public void setUserShares(TransactionSummary transactionSummary,RelativeLayout hiddenView){
+        user_shares = transactionSummary.getUserPriceShares();
+
         ListView price_share_view = (ListView) hiddenView.getChildAt(0);
+
         UserShareListAdapter usersharelistadapter = new UserShareListAdapter ((Activity) context, user_shares);
         price_share_view.setAdapter(usersharelistadapter);
         price_share_view.setEnabled(false);
@@ -173,19 +183,21 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
         ViewGroup.LayoutParams param = price_share_view.getLayoutParams();
         param.height = listItemHeight*(usersharelistadapter.getCount()) + (price_share_view.getDividerHeight() * (usersharelistadapter.getCount()-1));
         price_share_view.setLayoutParams(param);
+
+        //Set the total for the transaction
+        TextView transaction_total = (TextView) hiddenView.getChildAt(2);
+        transaction_total.setText(Float.toString(transactionSummary.getTotalPrice()));
         if (hiddenView.getVisibility() == View.VISIBLE) {
 
-            // The transition of the hiddenView is carried out
-            //  by the TransitionManager class.
-            // Here we use an object of the AutoTransition
-            // Class to create a default transition.
+            // Collapse the card if expanded
             hiddenView.setVisibility(View.GONE);
 
         }
 
-        // If the CardView is not expanded, set its visibility
-        // to visible and change the expand more icon to expand less.
+
         else {
+
+            //expand the card if collapsed
             hiddenView.setVisibility(View.VISIBLE);
         }
     }

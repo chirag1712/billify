@@ -46,6 +46,8 @@ public class GroupTransactionActivity extends AppCompatActivity {
 
         int gid = Integer.parseInt(getIntent().getStringExtra("gid"));
         System.out.println("gid: " + gid);
+
+
         ArrayList<Pair<Pair<String,Integer>,ArrayList<Pair<String,Integer>>>> transaction = new ArrayList<Pair<Pair<String,Integer>,ArrayList<Pair<String,Integer>>>>();
         ArrayList<Pair<String,Integer>> user_shares = new ArrayList<Pair<String,Integer>>();
         user_shares.add(new Pair<String,Integer>("Alric",20));

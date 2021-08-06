@@ -1,6 +1,7 @@
 package com.frontend.billify.controllers;
 
 import com.frontend.billify.models.Transaction;
+import com.frontend.billify.models.TransactionSummary;
 import com.frontend.billify.models.User;
 import com.frontend.billify.models.UserTransaction;
 import com.frontend.billify.models.UserTransactionShare;
@@ -28,7 +29,7 @@ public class TransactionController {
     }
 
     //All user shares for a transaction
-    public Call<ArrayList<UserTransactionShare>> getUserTransactionShare(int tid ) {
+    public Call<TransactionSummary> getUserTransactionShare(int tid ) {
         return this.apiRoutes.getUserTransactionShares(tid);
     }
 
