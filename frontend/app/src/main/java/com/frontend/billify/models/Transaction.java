@@ -1,12 +1,18 @@
 package com.frontend.billify.models;
 
+import android.os.Build;
 import android.telephony.gsm.GsmCellLocation;
+
+import androidx.annotation.RequiresApi;
 
 import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 public class Transaction implements Serializable {
@@ -163,6 +169,12 @@ public class Transaction implements Serializable {
 
     public String getT_date() {
         return t_date;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String getFormattedT_date() {
+        Date transactionDate = Date.from(Instant.parse(t_date));
+        return new SimpleDateFormat("yyyy-MM-dd").format(transactionDate);
     }
 
 }
