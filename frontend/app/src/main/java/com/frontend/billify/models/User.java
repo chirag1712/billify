@@ -11,6 +11,7 @@ public class User {
     private ArrayList<Group> groups;
 
     private HashMap<String, Integer> groupNameToGid;
+    private HashMap<Integer, Integer> gidToGroupPosition;
 
     public User(String email, String password, String userName) {
         this.email = email;
@@ -90,4 +91,15 @@ public class User {
         }
     }
 
+    public void initGidToGroupPositionMap() {
+        gidToGroupPosition = new HashMap<>();
+        for (int i=0; i < groups.size(); ++i) {
+            Group group = groups.get(i);
+            gidToGroupPosition.put(group.getGid(), i);
+        }
+    }
+
+    public int getGroupPositionFromGid(int gid) {
+        return gidToGroupPosition.get(gid);
+    }
 }
