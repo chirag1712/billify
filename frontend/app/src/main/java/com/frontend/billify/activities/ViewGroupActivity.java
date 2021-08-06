@@ -92,8 +92,9 @@ public class ViewGroupActivity extends Activity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(groupPop.this, GroupTransaction.class);
-                intent.putExtra("gid", String.valueOf(groups.get(i).getGid()));
+                Intent intent = new Intent(ViewGroupActivity.this, GroupTransactionActivity.class);
+                intent.putExtra("gid", groups.get(i).getGid());
+                intent.putExtra("group_name", groups.get(i).getGroup_name());
                 startActivity(intent);
             }
         });
