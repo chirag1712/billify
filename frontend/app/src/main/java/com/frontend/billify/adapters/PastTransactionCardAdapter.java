@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -46,17 +47,18 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ListView price_share_view = (ListView) holder.hiddenView.getChildAt(0);
                 UserShareListAdapter usersharelistadapter = new UserShareListAdapter ((Activity) context, transactions.get(position).second);
                 System.out.println(transactions.get(position).second.toString());
-                holder.hiddenView.setAdapter(usersharelistadapter);
-                holder.hiddenView.setEnabled(false);
-                ViewGroup vg = holder.hiddenView;
+                price_share_view.setAdapter(usersharelistadapter);
+                price_share_view.setEnabled(false);
+                ViewGroup vg = price_share_view;
                 View listItem = usersharelistadapter.getView(0,null,vg);
                 listItem.measure(0,0);
                 int listItemHeight = listItem.getMeasuredHeight();
-                ViewGroup.LayoutParams param = holder.hiddenView.getLayoutParams();
-                param.height = listItemHeight*(usersharelistadapter.getCount()) + (holder.hiddenView.getDividerHeight() * (usersharelistadapter.getCount()-1));
-                holder.hiddenView.setLayoutParams(param);
+                ViewGroup.LayoutParams param = price_share_view.getLayoutParams();
+                param.height = listItemHeight*(usersharelistadapter.getCount()) + (price_share_view.getDividerHeight() * (usersharelistadapter.getCount()-1));
+                price_share_view.setLayoutParams(param);
                 if (holder.hiddenView.getVisibility() == View.VISIBLE) {
 
                     // The transition of the hiddenView is carried out
@@ -90,12 +92,12 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
     public class ViewHolder  extends  RecyclerView.ViewHolder{
         private TextView transaction_label, total;
         private CardView parent;
-        private ListView hiddenView;
+        private RelativeLayout hiddenView;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             transaction_label = itemView.findViewById(R.id.transaction_label);
             total = itemView.findViewById(R.id.total_transaction_price);
-            hiddenView = itemView.findViewById(R.id.user_price_shares);
+            hiddenView = itemView.findViewById(R.id.hidden_shares_and_buttons);
             parent = itemView.findViewById(R.id.past_transaction);
         }
     }
