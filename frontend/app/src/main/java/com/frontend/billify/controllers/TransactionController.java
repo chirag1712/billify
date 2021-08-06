@@ -50,11 +50,7 @@ public class TransactionController {
     }
 
     public Call<ArrayList<UserTransaction>> updateUserTransactionLabels(ArrayList<UserTransaction> labelUpdates) {
-        RequestBody userTransactionLabelsBody = RequestBody.create(
-                MediaType.parse("multipart/form-data"),
-                String.valueOf(labelUpdates)
-        );
-        Call<ArrayList<UserTransaction>> call = this.apiRoutes.updateUserTransactionLabels(userTransactionLabelsBody);
+        Call<ArrayList<UserTransaction>> call = this.apiRoutes.updateUserTransactionLabels(labelUpdates);
         return call;
     }
     

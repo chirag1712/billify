@@ -137,7 +137,7 @@ class UserTransaction {
                                 "(Select label_id From Label Where label_name LIKE ? )" +
                                 "Where uid = ? And tid = ?";
                 sql.query(sqlQuery,
-                    label_name, uid, tid, (err, res) => {
+                    [label_name, uid, tid], (err, res) => {
                         if (err) {
                             console.log("error: ", err);
                             reject(err);

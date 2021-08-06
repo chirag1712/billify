@@ -51,10 +51,8 @@ public interface ApiRoutes {
     @GET("api/transactions/get-user-transaction-details/{uid}")
     Call<ArrayList<UserTransaction>> getUserTransactionDetails(@Path("uid") int uid);
 
-    @PATCH("api/transactions/update-user-transaction-labels")
-    Call<ArrayList<UserTransaction>> updateUserTransactionLabels(
-            @Part("label-updates") RequestBody labelUpdates
-    );
+    @POST("api/transactions/update-user-transaction-labels")
+    Call<ArrayList<UserTransaction>> updateUserTransactionLabels(@Body ArrayList<UserTransaction> labelUpdates);
 
     @Multipart
     @POST("api/transactions/create-transaction")

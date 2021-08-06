@@ -20,10 +20,12 @@ public class UserTransaction {
         this.price_share = price_share;
     }
 
-    public UserTransaction(int tid, String transaction_name, Label label) {
+    public UserTransaction(int tid, int uid, String transaction_name, Label label, float price_share) {
         this.tid = tid;
+        this.uid = uid;
         this.transaction_name = transaction_name;
         this.label = label;
+        this.price_share = price_share;
     }
 
 
@@ -34,6 +36,7 @@ public class UserTransaction {
         this.label = new Label(userTransaction.label);
         this.price_share = userTransaction.price_share;
     }
+
 
 
     public float getPrice_share() {

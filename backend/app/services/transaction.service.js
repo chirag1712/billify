@@ -314,9 +314,10 @@ async function getUserTransactionDetails(uid) {
 async function updateUserTransactionLabels(labelUpdates) {
     try {
         const createUserTransactionPromises = labelUpdates.map(async (labelUpdate) => {
-            await UserTransaction.updateUserTransactionLabels(labelUpdate.uid, labelUpdate.tid, labelUpdate.label_name);
+            await UserTransaction.updateUserTransactionLabel(labelUpdate.uid, labelUpdate.tid, labelUpdate.label.label_name);
         });
         await Promise.all(createUserTransactionPromises);
+        console.log("finished promise all");
     }
     catch (error) {
         console.log("Internal error: ", error);

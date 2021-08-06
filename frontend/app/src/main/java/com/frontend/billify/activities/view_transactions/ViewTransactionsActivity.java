@@ -80,8 +80,8 @@ public class ViewTransactionsActivity extends AppCompatActivity {
 //            count--;
 //        }
 
-        tidToUserTransactionMap.put(1, new UserTransaction(1, "Pokebox",
-                new Label(1, "Unlabelled" ,"#F0A500"), 10.5f)
+        tidToUserTransactionMap.put(1, new UserTransaction(349, 7, "Pokebox",
+                new Label(2, "Food" ,"#FF4848"), 10.5f)
         );
         tidToUserTransactionMap.put(2, new UserTransaction(2, "Walmart",
                 new Label(4, "Groceries", "#1EAE98"), 100.1f)
@@ -135,7 +135,30 @@ public class ViewTransactionsActivity extends AppCompatActivity {
                 labels);
         transactionView.AttachObserver(chart);
 
-        backButton.setOnClickListener(view -> finish());
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                transactionController.updateUserTransactionLabels(new ArrayList<>(tidToUserTransactionMap.values())).enqueue(new Callback<ArrayList<UserTransaction>>() {
+                    @Override
+                    public void onResponse(Call<ArrayList<UserTransaction>> call, Response<ArrayList<UserTransaction>> response) {
+
+//                        for (UserTransaction resUserTransaction: response.body()) {
+//                            UserTransaction userTransaction = new UserTransaction(resUserTransaction);
+//                            userTransactions.add(userTransaction);
+//                        }
+                        System.out.println(
+                                "resssssss--------: "
+                                        + response.body().toString()
+                        );
+                    }
+
+                    @Override
+                    public void onFailure(Call<ArrayList<UserTransaction>> call, Throwable t) {
+                        System.out.println("checkpoint 1 ---- ");
+                    }
+                });
+            }
+        });
     }
 
     public void onCurrencyFormatButton(View v) {

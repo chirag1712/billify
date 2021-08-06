@@ -14,8 +14,8 @@ router.get("/get-transaction-items/:tid", transaction.getTransactionItems);
 // @route GET api/transactions/get-user-transaction-details/:uid
 router.get("/get-user-transaction-details/:uid", transaction.getUserTransactionDetails);
 
-// @route PATCH api/transactions/update-user-transaction-labels/
-router.patch("/update-user-transaction-labels", transaction.updateUserTransactionLabels);
+// @route POST api/transactions/update-user-transaction-labels/
+router.post("/update-user-transaction-labels", transaction.updateUserTransactionLabels);
 
 // @route GET api/transactions/transaction/:tid
 router.get("/transaction/:tid", transaction.getTransaction);
