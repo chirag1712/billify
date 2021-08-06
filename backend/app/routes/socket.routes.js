@@ -63,12 +63,10 @@ class SocketHandler {
         // TODO: add validation s.t. user not in session cant do this
         const obj = Session.userSelect(userInfo, tid, item_id);
         console.log("selected ", item_id, " userInfos: ", obj.userInfoObjs);
+        console.log("new price shares", obj.priceShares);
 
         // broadcast to everyone in the room {item_id, userInfos}
-        this.server.to(tid).emit("itemUpdated", { item_id: item_id, userInfos: obj.userInfoObjs });
-
-        // TODO: broadcast priceShares for price share component
-        console.log("new price shares", obj.priceShares);
+        this.server.to(tid).emit("itemUpdated", { item_id: item_id, userInfos: obj.userInfoObjs, price_shares: obj.priceShares });
     }
 
     handleDeselectItem(client, deselectItemRequest) {
@@ -78,12 +76,10 @@ class SocketHandler {
         // TODO: add validation s.t. user not in session cant do this
         const obj = Session.userDeselect(userInfo, tid, item_id);
         console.log("deselected ", item_id, " userInfos: ", obj.userInfoObjs);
+        console.log("new price shares", obj.priceShares);
 
         // broadcast to everyone in the room {item_id, userInfos}
-        this.server.to(tid).emit("itemUpdated", { item_id: item_id, userInfos: obj.userInfoObjs });
-
-        // TODO: broadcast priceShares for price share component
-        console.log("new price shares", obj.priceShares);
+        this.server.to(tid).emit("itemUpdated", { item_id: item_id, userInfos: obj.userInfoObjs, price_shares: obj.priceShares });
     }
 
     async handleDisconnect(client, reason) {

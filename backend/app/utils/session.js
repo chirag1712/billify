@@ -12,7 +12,7 @@ class UserInfo {
 
 class UserPriceInfo {
     constructor(username, price_share) {
-        this.username = username;
+        this.userName = username;
         this.price_share = price_share;
     }
 }
