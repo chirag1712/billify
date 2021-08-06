@@ -47,7 +47,6 @@ public class groupPop extends Activity {
 
 
         int uid = Persistence.getUserId(this);
-        System.out.println("UID " + uid);
 
         groupService.getGroups(uid).enqueue(
                 new Callback<User>() {
@@ -82,8 +81,6 @@ public class groupPop extends Activity {
     }
 
     public void PopulateGroups() {
-        System.out.println("Group name " + groups.get(0).getGroup_name());
-
         //Create an adapter that generates list views for the group list and adds it to group popup window
         GroupListAdapter grouplistadapter = new GroupListAdapter (this, groups);
 
@@ -95,7 +92,6 @@ public class groupPop extends Activity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(groupPop.this, GroupTransaction.class);
-                System.out.println("In grouppop " + groups.get(i).getGid());
                 intent.putExtra("gid", String.valueOf(groups.get(i).getGid()));
                 startActivity(intent);
             }

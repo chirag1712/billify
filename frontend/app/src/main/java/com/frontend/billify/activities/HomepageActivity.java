@@ -74,13 +74,7 @@ public class HomepageActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<Transaction> call, Response<Transaction> response) {
                         Transaction currTransaction = new Transaction(response.body());
-                        System.out.println(
-                                "Successful homepage join billify session request with return value: "
-                                + currTransaction.getName()
-                        );
                         currTransaction.printItems();
-                        System.out.println("Curr Transaction TID: " +
-                                String.valueOf(currTransaction.getTid()));
                         Intent moveToItemizedScreenIntent = new Intent(
                                 HomepageActivity.this,
                                 BillifySessionActivity.class

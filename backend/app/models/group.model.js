@@ -21,8 +21,6 @@ Group.createGroup = newGroup => {
     });
 };
 
-// TODO: add member of fields here only if don't exist
-// can use: ON DUPLICATE KEY UPDATE uid=uid
 MemberOf.addUsers = (listMemberOf) => {
     return new Promise((resolve, reject) => {
         sql.query("INSERT INTO MemberOf (uid, gid) VALUES ?", [listMemberOf], (err, res) => {

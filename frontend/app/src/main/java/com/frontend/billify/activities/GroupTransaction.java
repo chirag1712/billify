@@ -1,11 +1,11 @@
 package com.frontend.billify.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.frontend.billify.R;
 
@@ -21,7 +21,6 @@ public class GroupTransaction extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(GroupTransaction.this, UploadReceiptActivity.class);
-                System.out.println("In group transaction " + getIntent().getStringExtra("gid"));
                 intent.putExtra("gid", getIntent().getStringExtra("gid"));
                 startActivity(intent);
             }
