@@ -2,19 +2,19 @@ package com.frontend.billify.models;
 
 public class UserTransactionShare {
     private int uid;
-    private String userName;
-    private float priceShare;
-    private boolean isSettled;
+    private String user_name;
+    private float price_share;
+    private boolean settled;
 
-    public UserTransactionShare(int uid, String userName, float priceShare, boolean isSettled){
+    public UserTransactionShare(int uid, String user_name, float price_share, boolean settled){
         this.uid = uid;
-        this.userName = userName;
-        this.priceShare = priceShare;
-        this.isSettled= isSettled;
+        this.user_name = user_name;
+        this.price_share = price_share;
+        this.settled = settled;
 
     }
     public String getUserName(){
-        return userName;
+        return user_name;
     }
 
     public int getUid(){
@@ -22,25 +22,25 @@ public class UserTransactionShare {
     }
 
     public float getPriceShare(){
-        return priceShare;
+        return price_share;
     }
-    public boolean getIsSettled(){
-        return isSettled;
+    public boolean isSettled(){
+        return settled;
     }
 
     public void setUserName( String userName){
-        this.userName = userName;
+        this.user_name = user_name;
     }
 
     public void setUid(int uid){
         this.uid = uid;
     }
 
-    public void setPriceShare(float priceShare){
-        this.priceShare = priceShare;
+    public void setPriceShare(float price_share){
+        this.price_share = price_share;
     }
-    public void setIsSettled(boolean isSettled){
-        this.isSettled = isSettled;
+    public void setSettled(boolean isSettled){
+        this.settled = isSettled;
     }
 
 }
