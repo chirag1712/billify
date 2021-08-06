@@ -349,21 +349,11 @@ public class UploadReceiptActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (!response.isSuccessful()) {
-                    try {
                         Toast.makeText(
                                 UploadReceiptActivity.this,
                                 "Couldn't get user Groups successful response from API",
                                 Toast.LENGTH_SHORT
                         ).show();
-                        System.out.println("Error code onResponse "
-                                + response.code()
-                                + " "
-                                + response.errorBody().string());
-                    } catch (Exception e) {
-                        System.out.println(
-                                "Exception occurred during response callback from API request to user groups: "
-                                        + e);
-                    }
                     return;
                 }
                 currUser = response.body(); // only userId is returned
@@ -413,16 +403,11 @@ public class UploadReceiptActivity extends AppCompatActivity {
                         Transaction parsedItemsTransaction = new Transaction();
                         uploadProgress.setVisibility(View.GONE);
                         if (!response.isSuccessful()) {
-                            try {
-                                System.out.println("Error code onResponse "
-                                        + response.code()
-                                        + " "
-                                        + response.errorBody().string());
-                            } catch (Exception e) {
-                                System.out.println(
-                                        "Exception occurred during response callback from receipt parser API: "
-                                                + e);
-                            }
+                            Toast.makeText(
+                                    UploadReceiptActivity.this,
+                                    "Couldn't get parsed receipt successfully from API",
+                                    Toast.LENGTH_SHORT
+                            ).show();
                         } else {
                             if (response.body() == null) {
                                 Toast.makeText(
@@ -445,7 +430,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NotNull Call<Transaction> call, @NotNull Throwable t) {
                         uploadProgress.setVisibility(View.GONE);
-                        System.out.println("Error: " + t.getMessage());
                         Toast.makeText(
                                 UploadReceiptActivity.this,
                                 "Failed Parsing Receipt since API request failed",
@@ -473,9 +457,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
         String transactionName = transactionNameEditText.getText().toString().trim();
         newTransaction.setTransaction_name(transactionName);
         newTransaction.setCurrPhotoFile(UploadReceiptActivity.this.currPhotoFile);
-        System.out.println("Successful upload request with return value: "
-                + newTransaction.getName()
-        );
         newTransaction.setLabel_id(labelTextView.getText().toString());
         return newTransaction;
     }
@@ -498,8 +479,5 @@ public class UploadReceiptActivity extends AppCompatActivity {
         );
         uploadReceiptButton.setVisibility(View.VISIBLE);
         startActivity(moveToEditAndConfirmItemsActivityIntent);
-
     }
-
-
 }
