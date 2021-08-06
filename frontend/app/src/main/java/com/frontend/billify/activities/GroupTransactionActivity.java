@@ -117,7 +117,7 @@ public class GroupTransactionActivity extends AppCompatActivity {
         });
     }
 
-    public void populateTransactions(List<Transaction> transactions) {
+    public void populateTransactions(ArrayList<Transaction> transactions) {
         PastTransactionCardAdapter adapter = new PastTransactionCardAdapter (this);
         adapter.setItems(transactions);
         pastTransactionsRecView.setAdapter(adapter);
