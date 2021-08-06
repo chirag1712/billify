@@ -15,6 +15,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.frontend.billify.R;
+import com.frontend.billify.models.Transaction;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 
 public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransactionCardAdapter.ViewHolder>{
 
-    private ArrayList<Pair<Pair<String,Integer>,ArrayList<Pair<String,Integer>>>> transactions = new ArrayList<Pair<Pair<String,Integer>,ArrayList<Pair<String,Integer>>>>();
+    private ArrayList<Transaction> transactions = new ArrayList<Transaction>();
     private Context context;
 
     public PastTransactionCardAdapter(Context context) {
@@ -40,16 +41,22 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
-        holder.transaction_label.setText(transactions.get(position).first.first);
-        holder.total.setText(transactions.get(position).first.second.toString());
+        holder.transaction_label.setText(transactions.get(position).getName());
+        holder.total.setText(transactions.get(position).getTid());
 
 
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ArrayList<Pair<String,Integer>> user_shares = new ArrayList<Pair<String,Integer>>();
+                user_shares.add(new Pair<String,Integer>("Alric",20));
+                user_shares.add(new Pair<String,Integer>("Huy",40));
+                user_shares.add(new Pair<String,Integer>("Pranav",12));
+                user_shares.add(new Pair<String,Integer>("Denis",45));
+                user_shares.add(new Pair<String,Integer>("Chirag",32));
+                user_shares.add(new Pair<String,Integer>("Mayank",25));
                 ListView price_share_view = (ListView) holder.hiddenView.getChildAt(0);
-                UserShareListAdapter usersharelistadapter = new UserShareListAdapter ((Activity) context, transactions.get(position).second);
-                System.out.println(transactions.get(position).second.toString());
+                UserShareListAdapter usersharelistadapter = new UserShareListAdapter ((Activity) context, user_shares);
                 price_share_view.setAdapter(usersharelistadapter);
                 price_share_view.setEnabled(false);
                 ViewGroup vg = price_share_view;
@@ -83,7 +90,7 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
         return transactions.size();
     }
 
-    public void setItems(ArrayList<Pair<Pair<String,Integer>,ArrayList<Pair<String,Integer>>>> transactions) {
+    public void setItems(ArrayList<Transaction> transactions) {
         this.transactions = transactions;
         System.out.println(transactions.toString());
         notifyDataSetChanged();
