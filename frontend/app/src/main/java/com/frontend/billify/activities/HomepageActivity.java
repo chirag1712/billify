@@ -83,7 +83,7 @@ public class HomepageActivity extends AppCompatActivity {
                                 String.valueOf(currTransaction.getTid()));
                         Intent moveToItemizedScreenIntent = new Intent(
                                 HomepageActivity.this,
-                                ItemizedViewActivity.class
+                                BillifySessionActivity.class
                         );
                         Bundle transactionBundle = new Bundle();
                         transactionBundle.putSerializable("SerializedTransaction", currTransaction);

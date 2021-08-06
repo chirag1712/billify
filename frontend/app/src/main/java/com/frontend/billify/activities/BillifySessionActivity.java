@@ -8,23 +8,21 @@ import android.widget.Button;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.frontend.billify.R;
+import com.frontend.billify.models.StartSession;
 import com.frontend.billify.models.Transaction;
+import com.frontend.billify.models.User;
+import com.frontend.billify.persistence.Persistence;
 
 import java.net.URISyntaxException;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
 
-public class ItemizedViewActivity extends Activity {
-    private ItemizedView itemizedView;
-    private UserPriceShare userPriceShare;
-
-    private RecyclerView itemsRecView;
-    // TODO: can add models for the socket responses later
+public class BillifySessionActivity extends Activity {
     private Socket mSocket;
+
     {
         try {
             mSocket = IO.socket("http://10.0.2.2:5000");
@@ -46,13 +44,17 @@ public class ItemizedViewActivity extends Activity {
         Bundle b = i.getBundleExtra("TransactionBundle");
         Transaction currTransaction = (Transaction) b.getSerializable("SerializedTransaction");
 
-        // price share view
-        userPriceShare = new UserPriceShare(findViewById(R.id.user_shares), this);
+        // client joins session by emitting start session event
+        int uid = Persistence.getUserId(this);
+        String userName = Persistence.getUserName(this);
+        StartSession request = new StartSession(new User(uid, userName), currTransaction.getTid());
+        mSocket.emit("startSession", request.getJson());
 
-        // itemized view
-        itemizedView = new ItemizedView(findViewById(R.id.recipeItems), this, mSocket, currTransaction);
+        // itemized view for transaction items
+        ItemizedView itemizedView = new ItemizedView(findViewById(R.id.recipeItems), this, mSocket, currTransaction);
 
-        // move socket listeners here in parent class how? -> dispatch to class specific event handlers somehow
+        // price share view for users and their prices owed
+        UserPriceShareView userPriceShareView = new UserPriceShareView(findViewById(R.id.user_shares), this, mSocket);
 
         saveButton.setOnClickListener(view -> {
             mSocket.disconnect();

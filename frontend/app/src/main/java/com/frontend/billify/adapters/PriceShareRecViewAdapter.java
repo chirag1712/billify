@@ -2,11 +2,8 @@ package com.frontend.billify.adapters;
 
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class PriceShareRecViewAdapter extends RecyclerView.Adapter<PriceShareRecViewAdapter.ViewHolder>{
@@ -27,12 +24,11 @@ public class PriceShareRecViewAdapter extends RecyclerView.Adapter<PriceShareRec
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        private final TextView user_name, price_share;
-        private final CardView parent;
+//        private final TextView user_name, price_share;
+//        private final CardView parent;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
         }
     }
 }
