@@ -83,13 +83,13 @@ public class TransactionChart extends Observer {
         PieDataSet pieDataSet = new PieDataSet(pieEntries, "");
         //setting text size of the value
         pieDataSet.setValueTextSize(12f);
+        pieDataSet.setValueTextColor(Color.WHITE);
         //providing color list for coloring different entries
         pieDataSet.setColors(colors);
         //set label names outside of chart
         pieDataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
         //grouping the data set from entry to chart
         PieData pieData = new PieData(pieDataSet);
-
         runRenderStrategy(pieData);
         chart.setData(pieData);
 
@@ -125,26 +125,27 @@ public class TransactionChart extends Observer {
         Label oldLabel = oldTransaction.getLabel();
         int oldLabelLid = oldLabel.getLId();
         float oldTransactionPrice = oldTransaction.getPrice_share();
-        float labelTotal = labelTotalMap.get(oldLabelLid).second;
-        // Lower count of old label and remove it if its total <= 0
-        if (labelTotal > oldTransactionPrice) {
-            labelTotalMap.put(oldLabelLid, new Pair<>(oldLabel, labelTotal - oldTransactionPrice));
-        } else {
-            labelTotalMap.remove(oldLabelLid);
+        if (labelTotalMap.containsKey(oldLabelLid)) {
+            float labelTotal = labelTotalMap.get(oldLabelLid).second;
+            // Lower count of old label and remove it if its total <= 0
+            if (labelTotal > oldTransactionPrice) {
+                labelTotalMap.put(oldLabelLid, new Pair<>(oldLabel, labelTotal - oldTransactionPrice));
+            } else {
+                labelTotalMap.remove(oldLabelLid);
+            }
+            // update new label's total transaction amount by adding old
+            Label newLabel = newTempTransactionWithNewLabel.getLabel();
+            int newLabelLid = newLabel.getLId();
+            float newTransactionPrice = oldTransaction.getPrice_share();
+            // Add total to new label or set it if it's not currently displayed
+            if (labelTotalMap.get(newLabelLid) != null) {
+                labelTotal = labelTotalMap.get(newLabelLid).second + newTransactionPrice;
+            } else {
+                labelTotal = newTransactionPrice;
+            }
+            labelTotalMap.put(newLabelLid, new Pair<>(newLabel, labelTotal));
+            oldTransaction.setLabel(newLabel);
+            showPieChart();
         }
-
-        // update new label's total transaction amount by adding old
-        Label newLabel = newTempTransactionWithNewLabel.getLabel();
-        int newLabelLid = newLabel.getLId();
-        float newTransactionPrice = oldTransaction.getPrice_share();
-        // Add total to new label or set it if it's not currently displayed
-        if (labelTotalMap.get(newLabelLid) != null) {
-            labelTotal = labelTotalMap.get(newLabelLid).second + newTransactionPrice;
-        } else {
-            labelTotal = newTransactionPrice;
-        }
-        labelTotalMap.put(newLabelLid, new Pair<>(newLabel, labelTotal));
-        oldTransaction.setLabel(newLabel);
-        showPieChart();
     }
 }
