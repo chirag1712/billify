@@ -223,7 +223,7 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
 
         //Set the total for the transaction
         TextView transaction_total = (TextView) hiddenView.getChildAt(2);
-        transaction_total.setText(Float.toString(transactionSummary.getTotalPrice()));
+        transaction_total.setText("$" + transactionSummary.getTotalPrice());
         if (hiddenView.getVisibility() == View.VISIBLE) {
             // Collapse the card if expanded
             hiddenView.setVisibility(View.GONE);
