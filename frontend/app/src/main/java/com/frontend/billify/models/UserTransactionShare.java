@@ -6,13 +6,19 @@ public class UserTransactionShare {
     private float price_share;
     private boolean settled;
 
+    public UserTransactionShare(int uid, String user_name, float price_share){
+        this.uid = uid;
+        this.user_name = user_name;
+        this.price_share = price_share;
+    }
+
     public UserTransactionShare(int uid, String user_name, float price_share, boolean settled){
         this.uid = uid;
         this.user_name = user_name;
         this.price_share = price_share;
         this.settled = settled;
-
     }
+
     public String getUserName(){
         return user_name;
     }

@@ -69,6 +69,10 @@ public class Item implements Serializable {
         return new ArrayList<>(this.selectedBy.values());
     }
 
+    public HashMap<Integer, String> getSelectedUserData() {
+        return this.selectedBy;
+    }
+
     public void updateSelectedBy(JSONArray userInfos) {
         this.selectedBy.clear();
         for(int i = 0; i < userInfos.length(); i++) {
@@ -92,8 +96,7 @@ public class Item implements Serializable {
     }
 
     public void setPrice(String price) {
-        this.price = Float.valueOf(price);
+        this.price = Float.parseFloat(price);
     }
-
 
 }
