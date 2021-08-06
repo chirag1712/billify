@@ -76,7 +76,8 @@ public class ViewGroupActivity extends Activity {
                     public void onFailure(Call<User> call, Throwable t) {
 
                         Toast.makeText(ViewGroupActivity.this.getApplicationContext(),
-                                "Cannot connect to login server", Toast.LENGTH_LONG).show();
+                                "Cannot connect to backend server", Toast.LENGTH_LONG).show();
+                        t.printStackTrace();
                     }
                 });
     }
