@@ -21,9 +21,6 @@ public class TransactionController {
         this.apiRoutes = retrofitService.retrofit.create(ApiRoutes.class);
     }
     public Call<ArrayList<Transaction>> getGroupTransactions(int gid ) {
-        if (gid == -1) {
-            System.out.println("Error, No uid");
-        }
         return this.apiRoutes.getGroupTransactions(gid);
     }
 
