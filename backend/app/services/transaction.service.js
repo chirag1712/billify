@@ -297,9 +297,28 @@ async function getTransactionItems(tid) {
     return transactionItemsJson;
 }
 
+async function getUserTransactionDetails(uid) {
+    const userTransactionDetailsJson = await UserTransaction.getUserTransactionDetails(uid);
+    return userTransactionDetailsJson;
+}
+
+async function updateUserTransactionLabels(labelUpdates) {
+    try {
+        const createUserTransactionPromises = labelUpdates.map(async (labelUpdate) => {
+            await UserTransaction.updateUserTransactionLabels(labelUpdate.uid, labelUpdate.tid, labelUpdate.label_name);
+        });
+        await Promise.all(createUserTransactionPromises);
+    }
+    catch (error) {
+        console.log("Internal error: ", error);
+    }
+}
+
 module.exports = {
     ReceiptParser,
     insertTransactionsAndItemsToDB,
     getGroupTransactions,
-    getTransactionItems
+    getTransactionItems,
+    getUserTransactionDetails,
+    updateUserTransactionLabels
 };

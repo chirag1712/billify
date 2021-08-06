@@ -1,25 +1,40 @@
 package com.frontend.billify.activities.view_transactions;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.frontend.billify.R;
+import com.frontend.billify.activities.HomepageActivity;
+import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.design_patterns.chart_render_strategies.ChartCurrencyRenderStrategy;
 import com.frontend.billify.design_patterns.chart_render_strategies.ChartPercentRenderStrategy;
 import com.frontend.billify.models.Label;
+import com.frontend.billify.models.Transaction;
 import com.frontend.billify.models.UserTransaction;
 import com.frontend.billify.persistence.Persistence;
+import com.frontend.billify.services.RetrofitService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class ViewTransactionsActivity extends AppCompatActivity {
     private TransactionChart chart;
     private TransactionView transactionView;
+    private ArrayList<UserTransaction> userTransactions = new ArrayList<>();
+
+    private final RetrofitService retrofitService = new RetrofitService();
+    private final TransactionController transactionController = new TransactionController(retrofitService);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,10 +44,42 @@ public class ViewTransactionsActivity extends AppCompatActivity {
         Button backButton = findViewById(R.id.back_button);
         int userId = Persistence.getUserId(this);
 
+        ArrayList<UserTransaction> userTransactions = new ArrayList<>();
+
+        transactionController.getUserTransactionDetails(userId).enqueue(new Callback<ArrayList<UserTransaction>>() {
+            @Override
+            public void onResponse(Call<ArrayList<UserTransaction>> call, Response<ArrayList<UserTransaction>> response) {
+
+                for (UserTransaction resUserTransaction: response.body()) {
+                    UserTransaction userTransaction = new UserTransaction(resUserTransaction);
+                    userTransactions.add(userTransaction);
+                }
+                System.out.println(
+                        "Successful homepage view transaction request with return value: "
+                                + userTransactions.size()
+                );
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<UserTransaction>> call, Throwable t) {
+                System.out.println("checkpoint 1 ---- ");
+            }
+        });
+
         // TODO: Connect to API to fetch all transactions of a user
 
+        System.out.println("checkpoint 1 ---- ");
         // Map from tid to UserTransaction
-        Map<Integer, UserTransaction> tidToUserTransactionMap = new HashMap<Integer, UserTransaction>();
+        Map<Integer, UserTransaction> tidToUserTransactionMap = new HashMap<>();
+        System.out.println("checkpoint 2 ---- " +  userTransactions.size());
+
+//        for (UserTransaction userTransaction: userTransactions) {
+//            System.out.println("checkpoint 3 ---- ");
+//            tidToUserTransactionMap.put(userTransaction.getTid(), userTransaction);
+//            userTransaction.printUserTransaction();
+//            count--;
+//        }
+
         tidToUserTransactionMap.put(1, new UserTransaction(1, "Pokebox",
                 new Label(1, "Unlabelled" ,"#F0A500"), 10.5f)
         );

@@ -4,6 +4,7 @@ import com.frontend.billify.models.Transaction;
 import com.frontend.billify.models.CreateGroupModel;
 import com.frontend.billify.models.Group;
 import com.frontend.billify.models.User;
+import com.frontend.billify.models.UserTransaction;
 
 import java.util.ArrayList;
 
@@ -14,7 +15,9 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.Part;
@@ -46,6 +49,14 @@ public interface ApiRoutes {
 
     @GET("api/transactions/transaction/{tid}")
     Call<Transaction> getTransaction(@Path("tid") int tid);
+
+    @GET("api/transactions/get-user-transaction-details/{uid}")
+    Call<ArrayList<UserTransaction>> getUserTransactionDetails(@Path("uid") int uid);
+
+    @PATCH("api/transactions/update-user-transaction-labels")
+    Call<ArrayList<UserTransaction>> updateUserTransactionLabels(
+            @Part("label-updates") RequestBody labelUpdates
+    );
 
     @Multipart
     @POST("api/transactions/create-transaction")

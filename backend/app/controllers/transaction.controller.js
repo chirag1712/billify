@@ -1,4 +1,5 @@
 const TransactionModel = require("../models/transaction.model.js");
+const UserTransactionModel = require("../models/UserTransaction.model");
 const TransactionService = require("../services/transaction.service.js");
 
 receiptParser = new TransactionService.ReceiptParser();
@@ -81,6 +82,44 @@ const getTransactionItems = async (request, response) => {
     }
 }
 
+// Get the transaction details based on the labels and price
+const getUserTransactionDetails = async (request, response) => {
+    try {
+        const uid = request.params.uid;
+        const getUserTransactionDetailsList = await TransactionService.getUserTransactionDetails(uid);
+        let userTransactions = [];
+        getUserTransactionDetailsList.forEach((userTransaction) => {
+            let userTransactionObj = {
+                tid: userTransaction.tid,
+                uid: userTransaction.uid,
+                transaction_name: userTransaction.transaction_name,
+                label: {
+                    lid: userTransaction.label_id,
+                    label_name: userTransaction.label_name,
+                    label_color: userTransaction.label_color
+                },
+                price_share: userTransaction.price_share
+            }
+            userTransactions.push(userTransactionObj);
+        });
+        return response.send(userTransactions);
+    } catch (err) {
+        return response.status(500).send({error: "Internal error: Couldn't get user transaction details: " + err})
+    }
+}
+
+// put the user transaction label
+const updateUserTransactionLabels = async (request, response) => {
+    console.log('check-------------------');
+    try {
+        const labelUpdates = JSON.parse(request.body["label_updates"]);
+        const updatedUserTransactionLabels = await TransactionService.updateUserTransactionLabels(labelUpdates);       
+        return response.send(updatedUserTransactionLabels);
+    } catch (err) {
+        return response.status(500).send({error: "Internal error: Couldn't update user transaction labels: " + err})
+    }
+}
+
 const getTransaction = async (request, response) => {
     try {
         const tid = request.params.tid;
@@ -98,4 +137,4 @@ const getTransaction = async (request, response) => {
     }
 }
 
-module.exports = { parseReceipt, getGroupTransactions, getTransactionItems, getTransaction, createNewTransaction};
+module.exports = { parseReceipt, getGroupTransactions, getTransactionItems, getUserTransactionDetails, getTransaction, createNewTransaction, updateUserTransactionLabels};
