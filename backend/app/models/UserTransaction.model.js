@@ -26,6 +26,35 @@ class UserTransaction {
         });
     }
 
+     // returns user information for users who have selected this item
+     static getUserTransactionInfosForTransaction(tid) {
+        return new Promise((resolve, reject) => {
+            sql.query("SELECT u.uid, u.user_name, ut.price_share FROM UserTransaction ut, User u WHERE u.uid = ut.uid and ut.tid = ?", tid, (err, res) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                } else {
+                    console.log("users found for tid=", tid, ": ", res);
+                    resolve(res);
+                }
+            });
+        });
+    }
+
+    static updatePriceShare(tid, uid, new_price_share) {
+        return new Promise((resolve, reject) => {
+            sql.query("UPDATE UserTransaction SET price_share = ? where uid = ? AND tid = ?", [new_price_share, uid, tid] , (err, res) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                } else {
+                    console.log("update price share for tid =", tid, "uid =", uid, "to", new_price_share);
+                    resolve(res);
+                } 
+            });
+        });
+    }
+
 }
 
 module.exports = {UserTransaction};

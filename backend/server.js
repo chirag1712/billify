@@ -25,8 +25,8 @@ app.use("/api/transactions", require("./app/routes/transaction.routes.js"));
 // socket setup
 const server = http.createServer(app);
 const io = require("socket.io")(server, { pingTimeout: 240000 });
-socketHandler = new SocketHandler(io);
-io.on("connection", socketHandler.connection);
+const socketHandler = new SocketHandler(io);
+io.on("connection", socketHandler.connection.bind(socketHandler));
 
 // start listening
 const PORT = process.env.PORT || 5000;
