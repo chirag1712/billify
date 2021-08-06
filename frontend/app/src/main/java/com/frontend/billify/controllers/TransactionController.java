@@ -2,6 +2,7 @@ package com.frontend.billify.controllers;
 
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.models.User;
+import com.frontend.billify.models.UserTransactionShare;
 import com.frontend.billify.services.ApiRoutes;
 import com.frontend.billify.services.RetrofitService;
 
@@ -19,8 +20,15 @@ public class TransactionController {
     public TransactionController(RetrofitService retrofitService) {
         this.apiRoutes = retrofitService.retrofit.create(ApiRoutes.class);
     }
+
+    // All Transactions in a group
     public Call<ArrayList<Transaction>> getGroupTransactions(int gid ) {
         return this.apiRoutes.getGroupTransactions(gid);
+    }
+
+    //All user shares for a transaction
+    public Call<ArrayList<UserTransactionShare>> getUserTransactionShare(int tid ) {
+        return this.apiRoutes.getUserTransactionShares(tid);
     }
 
     public Call<Transaction> parseReceipt(File img) {
