@@ -46,10 +46,10 @@ public interface ApiRoutes {
     @GET("api/transactions/transaction/{tid}")
     Call<Transaction> getTransaction(@Path("tid") int tid);
 
-    @GET("api/transactions/get-group-transactions/{gid}}")
+    @GET("api/transactions/get-group-transactions/{gid}")
     Call<ArrayList<Transaction>> getGroupTransactions(@Path("gid") int gid);
 
-    @GET("api/transactions/price-shares/:tid")
+    @GET("api/transactions/price-shares/{tid}")
     Call<ArrayList<UserTransactionShare>> getUserTransactionShares(@Path("tid") int tid);
 
     @Multipart
