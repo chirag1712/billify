@@ -97,7 +97,7 @@ public class ViewGroupActivity extends Activity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(ViewGroupActivity.this, GroupTransactionActivity.class);
                 System.out.println("In grouppop " + groups.get(i).getGid());
-                intent.putExtra("gid", String.valueOf(groups.get(i).getGid()));
+                intent.putExtra("gid", groups.get(i).getGid());
                 startActivity(intent);
             }
         });

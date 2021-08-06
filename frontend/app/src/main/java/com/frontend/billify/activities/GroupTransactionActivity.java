@@ -42,7 +42,10 @@ public class GroupTransactionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_transaction);
 
-        int gid = Integer.parseInt(getIntent().getStringExtra("gid"));
+        int gid = getIntent().getIntExtra("gid", -1);
+        if (gid == -1) {
+            Toast.makeText(this, "Gid was not passed successfully", Toast.LENGTH_SHORT).show();
+        }
         System.out.println("gid: " + gid);
 
 
@@ -63,7 +66,7 @@ public class GroupTransactionActivity extends AppCompatActivity {
 
 
 
-        pastTransactionsRecView= findViewById(R.id.recipeTransactions);
+        pastTransactionsRecView = findViewById(R.id.recipeTransactions);
 
 
 //        //Create an adapter that generates list views for the group list and adds it to group popup window
@@ -82,8 +85,8 @@ public class GroupTransactionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(GroupTransactionActivity.this, UploadReceiptActivity.class);
-                System.out.println("In group transaction " + getIntent().getStringExtra("gid"));
-                intent.putExtra("gid", getIntent().getStringExtra("gid"));
+                System.out.println("In group transaction " + getIntent().getIntExtra("gid", -1));
+                intent.putExtra("gid", gid);
                 startActivity(intent);
             }
         });

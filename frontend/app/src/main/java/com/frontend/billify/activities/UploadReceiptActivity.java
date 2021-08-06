@@ -391,16 +391,22 @@ public class UploadReceiptActivity extends AppCompatActivity {
          */
         ArrayList<String> groupNames = currUser.getGroupNames();
         currUser.initGroupNameToGidMap();
+        currUser.initGidToGroupPositionMap();
         groupTextView = findViewById(R.id.auto_complete_groups_text_view);
         groupArrayAdapter = new ArrayAdapter<>(
                 UploadReceiptActivity.this,
                 R.layout.list_group,
                 groupNames
         );
-
         groupTextView.setAdapter(groupArrayAdapter);
-        String firstGroupName = groupArrayAdapter.getItem(0).toString();
-        groupTextView.setText(firstGroupName, false);
+        String defaultGroupName = "";
+        if (getIntent().hasExtra("gid")) {
+            int gid = getIntent().getIntExtra("gid", -1);
+            defaultGroupName = groupArrayAdapter.getItem(currUser.getGroupPositionFromGid(gid)).toString();
+        } else {
+            defaultGroupName = groupArrayAdapter.getItem(0).toString();
+        }
+        groupTextView.setText(defaultGroupName, false);
     }
 
     public void uploadAndParseReceipt() {
