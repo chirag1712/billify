@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.ViewReceiptImageActivity">
+    tools:context=".activities.ViewReceiptImageActivity"
+    >
 
     <ImageView
         android:id="@+id/group_receipt_image_view"
@@ -13,5 +14,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="183dp"
-        tools:srcCompat="@tools:sample/avatars" />
+        tools:srcCompat="@tools:sample/avatars"
+        android:adjustViewBounds="true"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

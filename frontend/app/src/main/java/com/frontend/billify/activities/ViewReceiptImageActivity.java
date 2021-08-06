@@ -2,12 +2,18 @@ package com.frontend.billify.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.frontend.billify.R;
+
+import java.io.File;
 
 public class ViewReceiptImageActivity extends AppCompatActivity {
 
@@ -27,6 +33,47 @@ public class ViewReceiptImageActivity extends AppCompatActivity {
         if (getIntent().hasExtra("receipt_img")) {
             ImageView receiptImageView = findViewById(R.id.group_receipt_image_view);
             Glide.with(this).load(getIntent().getStringExtra("receipt_img")).into(receiptImageView);
+
+        } else if (getIntent().hasExtra("receipt_img_file")) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+
+            File receiptImageFile = (File) getIntent().getExtras().get("receipt_img_file");
+            ImageView receiptImageView = findViewById(R.id.group_receipt_image_view);
+            Bitmap myBitmap = BitmapFactory.decodeFile(receiptImageFile.getAbsolutePath(), options);
+
+            myBitmap = BitmapFactory.decodeFile(receiptImageFile.getAbsolutePath());
+            receiptImageView.setImageBitmap(myBitmap);
         }
     }
+
+    private int[] getNewImageWidthHeight(int imageWidth, int imageHeight, int screen_width, int screen_height) {
+        float i=1, j=1;
+
+        float[] arr = {1f, 1.5f, 1.75f, 2f, 2.5f, 2.75f, 3, 3.5f};
+        for (int k = 0; k < arr.length; ++k) {
+            float elem = arr[k];
+            i = elem;
+            if ((imageWidth * elem) > (0.95 * screen_width)) {
+                i = arr[k-1];
+                break;
+            }
+        }
+
+        for (int k = 0; k < arr.length; ++k) {
+            float elem = arr[k];
+            j = elem;
+            if ((imageHeight * elem) > (0.95 * screen_height)) {
+                j = arr[k-1];
+                break;
+            }
+        }
+
+        imageHeight = (int) Math.min(i, j) * imageHeight;
+        imageWidth = (int) Math.min(i, j) * imageWidth;
+
+        return new int[]{imageWidth, imageHeight};
+
+    }
+
 }

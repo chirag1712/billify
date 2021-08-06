@@ -120,6 +120,14 @@ public class UploadReceiptActivity extends AppCompatActivity {
         // Set default Label in dropdown
         labelTextView.setText(labelDropdownAdapter.getItem(0).toString(), false);
 
+        receiptImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(UploadReceiptActivity.this, ViewReceiptImageActivity.class);
+                intent.putExtra("receipt_img_file", currPhotoFile);
+                startActivity(intent);
+            }
+        });
         // Set default Transaction Name
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm");
         Date date = new Date(System.currentTimeMillis());
