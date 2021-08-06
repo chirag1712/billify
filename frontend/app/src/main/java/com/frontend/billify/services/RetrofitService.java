@@ -17,7 +17,7 @@ public class RetrofitService {
     // change localhost api address here
     public RetrofitService() {
         this.retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:5000/")
+                .baseUrl("http://192.168.4.26:5000/")
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();

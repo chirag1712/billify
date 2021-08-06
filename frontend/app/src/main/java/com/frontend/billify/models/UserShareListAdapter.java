@@ -32,7 +32,7 @@ public class UserShareListAdapter extends ArrayAdapter<Pair<String, Integer>> {
         nameTextView.setText(current_user_share.first);
 
         TextView priceTextView = (TextView) listItemView.findViewById(R.id.user_transaction_share);
-        nameTextView.setText(current_user_share.second.toString());
+        priceTextView.setText(current_user_share.second.toString());
 
         return listItemView;
     }
