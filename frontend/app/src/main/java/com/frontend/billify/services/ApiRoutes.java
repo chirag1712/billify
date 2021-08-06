@@ -53,6 +53,9 @@ public interface ApiRoutes {
 
     @POST("api/transactions/update-user-transaction-labels")
     Call<Object> updateUserTransactionLabels(@Body ArrayList<UserTransaction> labelUpdates);
+    
+    @GET("api/transactions/get-group-transactions/{gid}}")
+    Call<ArrayList<Transaction>> getGroupTransactions(@Path("gid") int gid);
 
     @Multipart
     @POST("api/transactions/create-transaction")

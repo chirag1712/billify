@@ -51,13 +51,41 @@
                 android:padding="10dp"
                 >
             </ListView>
-            <Button
-                android:id="@+id/testb"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/view_all_group"
                 android:layout_below="@id/user_price_shares"
-                app:backgroundTint="@color/cyan_button" />
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/join_billify_session"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="10dp"
+                    android:text="Billify Session"
+                    app:backgroundTint="@color/cyan_button"
+                    android:textSize="10sp"/>
+                <Button
+                    android:id="@+id/view_receipt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="10dp"
+                    android:text="Receipt"
+                    android:layout_below="@id/user_price_shares"
+                    app:backgroundTint="@color/cyan_button"
+                    android:textSize="10sp"/>
+                <Button
+                    android:id="@+id/settle_share"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="10dp"
+                    android:text="Settle"
+                    android:layout_below="@id/user_price_shares"
+                    app:backgroundTint="@color/cyan_button"
+                    android:textSize="10sp"/>
+            </LinearLayout>>
 
         </RelativeLayout>
     </RelativeLayout>
