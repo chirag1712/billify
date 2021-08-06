@@ -82,9 +82,9 @@
             android:layout_below="@+id/join_billify_session"
             android:layout_height="wrap_content"
             android:layout_width="124dip"
-            android:layout_marginTop="5dip"
             android:layout_centerHorizontal="true"
-            android:text="@string/logout" />
+            android:text="@string/logout"
+            app:backgroundTint="@color/cyan_button" />
 
     </RelativeLayout>
 
