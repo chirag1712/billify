@@ -39,9 +39,11 @@
         android:textSize="50sp"/>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:background="@color/group_popup"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/recipeItems">
+        android:layout_below="@id/total_amount_int"
+        android:id="@+id/recipeTransactions">
 
     </androidx.recyclerview.widget.RecyclerView>
 

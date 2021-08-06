@@ -1,10 +1,13 @@
 package com.frontend.billify.models;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,6 +17,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.frontend.billify.R;
+import com.frontend.billify.activities.GroupTransaction;
 import com.frontend.billify.models.Item;
 
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +27,7 @@ import android.transition.TransitionManager;
 
 public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransactionCardAdapter.ViewHolder>{
 
-    private ArrayList<Pair<String,Integer>> transactions = new ArrayList<Pair<String,Integer>>();
+    private ArrayList<Pair<Pair<String,Integer>,ArrayList<Pair<String,Integer>>>> transactions = new ArrayList<Pair<Pair<String,Integer>,ArrayList<Pair<String,Integer>>>>();
     private Context context;
 
     public PastTransactionCardAdapter(Context context) {
@@ -41,8 +45,20 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
-        holder.transaction_label.setText(transactions.get(position).first);
-        holder.total.setText(transactions.get(position).second);
+        holder.transaction_label.setText(transactions.get(position).first.first);
+        holder.total.setText(transactions.get(position).first.second.toString());
+        UserShareListAdapter usersharelistadapter = new UserShareListAdapter ((Activity) context, transactions.get(position).second);
+        System.out.println(transactions.get(position).second.toString());
+        holder.hiddenView.setAdapter(usersharelistadapter);
+        holder.hiddenView.setEnabled(false);
+        ViewGroup vg = holder.hiddenView;
+        View listItem = usersharelistadapter.getView(0,null,vg);
+        listItem.measure(0,0);
+        int listItemHeight = listItem.getMeasuredHeight();
+        ViewGroup.LayoutParams param = holder.hiddenView.getLayoutParams();
+        param.height = listItemHeight*(usersharelistadapter.getCount()) + (holder.hiddenView.getDividerHeight() * (usersharelistadapter.getCount()-1));
+        holder.hiddenView.setLayoutParams(param);
+
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,15 +86,16 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
         return transactions.size();
     }
 
-    public void setItems(ArrayList<Item> items) {
+    public void setItems(ArrayList<Pair<Pair<String,Integer>,ArrayList<Pair<String,Integer>>>> transactions) {
         this.transactions = transactions;
+        System.out.println(transactions.toString());
         notifyDataSetChanged();
     }
 
     public class ViewHolder  extends  RecyclerView.ViewHolder{
         private TextView transaction_label, total;
         private CardView parent;
-        private View hiddenView;
+        private ListView hiddenView;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             transaction_label = itemView.findViewById(R.id.transaction_label);
