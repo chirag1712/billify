@@ -161,7 +161,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     }
 
     private void openViewGroupPage(){
-        Intent intent = new Intent(this, groupPop.class);
+        Intent intent = new Intent(this, ViewGroupActivity.class);
         startActivity(intent);
     }
 }

@@ -1,4 +1,4 @@
-package com.frontend.billify.models;
+package com.frontend.billify.adapters;
 
 import android.app.Activity;
 import android.util.Pair;
