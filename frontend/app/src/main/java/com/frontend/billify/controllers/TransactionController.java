@@ -1,10 +1,12 @@
 package com.frontend.billify.controllers;
 
 import com.frontend.billify.models.Transaction;
+import com.frontend.billify.models.User;
 import com.frontend.billify.services.ApiRoutes;
 import com.frontend.billify.services.RetrofitService;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -16,6 +18,12 @@ public class TransactionController {
 
     public TransactionController(RetrofitService retrofitService) {
         this.apiRoutes = retrofitService.retrofit.create(ApiRoutes.class);
+    }
+    public Call<ArrayList<Transaction>> getGroupTransactions(int gid ) {
+        if (gid == -1) {
+            System.out.println("Error, No uid");
+        }
+        return this.apiRoutes.getGroupTransactions(gid);
     }
 
     public Call<Transaction> parseReceipt(File img) {

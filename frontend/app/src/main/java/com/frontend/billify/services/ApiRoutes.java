@@ -45,6 +45,9 @@ public interface ApiRoutes {
     @GET("api/transactions/transaction/{tid}")
     Call<Transaction> getTransaction(@Path("tid") int tid);
 
+    @GET("api/transactions/get-group-transactions/{gid}}")
+    Call<ArrayList<Transaction>> getGroupTransactions(@Path("gid") int gid);
+
     @Multipart
     @POST("api/transactions/create-transaction")
     Call<Transaction> createTransaction(
