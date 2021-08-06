@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +23,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.frontend.billify.R;
-import com.frontend.billify.activities.GroupTransactionActivity;
-import com.frontend.billify.activities.HomepageActivity;
 import com.frontend.billify.activities.ItemizedViewActivity;
 import com.frontend.billify.activities.ViewGroupActivity;
 import com.frontend.billify.activities.ViewReceiptImageActivity;
@@ -39,10 +36,7 @@ import com.frontend.billify.services.RetrofitService;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -56,8 +50,6 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
     private ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 
     private Context context;
-
-    private int first_click_pos = -1;
 
     public PastTransactionCardAdapter(Context context) {
         this.context = context;
@@ -82,6 +74,8 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
         holder.date.setText(curTransaction.getFormattedT_date());
 
         holder.joinBillifySession.setOnClickListener(view -> {
+            holder.hiddenView.setVisibility(View.GONE);
+
             transactionController.getTransaction(curTransaction.getTid()).enqueue(new Callback<Transaction>() {
                 @Override
                 public void onResponse(Call<Transaction> call, Response<Transaction> response) {
@@ -117,53 +111,11 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
             context.startActivity(viewReceiptImgIntent);
         });
 
-        holder.parent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if(first_click_pos != position){
-                    getUserShares(curTransaction.getTid(),holder.hiddenView);
-                    first_click_pos = position;
-                }
-                else{
-                    System.out.println(user_shares.toString());
-                    if (holder.hiddenView.getVisibility() == View.VISIBLE) {
-
-                        // The transition of the hiddenView is carried out
-                        //  by the TransitionManager class.
-                        // Here we use an object of the AutoTransition
-                        // Class to create a default transition.
-                        holder.hiddenView.setVisibility(View.GONE);
-
-                    }
-
-                    // If the CardView is not expanded, set its visibility
-                    // to visible and change the expand more icon to expand less.
-                    else {
-                        holder.hiddenView.setVisibility(View.VISIBLE);
-                    }
-                }
-
-
-//                ArrayList<Pair<String,Integer>> user_shares = new ArrayList<Pair<String,Integer>>();
-//                user_shares.add(new Pair<String,Integer>("Alric",20));
-//                user_shares.add(new Pair<String,Integer>("Huy",40));
-//                user_shares.add(new Pair<String,Integer>("Pranav",12));
-//                user_shares.add(new Pair<String,Integer>("Denis",45));
-//                user_shares.add(new Pair<String,Integer>("Chirag",32));
-//                user_shares.add(new Pair<String,Integer>("Mayank",25));
-//                ListView price_share_view = (ListView) holder.hiddenView.getChildAt(0);
-//                UserShareListAdapter usersharelistadapter = new UserShareListAdapter ((Activity) context, user_shares);
-//                price_share_view.setAdapter(usersharelistadapter);
-//                price_share_view.setEnabled(false);
-//                ViewGroup vg = price_share_view;
-//                View listItem = usersharelistadapter.getView(0,null,vg);
-//                listItem.measure(0,0);
-//                int listItemHeight = listItem.getMeasuredHeight();
-//                ViewGroup.LayoutParams param = price_share_view.getLayoutParams();
-//                param.height = listItemHeight*(usersharelistadapter.getCount()) + (price_share_view.getDividerHeight() * (usersharelistadapter.getCount()-1));
-//                price_share_view.setLayoutParams(param);
-
+        holder.parent.setOnClickListener(view -> {
+            if (holder.hiddenView.getVisibility() == View.GONE) {
+                getUserShares(curTransaction.getTid(),holder.hiddenView);
+            } else {
+                holder.hiddenView.setVisibility(View.GONE);
             }
         });
     }
@@ -249,15 +201,9 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
         TextView transaction_total = (TextView) hiddenView.getChildAt(2);
         transaction_total.setText(Float.toString(transactionSummary.getTotalPrice()));
         if (hiddenView.getVisibility() == View.VISIBLE) {
-
             // Collapse the card if expanded
             hiddenView.setVisibility(View.GONE);
-
-        }
-
-
-        else {
-
+        } else {
             //expand the card if collapsed
             hiddenView.setVisibility(View.VISIBLE);
         }

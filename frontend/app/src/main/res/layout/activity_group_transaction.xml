@@ -18,31 +18,21 @@
         android:layout_marginHorizontal="30dp"
         android:layout_marginBottom="16dp"/>
 
-    <TextView
-        android:id="@+id/total_amount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/add_group_receipt"
-        android:layout_alignLeft="@id/add_group_receipt"
-        android:text= "Total Spent:"
-        android:textColor="@color/black"
-        android:textSize="20sp"/>
 
     <TextView
-        android:id="@+id/total_amount_int"
+        android:id="@+id/group_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/total_amount"
-        android:layout_alignLeft="@id/total_amount"
-        android:text= "300.00 $"
         android:textColor="@color/black"
-        android:textSize="50sp"/>
+        android:layout_below="@id/add_group_receipt"
+        android:layout_alignLeft="@id/add_group_receipt"
+        android:textSize="40sp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:background="@color/group_popup"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/total_amount_int"
+        android:layout_below="@id/group_name"
         android:id="@+id/recipeTransactions">
 
     </androidx.recyclerview.widget.RecyclerView>

@@ -9,9 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.frontend.billify.R;
 import com.frontend.billify.activities.view_transactions.ViewTransactionsActivity;
-import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.persistence.Persistence;
-import com.frontend.billify.services.RetrofitService;
 
 public class HomepageActivity extends AppCompatActivity {
     @Override
@@ -23,18 +21,12 @@ public class HomepageActivity extends AppCompatActivity {
         Button add_receipt_button = findViewById(R.id.add_receipt_button);
         Button create_group_button = findViewById(R.id.create_group_button);
         Button view_transactions_button = findViewById(R.id.view_transactions_button);
-        Button join_billify_session = findViewById(R.id.join_billify_session);
         Button logoutButton = findViewById(R.id.logout_button);
-        RetrofitService retrofitService = new RetrofitService();
-        TransactionController transactionController = new TransactionController(retrofitService);
 
         view_group_button.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
-
                 startActivity(new Intent(HomepageActivity.this, ViewGroupActivity.class));
-
             }
         });
 
