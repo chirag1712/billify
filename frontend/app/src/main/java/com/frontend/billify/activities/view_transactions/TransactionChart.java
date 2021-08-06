@@ -122,7 +122,6 @@ public class TransactionChart extends Observer {
         UserTransaction newTempTransactionWithNewLabel = (UserTransaction) o;
         UserTransaction oldTransaction = tidToUserTransactionMap.get(newTempTransactionWithNewLabel.getTid());
 
-        // update old label's total transaction amount by decrementing it by deselected transaction
         Label oldLabel = oldTransaction.getLabel();
         int oldLabelLid = oldLabel.getLId();
         float oldTransactionPrice = oldTransaction.getPrice_share();

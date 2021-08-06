@@ -109,7 +109,6 @@ class UserTransaction {
     static getUserTransactionDetails(uid) {
         if (uid !== undefined) {
             return new Promise((resolve, reject) => {
-                console.log('checkpoint 1');
                 let sqlQuery = "Select ut.tid as tid, ut.uid as uid, t.transaction_name as transaction_name, ut.price_share as price_share, l.label_id as label_id, l.label_name as label_name, l.label_color as label_color " +
                                 "From UserTransaction as ut " +
                                 "Inner Join Transaction as t ON ut.tid = t.tid " +
@@ -121,7 +120,6 @@ class UserTransaction {
                             console.log("error: ", err);
                             reject(err);
                         }
-                        console.log('Accessing transactions for the user: ', uid, res);
                         resolve(res);
                     });
             });
@@ -142,7 +140,9 @@ class UserTransaction {
                             console.log("error: ", err);
                             reject(err);
                         }
-                        console.log('Updating user transaction label: ', uid, tid, res);
+                        if (res.changedRows == 1) {
+                            console.log('Updating user transaction label: ', uid, tid, res);
+                        }
                         resolve(res);
                     });
             });

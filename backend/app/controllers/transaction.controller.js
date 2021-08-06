@@ -119,11 +119,11 @@ const getUserTransactionDetails = async (request, response) => {
 // put the user transaction label
 const updateUserTransactionLabels = async (request, response) => {
     try {
+        console.log("New Update Label request");
         const labelUpdates = request.body;
-        console.log(labelUpdates);
-        await TransactionService.updateUserTransactionLabels(labelUpdates);       
-        console.log('check-------------------');
-        return response.status(200).send({success: "success"});
+        await TransactionService.updateUserTransactionLabels(labelUpdates);
+        const successMessage = "Successfully updated UserTransaction labels";       
+        return response.send({success: successMessage});
     } catch (err) {
         return response.status(500).send({error: "Internal error: Couldn't update user transaction labels: " + err})
     }

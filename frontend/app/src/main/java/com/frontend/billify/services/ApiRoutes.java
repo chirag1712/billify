@@ -52,7 +52,7 @@ public interface ApiRoutes {
     Call<ArrayList<UserTransaction>> getUserTransactionDetails(@Path("uid") int uid);
 
     @POST("api/transactions/update-user-transaction-labels")
-    Call<ArrayList<UserTransaction>> updateUserTransactionLabels(@Body ArrayList<UserTransaction> labelUpdates);
+    Call<Object> updateUserTransactionLabels(@Body ArrayList<UserTransaction> labelUpdates);
 
     @Multipart
     @POST("api/transactions/create-transaction")

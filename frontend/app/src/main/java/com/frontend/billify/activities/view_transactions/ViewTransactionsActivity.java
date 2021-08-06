@@ -2,7 +2,6 @@ package com.frontend.billify.activities.view_transactions;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
@@ -10,12 +9,11 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.frontend.billify.R;
-import com.frontend.billify.activities.HomepageActivity;
 import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.design_patterns.chart_render_strategies.ChartCurrencyRenderStrategy;
 import com.frontend.billify.design_patterns.chart_render_strategies.ChartPercentRenderStrategy;
 import com.frontend.billify.models.Label;
-import com.frontend.billify.models.Transaction;
+import com.frontend.billify.models.User;
 import com.frontend.billify.models.UserTransaction;
 import com.frontend.billify.persistence.Persistence;
 import com.frontend.billify.services.RetrofitService;
@@ -35,7 +33,7 @@ public class ViewTransactionsActivity extends AppCompatActivity {
 
     private final RetrofitService retrofitService = new RetrofitService();
     private final TransactionController transactionController = new TransactionController(retrofitService);
-
+    private Map<Integer, UserTransaction> tidToUserTransactionMap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +41,10 @@ public class ViewTransactionsActivity extends AppCompatActivity {
 
         Button backButton = findViewById(R.id.back_button);
         int userId = Persistence.getUserId(this);
+
+        // Map from tid to UserTransaction
+        tidToUserTransactionMap = new HashMap<>();
+
 
         ArrayList<UserTransaction> userTransactions = new ArrayList<>();
 
@@ -54,6 +56,11 @@ public class ViewTransactionsActivity extends AppCompatActivity {
                     UserTransaction userTransaction = new UserTransaction(resUserTransaction);
                     userTransactions.add(userTransaction);
                 }
+                for (UserTransaction userTransaction: userTransactions) {
+//                    tidToUserTransactionMap.put(userTransaction.getTid(), userTransaction);
+                    userTransaction.printUserTransaction();
+                }
+
                 System.out.println(
                         "Successful homepage view transaction request with return value: "
                                 + userTransactions.size()
@@ -62,25 +69,15 @@ public class ViewTransactionsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ArrayList<UserTransaction>> call, Throwable t) {
-                System.out.println("checkpoint 1 ---- ");
+                System.out.println("Failed getting User Transaction Response API");
+                t.printStackTrace();
             }
         });
 
         // TODO: Connect to API to fetch all transactions of a user
 
-        System.out.println("checkpoint 1 ---- ");
-        // Map from tid to UserTransaction
-        Map<Integer, UserTransaction> tidToUserTransactionMap = new HashMap<>();
-        System.out.println("checkpoint 2 ---- " +  userTransactions.size());
 
-//        for (UserTransaction userTransaction: userTransactions) {
-//            System.out.println("checkpoint 3 ---- ");
-//            tidToUserTransactionMap.put(userTransaction.getTid(), userTransaction);
-//            userTransaction.printUserTransaction();
-//            count--;
-//        }
-
-        tidToUserTransactionMap.put(1, new UserTransaction(349, 7, "Pokebox",
+        tidToUserTransactionMap.put(349, new UserTransaction(349, 7, "Pokebox",
                 new Label(2, "Food" ,"#FF4848"), 10.5f)
         );
         tidToUserTransactionMap.put(2, new UserTransaction(2, "Walmart",
@@ -123,7 +120,9 @@ public class ViewTransactionsActivity extends AppCompatActivity {
         }
 
         // The observer. Gets notified when a transaction label is changed and update the chart
-        chart = new TransactionChart(findViewById(R.id.transaction_chart), tidToUserTransactionMap,
+        chart = new TransactionChart(
+                findViewById(R.id.transaction_chart),
+                tidToUserTransactionMap,
                 labelTotalMap,
                 new ChartPercentRenderStrategy());
 
@@ -138,23 +137,35 @@ public class ViewTransactionsActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                transactionController.updateUserTransactionLabels(new ArrayList<>(tidToUserTransactionMap.values())).enqueue(new Callback<ArrayList<UserTransaction>>() {
+                transactionController.updateUserTransactionLabels(new ArrayList<>(tidToUserTransactionMap.values())).enqueue(
+                        new Callback<Object>() {
                     @Override
-                    public void onResponse(Call<ArrayList<UserTransaction>> call, Response<ArrayList<UserTransaction>> response) {
+                    public void onResponse(Call<Object> call, Response<Object> response) {
 
-//                        for (UserTransaction resUserTransaction: response.body()) {
-//                            UserTransaction userTransaction = new UserTransaction(resUserTransaction);
-//                            userTransactions.add(userTransaction);
-//                        }
+                        if (!response.isSuccessful()) {
+                            Toast.makeText(
+                                    ViewTransactionsActivity.this,
+                                    "Response returned but with an response code: "
+                                        + response.code() + ": "
+                                        + response.errorBody().toString(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
                         System.out.println(
                                 "resssssss--------: "
                                         + response.body().toString()
                         );
+                        Toast.makeText(ViewTransactionsActivity.this,
+                                "Saving updated labels", Toast.LENGTH_SHORT).show();
+                        finish();
                     }
 
                     @Override
-                    public void onFailure(Call<ArrayList<UserTransaction>> call, Throwable t) {
-                        System.out.println("checkpoint 1 ---- ");
+                    public void onFailure(Call<Object> call, Throwable t) {
+                        Toast.makeText(ViewTransactionsActivity.this,
+                                "API Response failed for some reason",
+                                Toast.LENGTH_SHORT).show();
+                        t.printStackTrace();
+                        finish();
                     }
                 });
             }

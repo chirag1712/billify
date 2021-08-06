@@ -1,6 +1,7 @@
 package com.frontend.billify.controllers;
 
 import com.frontend.billify.models.Transaction;
+import com.frontend.billify.models.User;
 import com.frontend.billify.models.UserTransaction;
 import com.frontend.billify.services.ApiRoutes;
 import com.frontend.billify.services.RetrofitService;
@@ -49,8 +50,8 @@ public class TransactionController {
         return call;
     }
 
-    public Call<ArrayList<UserTransaction>> updateUserTransactionLabels(ArrayList<UserTransaction> labelUpdates) {
-        Call<ArrayList<UserTransaction>> call = this.apiRoutes.updateUserTransactionLabels(labelUpdates);
+    public Call<Object> updateUserTransactionLabels(ArrayList<UserTransaction> labelUpdates) {
+        Call<Object> call = this.apiRoutes.updateUserTransactionLabels(labelUpdates);
         return call;
     }
     

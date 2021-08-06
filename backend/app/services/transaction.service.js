@@ -317,7 +317,6 @@ async function updateUserTransactionLabels(labelUpdates) {
             await UserTransaction.updateUserTransactionLabel(labelUpdate.uid, labelUpdate.tid, labelUpdate.label.label_name);
         });
         await Promise.all(createUserTransactionPromises);
-        console.log("finished promise all");
     }
     catch (error) {
         console.log("Internal error: ", error);
