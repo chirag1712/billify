@@ -59,7 +59,7 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
     @Override
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
         holder.transaction_label.setText(transactions.get(position).getName());
-        holder.total.setText(transactions.get(position).getName());
+        holder.date.setText(transactions.get(position).getName());
 
 
         holder.parent.setOnClickListener(new View.OnClickListener() {
@@ -125,13 +125,13 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
     }
 
     public class ViewHolder  extends  RecyclerView.ViewHolder{
-        private TextView transaction_label, total;
+        private TextView transaction_label, date;
         private CardView parent;
         private RelativeLayout hiddenView;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             transaction_label = itemView.findViewById(R.id.transaction_label);
-            total = itemView.findViewById(R.id.transaction_date);
+            date = itemView.findViewById(R.id.transaction_date);
             hiddenView = itemView.findViewById(R.id.hidden_shares_and_buttons);
             parent = itemView.findViewById(R.id.past_transaction);
         }
