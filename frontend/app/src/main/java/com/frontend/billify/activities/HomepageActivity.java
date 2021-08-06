@@ -9,6 +9,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.frontend.billify.R;
 import com.frontend.billify.activities.view_transactions.ViewTransactionsActivity;
+import com.frontend.billify.controllers.TransactionController;
+import com.frontend.billify.models.Transaction;
+import com.frontend.billify.models.UserTransaction;
+import com.frontend.billify.persistence.Persistence;
+import com.frontend.billify.services.RetrofitService;
+
+import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 import com.frontend.billify.persistence.Persistence;
 
 public class HomepageActivity extends AppCompatActivity {
@@ -48,8 +60,8 @@ public class HomepageActivity extends AppCompatActivity {
         view_transactions_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(HomepageActivity.this, ViewTransactionsActivity.class);
-                startActivity(intent);
+                Intent moveToViewTransactionsScreenIntent = new Intent(HomepageActivity.this, ViewTransactionsActivity.class);
+                startActivity(moveToViewTransactionsScreenIntent);
             }
         });
 

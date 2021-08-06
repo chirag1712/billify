@@ -85,8 +85,7 @@ public class GroupTransactionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(GroupTransactionActivity.this, UploadReceiptActivity.class);
-                System.out.println("In group transaction " + getIntent().getIntExtra("gid", -1));
-                intent.putExtra("gid", gid);
+                intent.putExtra("gid", getIntent().getStringExtra("gid"));
                 startActivity(intent);
             }
         });

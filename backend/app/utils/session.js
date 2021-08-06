@@ -12,7 +12,7 @@ class UserInfo {
 
 class UserPriceInfo {
     constructor(username, price_share) {
-        this.username = username;
+        this.userName = username;
         this.price_share = price_share;
     }
 }
@@ -57,7 +57,7 @@ class Session {
         }
 
         // first user to join the session, fetch state from db
-        // optional TODO: modify s.t. fetch from session when available
+        // optional: use caching such that state can be fetched from session
         this.tid2num[tid] = 1;
         try {
             const itemId2itemInfo = {};
@@ -146,7 +146,7 @@ class Session {
             })
 
             // clearing socket state
-            // optional TODO: modify s.t. state can be fetched from session when available
+            // optional: use caching such that state can be fetched from session
             delete this.tid2itemInfos[tid];
         }
 
@@ -161,7 +161,6 @@ class Session {
     //      price_shares: {[uid] -> userPriceInfo}, 
     //      items: [{item_id, userInfos}]
     // }
-
     getState(tid) {
         /* gets current state */
         const state = { items: [], price_shares: {} };

@@ -25,12 +25,12 @@ import io.socket.client.Socket;
 
 public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsItemsRecViewAdapter.ViewHolder>{
 
-    private String userName;
-    private int tid;
-    private int uid;
-    private Socket mSocket;
+    private final String userName;
+    private final int tid;
+    private final int uid;
+    private final Socket mSocket;
     private ArrayList<Item> items = new ArrayList<>();
-    private Context context;
+    private final Context context;
 
     public ReceiptsItemsRecViewAdapter(Context context, Socket mSocket, User u, int tid) {
         this.context = context;
@@ -52,7 +52,7 @@ public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsIt
     @Override
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
         holder.item_name.setText(items.get(position).getName());
-        holder.price.setText(items.get(position).getStrPrice());
+        holder.price.setText("$" + items.get(position).getStrPrice());
 
         // setting the grid layout with items
         holder.grid.removeAllViews();
@@ -60,7 +60,7 @@ public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsIt
         int column = 3;
         int row = total / column;
         holder.grid.setColumnCount(column);
-        holder.grid.setRowCount(row + 1);
+        holder.grid.setRowCount(row + 1); // +1 to avoid an edge case iirc
         for (int i = 0, c = 0, r = 0; i < total; i++, c++) {
             if (c == column) {
                 c = 0;
@@ -96,7 +96,6 @@ public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsIt
                     mSocket.emit("selectItem", request.getJson());
                     Toast.makeText(context, items.get(position).getName() + " Selected", Toast.LENGTH_SHORT).show();
                 }
-                notifyDataSetChanged();
             }
         });
     }
@@ -111,10 +110,10 @@ public class ReceiptsItemsRecViewAdapter extends RecyclerView.Adapter<ReceiptsIt
         notifyDataSetChanged();
     }
 
-    public class ViewHolder  extends  RecyclerView.ViewHolder{
-        private TextView item_name, price;
-        private CardView parent;
-        private GridLayout grid;
+    public static class ViewHolder extends RecyclerView.ViewHolder{
+        private final TextView item_name, price;
+        private final CardView parent;
+        private final GridLayout grid;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             item_name = itemView.findViewById(R.id.receiptItem);

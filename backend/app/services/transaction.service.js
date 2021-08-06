@@ -47,7 +47,7 @@ class ReceiptParser {
         if (!relationships) {
             return ""
         }
-        // TODO: Check and confirm that a Cell has at most one relationship
+
         const relationship = relationships[0];
         if ((relationship) && (relationship.Type === "CHILD")) {
             let cellText = "";
@@ -101,8 +101,6 @@ class ReceiptParser {
                             const rowIdx = parseInt(block.RowIndex) - 1;
                             const colIdx = parseInt(block.ColumnIndex) - 1;
                             itemsTable[rowIdx][colIdx] = cellText;
-                        } else if (block.BlockType == "LINE") {
-                            // TODO: Optionally, can try to identify merchants using string matching
                         }
                     }
                     resolve(itemsTable);
@@ -138,7 +136,6 @@ class ReceiptParser {
         /*
         NOTE: Also assume price must have a decimal point,
         e.g. "432.10" is a price and "432" is not a price.
-        TODO: Check above assumption is valid.
         */
         let filterNonPriceRows = itemRow => {
             let priceStr = itemRow[itemRow.length - 1];
@@ -306,9 +303,28 @@ async function getTransactionItems(tid) {
     return transactionItemsJson;
 }
 
+async function getUserTransactionDetails(uid) {
+    const userTransactionDetailsJson = await UserTransaction.getUserTransactionDetails(uid);
+    return userTransactionDetailsJson;
+}
+
+async function updateUserTransactionLabels(labelUpdates) {
+    try {
+        const createUserTransactionPromises = labelUpdates.map(async (labelUpdate) => {
+            await UserTransaction.updateUserTransactionLabel(labelUpdate.uid, labelUpdate.tid, labelUpdate.label.label_name);
+        });
+        await Promise.all(createUserTransactionPromises);
+    }
+    catch (error) {
+        console.log("Internal error: ", error);
+    }
+}
+
 module.exports = {
     ReceiptParser,
     insertTransactionsAndItemsToDB,
     getGroupTransactions,
-    getTransactionItems
+    getTransactionItems,
+    getUserTransactionDetails,
+    updateUserTransactionLabels
 };

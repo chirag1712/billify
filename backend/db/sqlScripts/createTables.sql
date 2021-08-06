@@ -41,7 +41,6 @@ CREATE TABLE IF NOT EXISTS Item (
     FOREIGN KEY (tid) REFERENCES Transaction(tid)
 );
 
--- todo: might be possible to remove tid from this relation
 CREATE TABLE IF NOT EXISTS UserItem (
     item_id INT NOT NULL,
     uid INT NOT NULL,

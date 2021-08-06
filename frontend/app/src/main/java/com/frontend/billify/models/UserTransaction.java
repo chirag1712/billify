@@ -7,19 +7,6 @@ public class UserTransaction {
     private Label label;
     private float price_share;
 
-    public UserTransaction(int tid, int uid, String transaction_name, Label label) {
-        this.tid = tid;
-        this.uid = uid;
-        this.transaction_name = transaction_name;
-        this.label = label;
-    }
-
-    public UserTransaction(int tid, String transaction_name, Label label) {
-        this.tid = tid;
-        this.transaction_name = transaction_name;
-        this.label = label;
-    }
-
     public UserTransaction(int tid, String transaction_name, Label label, float price_share) {
         this.tid = tid;
         this.transaction_name = transaction_name;
@@ -27,12 +14,29 @@ public class UserTransaction {
         this.price_share = price_share;
     }
 
+    public UserTransaction(int tid, int uid, int label_id, float price_share) {
+        this.tid = tid;
+        this.uid = uid;
+        this.price_share = price_share;
+    }
+
+    public UserTransaction(int tid, int uid, String transaction_name, Label label, float price_share) {
+        this.tid = tid;
+        this.uid = uid;
+        this.transaction_name = transaction_name;
+        this.label = label;
+        this.price_share = price_share;
+    }
+
+
     public UserTransaction(UserTransaction userTransaction) {
         this.tid = userTransaction.tid;
+        this.uid = userTransaction.uid;
         this.transaction_name = userTransaction.transaction_name;
         this.label = new Label(userTransaction.label);
         this.price_share = userTransaction.price_share;
     }
+
 
 
     public float getPrice_share() {
@@ -69,5 +73,13 @@ public class UserTransaction {
 
     public void setTid(int tid) {
         this.tid = tid;
+    }
+
+    public void printUserTransaction() {
+        System.out.println("tid: " + this.tid);
+        System.out.println("uid: " + this.uid);
+        System.out.println("transaction_name: " + this.transaction_name);
+        System.out.println("price_share: " + this.price_share);
+        System.out.println("label: " + this.label.getLabel_name());
     }
 }

@@ -1,18 +1,5 @@
 package com.frontend.billify.activities.edit_and_confirm_items;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
@@ -31,6 +18,19 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
+
 import com.frontend.billify.R;
 import com.frontend.billify.activities.HomepageActivity;
 import com.frontend.billify.adapters.EditItemsRecViewAdapter;
@@ -43,9 +43,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textview.MaterialTextView;
 
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -194,12 +191,10 @@ public class EditItemsActivity extends AppCompatActivity {
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("YES: In onClick of Confirm button");
                 if (
                         (currTransaction.getCurrPhotoFile() != null) &&
                                 (currTransaction.getNumItems() > 0)
                 ) {
-                    System.out.println(currTransaction.getNumItems());
                     currTransaction.printItems();
                     createTransactionRequestProgressBar.setVisibility(View.VISIBLE);
                     confirmButton.setVisibility(View.INVISIBLE);
@@ -241,32 +236,16 @@ public class EditItemsActivity extends AppCompatActivity {
                         createTransactionRequestProgressBar.setVisibility(View.GONE);
                         confirmButton.setVisibility(View.VISIBLE);
                         if (!response.isSuccessful()) {
-                            try {
-                                Toast parseReceiptErrorToast = Toast.makeText(
-                                        EditItemsActivity.this,
-                                        "Couldn't Parse Receipt",
-                                        Toast.LENGTH_SHORT
-                                );
-                                parseReceiptErrorToast.show();
-                                System.out.println("Error code onResponse "
-                                        + response.code()
-                                        + " "
-                                        + response.errorBody().string());
-                            } catch (Exception e) {
-                                System.out.println(
-                                        "Exception occurred during response callback from receipt parser API: "
-                                                + e);
-                            }
+                            Toast.makeText(
+                                    EditItemsActivity.this,
+                                    "Couldn't Parse Receipt",
+                                    Toast.LENGTH_SHORT
+                            ).show();
                             return;
                         }
                         Transaction currTransaction = response.body();
-                        System.out.println("Successful item confirm and create transaction request with return value: "
-                                + currTransaction.getName()
-                        );
-
                         showSuccessAnimation();
                         moveBackToHomepageActivity(1000);
-
                     }
 
                     @Override
@@ -331,10 +310,7 @@ public class EditItemsActivity extends AppCompatActivity {
                 startActivity(moveBackToHomepageIntent);
             }
         }, delay);
-
     }
-
-
 
 
     // Adding swipe left to delete functionality
