@@ -1,4 +1,4 @@
-package com.frontend.billify.models;
+package com.frontend.billify.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -6,24 +6,18 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.frontend.billify.R;
-import com.frontend.billify.activities.GroupTransaction;
-import com.frontend.billify.models.Item;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import android.transition.TransitionManager;
 
 public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransactionCardAdapter.ViewHolder>{
 
@@ -47,21 +41,22 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
         holder.transaction_label.setText(transactions.get(position).first.first);
         holder.total.setText(transactions.get(position).first.second.toString());
-        UserShareListAdapter usersharelistadapter = new UserShareListAdapter ((Activity) context, transactions.get(position).second);
-        System.out.println(transactions.get(position).second.toString());
-        holder.hiddenView.setAdapter(usersharelistadapter);
-        holder.hiddenView.setEnabled(false);
-        ViewGroup vg = holder.hiddenView;
-        View listItem = usersharelistadapter.getView(0,null,vg);
-        listItem.measure(0,0);
-        int listItemHeight = listItem.getMeasuredHeight();
-        ViewGroup.LayoutParams param = holder.hiddenView.getLayoutParams();
-        param.height = listItemHeight*(usersharelistadapter.getCount()) + (holder.hiddenView.getDividerHeight() * (usersharelistadapter.getCount()-1));
-        holder.hiddenView.setLayoutParams(param);
+
 
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                UserShareListAdapter usersharelistadapter = new UserShareListAdapter ((Activity) context, transactions.get(position).second);
+                System.out.println(transactions.get(position).second.toString());
+                holder.hiddenView.setAdapter(usersharelistadapter);
+                holder.hiddenView.setEnabled(false);
+                ViewGroup vg = holder.hiddenView;
+                View listItem = usersharelistadapter.getView(0,null,vg);
+                listItem.measure(0,0);
+                int listItemHeight = listItem.getMeasuredHeight();
+                ViewGroup.LayoutParams param = holder.hiddenView.getLayoutParams();
+                param.height = listItemHeight*(usersharelistadapter.getCount()) + (holder.hiddenView.getDividerHeight() * (usersharelistadapter.getCount()-1));
+                holder.hiddenView.setLayoutParams(param);
                 if (holder.hiddenView.getVisibility() == View.VISIBLE) {
 
                     // The transition of the hiddenView is carried out

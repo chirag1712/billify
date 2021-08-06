@@ -25,7 +25,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class groupPop extends Activity {
+public class ViewGroupActivity extends Activity {
 
     private final RetrofitService retrofitService = new RetrofitService();
     private final GroupService groupService = new GroupService(retrofitService);
@@ -56,12 +56,12 @@ public class groupPop extends Activity {
                         if (!response.isSuccessful()) {
                             try {
                                 JSONObject error = new JSONObject(response.errorBody().string());
-                                 Toast.makeText(groupPop.this.getApplicationContext(),
+                                 Toast.makeText(ViewGroupActivity.this.getApplicationContext(),
                                         error.getString("error"),
                                         Toast.LENGTH_LONG).show();
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                Toast.makeText(groupPop.this.getApplicationContext(),
+                                Toast.makeText(ViewGroupActivity.this.getApplicationContext(),
                                         "Sorry :( Something went wrong.",
                                         Toast.LENGTH_SHORT).show();
                             }
@@ -75,7 +75,7 @@ public class groupPop extends Activity {
                     @Override
                     public void onFailure(Call<User> call, Throwable t) {
 
-                        Toast.makeText(groupPop.this.getApplicationContext(),
+                        Toast.makeText(ViewGroupActivity.this.getApplicationContext(),
                                 "Cannot connect to login server", Toast.LENGTH_LONG).show();
                     }
                 });
@@ -94,7 +94,7 @@ public class groupPop extends Activity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(groupPop.this, GroupTransaction.class);
+                Intent intent = new Intent(ViewGroupActivity.this, GroupTransactionActivity.class);
                 System.out.println("In grouppop " + groups.get(i).getGid());
                 intent.putExtra("gid", String.valueOf(groups.get(i).getGid()));
                 startActivity(intent);

@@ -9,17 +9,14 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ListView;
 
 import com.frontend.billify.R;
 
-import com.frontend.billify.adapters.ReceiptsItemsRecViewAdapter;
-import com.frontend.billify.models.PastTransactionCardAdapter;
-import com.frontend.billify.models.UserShareListAdapter;
+import com.frontend.billify.adapters.PastTransactionCardAdapter;
 
 import java.util.ArrayList;
 
-public class GroupTransaction extends AppCompatActivity {
+public class GroupTransactionActivity extends AppCompatActivity {
     private RecyclerView pastTransactionsRecView;
 
     @Override
@@ -59,7 +56,7 @@ public class GroupTransaction extends AppCompatActivity {
         add_group_receipt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(GroupTransaction.this, UploadReceiptActivity.class);
+                Intent intent = new Intent(GroupTransactionActivity.this, UploadReceiptActivity.class);
                 System.out.println("In group transaction " + getIntent().getStringExtra("gid"));
                 intent.putExtra("gid", getIntent().getStringExtra("gid"));
                 startActivity(intent);

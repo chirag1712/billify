@@ -42,6 +42,8 @@
             android:layout_below="@id/total_transaction_price"
             android:padding="10dp"
             android:visibility="gone">
+
+
         </ListView>
 
     </RelativeLayout>
