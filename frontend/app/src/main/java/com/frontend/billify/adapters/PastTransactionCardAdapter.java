@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -21,11 +22,15 @@ import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.frontend.billify.R;
 import com.frontend.billify.activities.GroupTransactionActivity;
 import com.frontend.billify.activities.HomepageActivity;
 import com.frontend.billify.activities.ItemizedViewActivity;
+import com.frontend.billify.activities.ViewGroupActivity;
+import com.frontend.billify.activities.ViewReceiptImageActivity;
 import com.frontend.billify.controllers.TransactionController;
+import com.frontend.billify.models.Group;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.models.TransactionSummary;
 import com.frontend.billify.models.UserTransactionShare;
@@ -106,9 +111,10 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
         });
 
         holder.viewReceiptBtn.setOnClickListener(view -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(curTransaction.getReceipt_img()));
-            context.startActivity(browserIntent);
+            Intent viewReceiptImgIntent = new Intent(context,
+                    ViewReceiptImageActivity.class);
+            viewReceiptImgIntent.putExtra("receipt_img", curTransaction.getReceipt_img());
+            context.startActivity(viewReceiptImgIntent);
         });
 
         holder.parent.setOnClickListener(new View.OnClickListener() {
