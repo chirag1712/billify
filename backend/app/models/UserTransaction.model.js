@@ -65,7 +65,7 @@ class UserTransaction {
                 } else {
                     console.log("price shares found for tid =", tid, res);
                     res.map((elem) => {
-                        elem.settled = elem.settled[0];
+                        elem.settled = (elem.settled[0]==1) ? true: false;
                         return elem;
                     });
                     resolve(res);

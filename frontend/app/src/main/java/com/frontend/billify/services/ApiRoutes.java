@@ -3,6 +3,7 @@ package com.frontend.billify.services;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.models.CreateGroupModel;
 import com.frontend.billify.models.Group;
+import com.frontend.billify.models.TransactionSummary;
 import com.frontend.billify.models.User;
 import com.frontend.billify.models.UserTransactionShare;
 
@@ -50,7 +51,7 @@ public interface ApiRoutes {
     Call<ArrayList<Transaction>> getGroupTransactions(@Path("gid") int gid);
 
     @GET("api/transactions/price-shares/{tid}")
-    Call<ArrayList<UserTransactionShare>> getUserTransactionShares(@Path("tid") int tid);
+    Call<TransactionSummary> getUserTransactionShares(@Path("tid") int tid);
 
     @Multipart
     @POST("api/transactions/create-transaction")

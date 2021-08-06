@@ -30,7 +30,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/total_transaction_price"
+            android:id="@+id/transaction_date"
             android:layout_alignParentRight="true"
             android:layout_margin="5dp"
             android:padding="15dp"
@@ -51,10 +51,38 @@
                 android:padding="10dp"
                 >
             </ListView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="15dp"
+                android:layout_below="@id/user_price_shares"
+                android:layout_marginBottom="15dp"
+                android:layout_alignLeft="@id/user_price_shares"
+                android:textStyle="bold"
+                android:text="Total"
+                android:textSize="15sp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/total_transaction_price"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/user_price_shares"
+                android:layout_marginStart="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginRight="15dp"
+                android:textSize="15sp"
+
+
+                android:paddingRight="10dp"
+                android:textStyle="bold"/>
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_below="@id/user_price_shares"
+                android:layout_below="@id/total_transaction_price"
                 android:layout_height="wrap_content">
                 <Button
                     android:id="@+id/join_billify_session"
