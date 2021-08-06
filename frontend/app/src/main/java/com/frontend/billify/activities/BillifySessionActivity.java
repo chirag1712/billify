@@ -25,7 +25,7 @@ public class BillifySessionActivity extends Activity {
 
     {
         try {
-            mSocket = IO.socket("http://10.0.2.2:5000");
+            mSocket = IO.socket("http://129.97.167.52:5000");
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
