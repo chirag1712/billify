@@ -74,6 +74,33 @@ class UserTransaction {
         });
     }
 
+    static settle(uid, tid) {
+        return new Promise((resolve, reject) => {
+            sql.query("UPDATE UserTransaction SET settled = 1 where tid = ? AND uid = ?", [tid, uid], (err, res) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                } else {
+                    console.log("settled transaction uid =", uid, "tid =", tid);
+                    resolve(res);
+                }
+            });
+        });
+    }
+
+    static unsettle(uid, tid) {
+        return new Promise((resolve, reject) => {
+            sql.query("UPDATE UserTransaction SET settled = 0 where tid = ? AND uid = ?", [tid, uid], (err, res) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                } else {
+                    console.log("settled transaction uid =", uid, "tid =", tid);
+                    resolve(res);
+                }
+            });
+        });
+    }
 }
 
 module.exports = { UserTransaction };

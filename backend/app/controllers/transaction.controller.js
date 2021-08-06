@@ -128,4 +128,24 @@ const getPriceShares = async (request, response) => {
     }
 }
 
-module.exports = { parseReceipt, getGroupTransactions, getTransactionItems, getTransaction, createNewTransaction, getPriceShares };
+const settlePriceShare = async (request, response) => {
+    try {
+        const { uid, tid } = request.body;
+        await UserTransaction.settle(uid, tid);
+        return response.send({ success: "true" });
+    } catch (err) {
+        return response.status(500).send({ error: "Internal error: Couldn't settle transaction: " + err })
+    }
+}
+
+const unsettlePriceShare = async (request, response) => {
+    try {
+        const { uid, tid } = request.body;
+        await UserTransaction.unsettle(uid, tid);
+        return response.send({ success: "true" });
+    } catch (err) {
+        return response.status(500).send({ error: "Internal error: Couldn't unsettle transaction: " + err })
+    }
+}
+
+module.exports = { parseReceipt, getGroupTransactions, getTransactionItems, getTransaction, createNewTransaction, getPriceShares, settlePriceShare, unsettlePriceShare };
