@@ -9,8 +9,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.frontend.billify.R;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -86,7 +84,7 @@ public class GroupTransactionActivity extends AppCompatActivity {
         add_group_receipt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(GroupTransaction.this, UploadReceiptActivity.class);
+                Intent intent = new Intent(GroupTransactionActivity.this, UploadReceiptActivity.class);
                 intent.putExtra("gid", getIntent().getStringExtra("gid"));
                 startActivity(intent);
             }

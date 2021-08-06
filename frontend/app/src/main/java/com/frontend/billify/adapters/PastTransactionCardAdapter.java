@@ -20,7 +20,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.frontend.billify.R;
-import com.frontend.billify.activities.ItemizedViewActivity;
+import com.frontend.billify.activities.BillifySessionActivity;
 import com.frontend.billify.activities.ViewReceiptImageActivity;
 import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.models.SettleResponse;
@@ -80,7 +80,7 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
                     fullTransaction.printItems();
                     Intent moveToItemizedScreenIntent = new Intent(
                             context,
-                            ItemizedViewActivity.class
+                            BillifySessionActivity.class
                     );
                     Bundle transactionBundle = new Bundle();
                     transactionBundle.putSerializable("SerializedTransaction", fullTransaction);
