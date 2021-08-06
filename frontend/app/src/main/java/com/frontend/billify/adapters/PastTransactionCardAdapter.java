@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.frontend.billify.R;
 import com.frontend.billify.activities.GroupTransactionActivity;
+import com.frontend.billify.activities.HomepageActivity;
+import com.frontend.billify.activities.ItemizedViewActivity;
 import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.models.TransactionSummary;
@@ -72,6 +75,35 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
         holder.transaction_label.setText(curTransaction.getName());
 
         holder.date.setText(curTransaction.getFormattedT_date());
+
+        holder.joinBillifySession.setOnClickListener(view -> {
+            transactionController.getTransaction(curTransaction.getTid()).enqueue(new Callback<Transaction>() {
+                @Override
+                public void onResponse(Call<Transaction> call, Response<Transaction> response) {
+                    Transaction fullTransaction = new Transaction(response.body());
+                    fullTransaction.printItems();
+                    Intent moveToItemizedScreenIntent = new Intent(
+                            context,
+                            ItemizedViewActivity.class
+                    );
+                    Bundle transactionBundle = new Bundle();
+                    transactionBundle.putSerializable("SerializedTransaction", fullTransaction);
+                    moveToItemizedScreenIntent.putExtra(
+                            "TransactionBundle",
+                            transactionBundle
+                    );
+                    context.startActivity(moveToItemizedScreenIntent);
+                }
+
+                @Override
+                public void onFailure(Call<Transaction> call, Throwable t) {
+                    Toast.makeText(context,
+                            "Failed joining the billify session",
+                            Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
+                }
+            });
+        });
 
         holder.viewReceiptBtn.setOnClickListener(view -> {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW,
@@ -145,6 +177,7 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
         private TextView transaction_label, date;
         private CardView parent;
         private RelativeLayout hiddenView;
+        private Button joinBillifySession;
         private Button viewReceiptBtn;
 
         public ViewHolder(@NonNull View itemView) {
@@ -153,6 +186,7 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
             date = itemView.findViewById(R.id.transaction_date);
             hiddenView = itemView.findViewById(R.id.hidden_shares_and_buttons);
             parent = itemView.findViewById(R.id.past_transaction);
+            joinBillifySession = itemView.findViewById(R.id.join_billify_session);
             viewReceiptBtn = itemView.findViewById(R.id.view_receipt);
         }
     }

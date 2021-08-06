@@ -1,31 +1,25 @@
 package com.frontend.billify.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.frontend.billify.R;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.frontend.billify.R;
 import com.frontend.billify.adapters.PastTransactionCardAdapter;
-import com.frontend.billify.controllers.GroupService;
 import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.models.Transaction;
-import com.frontend.billify.models.User;
 import com.frontend.billify.services.RetrofitService;
 
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,8 +41,6 @@ public class GroupTransactionActivity extends AppCompatActivity {
             Toast.makeText(this, "Gid was not passed successfully", Toast.LENGTH_SHORT).show();
         }
         System.out.println("gid: " + gid);
-
-
         ArrayList<Pair<Pair<String,Integer>,ArrayList<Pair<String,Integer>>>> transaction = new ArrayList<Pair<Pair<String,Integer>,ArrayList<Pair<String,Integer>>>>();
         ArrayList<Pair<String,Integer>> user_shares = new ArrayList<Pair<String,Integer>>();
         user_shares.add(new Pair<String,Integer>("Alric",20));
