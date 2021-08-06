@@ -12,6 +12,7 @@ import java.util.HashMap;
 public class Transaction implements Serializable {
     private int tid;
     private int gid;
+
     private String t_date;
     private String t_state;
     private String receipt_img; // NOTE: receipt_img is a URL to the image
@@ -154,6 +155,14 @@ public class Transaction implements Serializable {
     public void setLabel_id(String labelName) {
         this.label_id = labelNameToLabelId.get(labelName);
         System.out.println("Label ID is: " + String.valueOf(this.label_id));
+    }
+
+    public String getReceipt_img() {
+        return receipt_img;
+    }
+
+    public String getT_date() {
+        return t_date;
     }
 
 }

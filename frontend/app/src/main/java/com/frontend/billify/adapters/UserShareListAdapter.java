@@ -28,12 +28,14 @@ public class UserShareListAdapter extends ArrayAdapter<UserTransactionShare> {
             listItemView = LayoutInflater.from(getContext()).inflate(
                     R.layout.user_transaction_share, parent, false);
         }
-        UserTransactionShare current_user_share = getItem(position);
-        TextView nameTextView = (TextView) listItemView.findViewById(R.id.username);
-        nameTextView.setText(current_user_share.getUserName());
+        if (!isEmpty()) {
+            UserTransactionShare current_user_share = getItem(position);
+            TextView nameTextView = (TextView) listItemView.findViewById(R.id.username);
+            nameTextView.setText(current_user_share.getUserName());
 
-        TextView priceTextView = (TextView) listItemView.findViewById(R.id.user_transaction_share);
-        priceTextView.setText(Float.toString(current_user_share.getPriceShare()));
+            TextView priceTextView = (TextView) listItemView.findViewById(R.id.user_transaction_share);
+            priceTextView.setText(Float.toString(current_user_share.getPriceShare()));
+        }
 
         return listItemView;
     }
