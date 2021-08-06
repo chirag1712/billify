@@ -105,14 +105,11 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
             context.startActivity(browserIntent);
         });
 
-        holder.parent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (holder.hiddenView.getVisibility() == View.GONE) {
-                    getUserShares(curTransaction.getTid(),holder.hiddenView);
-                } else {
-                    holder.hiddenView.setVisibility(View.GONE);
-                }
+        holder.parent.setOnClickListener(view -> {
+            if (holder.hiddenView.getVisibility() == View.GONE) {
+                getUserShares(curTransaction.getTid(),holder.hiddenView);
+            } else {
+                holder.hiddenView.setVisibility(View.GONE);
             }
         });
     }
