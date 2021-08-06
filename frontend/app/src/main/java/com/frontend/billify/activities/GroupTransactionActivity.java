@@ -24,6 +24,7 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,7 +41,8 @@ public class GroupTransactionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_transaction);
 
-        String gid = getIntent().getStringExtra("gid")
+        int gid = Integer.parseInt(getIntent().getStringExtra("gid"));
+        System.out.println("gid: " + gid);
         ArrayList<Pair<Pair<String,Integer>,ArrayList<Pair<String,Integer>>>> transaction = new ArrayList<Pair<Pair<String,Integer>,ArrayList<Pair<String,Integer>>>>();
         ArrayList<Pair<String,Integer>> user_shares = new ArrayList<Pair<String,Integer>>();
         user_shares.add(new Pair<String,Integer>("Alric",20));
@@ -68,12 +70,10 @@ public class GroupTransactionActivity extends AppCompatActivity {
 //        listView.setAdapter(usersharelistadapter);
 
         //function makes API call for transactions
-        ArrayList<Transaction> transactions = getTransactions(gid);
+        // getTransactions(gid);
+        getTransactions(gid);
 
-        PastTransactionCardAdapter adapter = new PastTransactionCardAdapter (this);
-        adapter.setItems(transaction);
-        pastTransactionsRecView.setAdapter(adapter);
-        pastTransactionsRecView.setLayoutManager(new LinearLayoutManager(this));
+
         final Button add_group_receipt = findViewById(R.id.add_group_receipt);
         add_group_receipt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,7 +86,7 @@ public class GroupTransactionActivity extends AppCompatActivity {
         });
     }
 
-    public ArrayList<Transaction> getTransactions(int gid){
+    public void getTransactions(int gid){
 
         transactionController.getGroupTransactions(gid).enqueue(new Callback<ArrayList<Transaction>>() {
             @Override
@@ -105,18 +105,23 @@ public class GroupTransactionActivity extends AppCompatActivity {
                     }
                     return;
                 }
-                 transactions = response.body();
+                transactions = response.body();
+                populateTransactions(transactions);
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
-
-                Toast.makeText(ViewGroupActivity.this.getApplicationContext(),
+            public void onFailure(Call<ArrayList<Transaction>> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),
                         "Cannot connect to login server", Toast.LENGTH_LONG).show();
             }
         });
+    }
 
-        return transactions;
+    public void populateTransactions(List<Transaction> transactions) {
+        PastTransactionCardAdapter adapter = new PastTransactionCardAdapter (this);
+        adapter.setItems(transactions);
+        pastTransactionsRecView.setAdapter(adapter);
+        pastTransactionsRecView.setLayoutManager(new LinearLayoutManager(this));
     }
 }
 
