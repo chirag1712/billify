@@ -5,6 +5,7 @@ import com.frontend.billify.models.CreateGroupModel;
 import com.frontend.billify.models.Group;
 import com.frontend.billify.models.User;
 import com.frontend.billify.models.UserTransaction;
+import com.frontend.billify.models.UserTransactionShare;
 
 import java.util.ArrayList;
 
@@ -56,6 +57,9 @@ public interface ApiRoutes {
     
     @GET("api/transactions/get-group-transactions/{gid}}")
     Call<ArrayList<Transaction>> getGroupTransactions(@Path("gid") int gid);
+
+    @GET("api/transactions/price-shares/:tid")
+    Call<ArrayList<UserTransactionShare>> getUserTransactionShares(@Path("tid") int tid);
 
     @Multipart
     @POST("api/transactions/create-transaction")

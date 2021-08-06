@@ -124,8 +124,8 @@ public class GroupTransactionActivity extends AppCompatActivity {
         adapter.setItems(transactions);
         pastTransactionsRecView.setAdapter(adapter);
         pastTransactionsRecView.setLayoutManager(new LinearLayoutManager(this));
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://billify.s3.amazonaws.com/android%20group%202021-07-27%2020%3A10-1627416608911.jpg"));
-        startActivity(browserIntent);
+//        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://billify.s3.amazonaws.com/android%20group%202021-07-27%2020%3A10-1627416608911.jpg"));
+//        startActivity(browserIntent);
     }
 }
 

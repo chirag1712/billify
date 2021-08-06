@@ -9,21 +9,35 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.frontend.billify.R;
+import com.frontend.billify.activities.GroupTransactionActivity;
+import com.frontend.billify.controllers.TransactionController;
 import com.frontend.billify.models.Transaction;
+import com.frontend.billify.models.UserTransactionShare;
+import com.frontend.billify.services.RetrofitService;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransactionCardAdapter.ViewHolder>{
+    private final RetrofitService retrofitService = new RetrofitService();
+    private final TransactionController transactionController = new TransactionController(retrofitService);
+    private ArrayList<UserTransactionShare> user_shares = new ArrayList<UserTransactionShare>();
 
     private ArrayList<Transaction> transactions = new ArrayList<Transaction>();
+
     private Context context;
 
     public PastTransactionCardAdapter(Context context) {
@@ -48,13 +62,19 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<Pair<String,Integer>> user_shares = new ArrayList<Pair<String,Integer>>();
-                user_shares.add(new Pair<String,Integer>("Alric",20));
-                user_shares.add(new Pair<String,Integer>("Huy",40));
-                user_shares.add(new Pair<String,Integer>("Pranav",12));
-                user_shares.add(new Pair<String,Integer>("Denis",45));
-                user_shares.add(new Pair<String,Integer>("Chirag",32));
-                user_shares.add(new Pair<String,Integer>("Mayank",25));
+
+                if(user_shares.isEmpty()){
+                    getUserShares(transactions.get(position).getTid());
+
+                }
+                System.out.println(user_shares.toString());
+//                ArrayList<Pair<String,Integer>> user_shares = new ArrayList<Pair<String,Integer>>();
+//                user_shares.add(new Pair<String,Integer>("Alric",20));
+//                user_shares.add(new Pair<String,Integer>("Huy",40));
+//                user_shares.add(new Pair<String,Integer>("Pranav",12));
+//                user_shares.add(new Pair<String,Integer>("Denis",45));
+//                user_shares.add(new Pair<String,Integer>("Chirag",32));
+//                user_shares.add(new Pair<String,Integer>("Mayank",25));
                 ListView price_share_view = (ListView) holder.hiddenView.getChildAt(0);
                 UserShareListAdapter usersharelistadapter = new UserShareListAdapter ((Activity) context, user_shares);
                 price_share_view.setAdapter(usersharelistadapter);
@@ -107,5 +127,40 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
             hiddenView = itemView.findViewById(R.id.hidden_shares_and_buttons);
             parent = itemView.findViewById(R.id.past_transaction);
         }
+    }
+
+    public void getUserShares(int tid){
+        System.out.println("tid is "+tid);
+        transactionController.getUserTransactionShare(tid).enqueue(new Callback<ArrayList<UserTransactionShare>>() {
+            @Override
+            public void onResponse(Call<ArrayList<UserTransactionShare>> call, Response<ArrayList<UserTransactionShare>> response) {
+                if (!response.isSuccessful()) {
+                    try {
+                        JSONObject error = new JSONObject(response.errorBody().string());
+                        Toast.makeText((Activity) context,
+                                error.getString("error"),
+                                Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText((Activity) context,
+                                "Sorry :( Something went wrong.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                    return;
+                }
+                ArrayList<UserTransactionShare> user_share_response = response.body();
+                setUserShares(user_share_response);
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<UserTransactionShare>> call, Throwable t) {
+                Toast.makeText(context,
+                        "Cannot connect to login server", Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
+    public void setUserShares(ArrayList<UserTransactionShare> user_share_response){
+        user_shares = user_share_response;
     }
 }
