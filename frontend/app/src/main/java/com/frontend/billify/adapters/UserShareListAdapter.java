@@ -1,7 +1,7 @@
 package com.frontend.billify.adapters;
 
 import android.app.Activity;
-import android.util.Pair;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,9 +32,12 @@ public class UserShareListAdapter extends ArrayAdapter<UserTransactionShare> {
             UserTransactionShare current_user_share = getItem(position);
             TextView nameTextView = (TextView) listItemView.findViewById(R.id.username);
             nameTextView.setText(current_user_share.getUserName());
+            if (current_user_share.isSettled()) {
+                nameTextView.setPaintFlags(nameTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }
 
             TextView priceTextView = (TextView) listItemView.findViewById(R.id.user_transaction_share);
-            priceTextView.setText(Float.toString(current_user_share.getPriceShare()));
+            priceTextView.setText("$" + Float.toString(current_user_share.getPriceShare()));
         }
 
         return listItemView;

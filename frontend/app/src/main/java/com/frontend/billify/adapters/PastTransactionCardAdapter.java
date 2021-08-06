@@ -27,10 +27,11 @@ import com.frontend.billify.activities.ItemizedViewActivity;
 import com.frontend.billify.activities.ViewGroupActivity;
 import com.frontend.billify.activities.ViewReceiptImageActivity;
 import com.frontend.billify.controllers.TransactionController;
-import com.frontend.billify.models.Group;
+import com.frontend.billify.models.SettleResponse;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.models.TransactionSummary;
 import com.frontend.billify.models.UserTransactionShare;
+import com.frontend.billify.persistence.Persistence;
 import com.frontend.billify.services.RetrofitService;
 
 import org.jetbrains.annotations.NotNull;
@@ -111,6 +112,26 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
             context.startActivity(viewReceiptImgIntent);
         });
 
+        holder.settleBtn.setOnClickListener(view -> {
+            int uid = Persistence.getUserId(context);
+            transactionController.settleTransaction(uid, curTransaction.getTid()).enqueue(new Callback<SettleResponse>() {
+
+                @Override
+                public void onResponse(Call<SettleResponse> call, Response<SettleResponse> response) {
+                    Toast.makeText(context,
+                            "Transaction settled successfully!", Toast.LENGTH_LONG).show();
+                    holder.hiddenView.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onFailure(Call<SettleResponse> call, Throwable t) {
+                    Toast.makeText(context,
+                            "Settle transaction failed", Toast.LENGTH_LONG).show();
+                    t.printStackTrace();
+                }
+            });
+        });
+
         holder.parent.setOnClickListener(view -> {
             if (holder.hiddenView.getVisibility() == View.GONE) {
                 getUserShares(curTransaction.getTid(),holder.hiddenView);
@@ -137,6 +158,7 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
         private RelativeLayout hiddenView;
         private Button joinBillifySession;
         private Button viewReceiptBtn;
+        private Button settleBtn;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -146,6 +168,7 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
             parent = itemView.findViewById(R.id.past_transaction);
             joinBillifySession = itemView.findViewById(R.id.join_billify_session);
             viewReceiptBtn = itemView.findViewById(R.id.view_receipt);
+            settleBtn = itemView.findViewById(R.id.settle_share);
         }
     }
 

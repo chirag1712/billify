@@ -26,10 +26,10 @@ router.post("/create-transaction", transaction.createNewTransaction);
 // @route GET api/transactions/price-shares/:tid
 router.get("/price-shares/:tid", transaction.getPriceShares);
 
-// @route POST api/transactions/price-shares/:tid
+// @route POST api/transactions/settle
 router.post("/settle", transaction.settlePriceShare);
 
-// @route POST api/transactions/price-shares/:tid
+// @route POST api/transactions/unsettle
 router.post("/unsettle", transaction.unsettlePriceShare);
 
 module.exports = router;

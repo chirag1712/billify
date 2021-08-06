@@ -1,5 +1,7 @@
 package com.frontend.billify.controllers;
 
+import com.frontend.billify.models.SettleResponse;
+import com.frontend.billify.models.SettleTransactionModel;
 import com.frontend.billify.models.Transaction;
 import com.frontend.billify.models.TransactionSummary;
 import com.frontend.billify.models.User;
@@ -64,6 +66,11 @@ public class TransactionController {
 
     public Call<Object> updateUserTransactionLabels(ArrayList<UserTransaction> labelUpdates) {
         Call<Object> call = this.apiRoutes.updateUserTransactionLabels(labelUpdates);
+        return call;
+    }
+
+    public Call<SettleResponse> settleTransaction(int uid, int tid) {
+        Call<SettleResponse> call = this.apiRoutes.settleTransaction(new SettleTransactionModel(uid, tid));
         return call;
     }
     
