@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +28,7 @@ import retrofit2.Response;
 
 public class GroupTransactionActivity extends AppCompatActivity {
     private RecyclerView pastTransactionsRecView;
+    private TextView group_title_text;
     private final RetrofitService retrofitService = new RetrofitService();
     private final TransactionController transactionController = new TransactionController(retrofitService);
     ArrayList<Transaction> transactions = new ArrayList<Transaction>();
@@ -37,10 +39,16 @@ public class GroupTransactionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_group_transaction);
 
         int gid = getIntent().getIntExtra("gid", -1);
+
         if (gid == -1) {
             Toast.makeText(this, "Gid was not passed successfully", Toast.LENGTH_SHORT).show();
         }
         System.out.println("gid: " + gid);
+
+        String group_name = getIntent().getStringExtra("group_name");
+        group_title_text = findViewById(R.id.group_name);
+        group_title_text.setText(group_name);
+
         ArrayList<Pair<Pair<String,Integer>,ArrayList<Pair<String,Integer>>>> transaction = new ArrayList<Pair<Pair<String,Integer>,ArrayList<Pair<String,Integer>>>>();
         ArrayList<Pair<String,Integer>> user_shares = new ArrayList<Pair<String,Integer>>();
         user_shares.add(new Pair<String,Integer>("Alric",20));
