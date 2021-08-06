@@ -17,4 +17,13 @@ router.get("/transaction/:tid", transaction.getTransaction);
 // @route POST api/transactions/create-transaction
 router.post("/create-transaction", transaction.createNewTransaction);
 
+// @route GET api/transactions/price-shares/:tid
+router.get("/price-shares/:tid", transaction.getPriceShares);
+
+// @route POST api/transactions/price-shares/:tid
+router.post("/settle", transaction.settlePriceShare);
+
+// @route POST api/transactions/price-shares/:tid
+router.post("/unsettle", transaction.unsettlePriceShare);
+
 module.exports = router;
