@@ -27,7 +27,7 @@
             android:layout_margin="5dp"
             android:layout_toRightOf="@+id/price_share_username"
             android:text="Price"
-            android:textStyle="bold" />
+            android:textSize="20dp"/>
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

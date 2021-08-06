@@ -27,27 +27,26 @@ public class PriceShareAdapter extends ArrayAdapter<UserTransactionShare> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View row = convertView;
         ViewHolder holder = null;
 
-        if (row == null) {
+        if (convertView == null) {
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-            row = inflater.inflate(layoutResourceId, parent, false);
+            convertView = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new ViewHolder();
-            holder.userName = (TextView) row.findViewById(R.id.price_share_username);
-            holder.priceShare = (TextView) row.findViewById(R.id.price_share);
-            row.setTag(holder);
+            holder.userName = (TextView) convertView.findViewById(R.id.price_share_username);
+            holder.priceShare = (TextView) convertView.findViewById(R.id.price_share);
+            convertView.setTag(holder);
         } else {
-            holder = (ViewHolder) row.getTag();
+            holder = (ViewHolder) convertView.getTag();
         }
 
+        // set values for the text views for price shares
         UserTransactionShare userPriceInfo = this.userPriceInfos.get(position);
-
         holder.userName.setText(userPriceInfo.getUserName() + ":");
         holder.priceShare.setText("$" + userPriceInfo.getPriceShare());
 
-        return row;
+        return convertView;
     }
 
     @Override
