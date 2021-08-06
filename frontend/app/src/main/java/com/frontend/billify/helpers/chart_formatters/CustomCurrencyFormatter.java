@@ -14,10 +14,10 @@ public class CustomCurrencyFormatter extends ValueFormatter {
     @Override
     public String getFormattedValue(float value) {
 
-        // Don't show values less than 70
-        if (value <= 70) {
-            return "";
-        }
+//        // Don't show values less than 70
+//        if (value <= 70) {
+//            return "";
+//        }
 
         return "$" + format.format(value);
     }

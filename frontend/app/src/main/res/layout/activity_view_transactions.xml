@@ -1,60 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.view_transactions.ViewTransactionsActivity"
-    android:background="@drawable/empty_background">
+    android:layout_margin="10dp"
+    android:background="@drawable/empty_background"
+    tools:context=".activities.view_transactions.ViewTransactionsActivity">
 
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/chart_display_btn_group"
-        android:layout_height="50dp"
         android:layout_width="100dp"
-        app:singleSelection="true"
-        app:selectionRequired="true"
+        android:layout_height="50dp"
         app:checkedButton="@id/percent_format_btn"
-        >
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
         <Button
             android:id="@+id/currency_format_btn"
-            android:layout_height="match_parent"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            app:icon="@drawable/outline_attach_money_24"
             style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:onClick="onCurrencyFormatButton"
-            />
+            app:icon="@drawable/outline_attach_money_24" />
+
         <Button
             android:id="@+id/percent_format_btn"
-            android:layout_height="match_parent"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            app:icon="@drawable/ic_percent"
             style="@style/Widget.App.Button.OutlinedButton.IconOnly"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:onClick="onPercentFormatButton"
-            />
+            app:icon="@drawable/ic_percent" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
 
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/transaction_chart"
-        android:layout_centerHorizontal="true"
+        android:layout_width="385dp"
+        android:layout_height="297dp"
         android:layout_marginTop="50dp"
-        android:layout_width="match_parent"
-        android:layout_height="320dp" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible"
+        android:visibility="gone">
+
+    </com.github.mikephil.charting.charts.PieChart>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/transaction_list"
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        android:layout_below="@id/transaction_chart"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/transaction_chart" />
 
     <Button
         android:id="@+id/back_button"
-        android:layout_below="@+id/transaction_list"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="@string/back" />
+        android:layout_height="wrap_content"
+        android:text="@string/back"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/transaction_list" />
 
-</RelativeLayout>
+    <ProgressBar
+        android:id="@+id/loading_chart_progress_bar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.52"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.26999998" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

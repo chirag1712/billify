@@ -90,6 +90,45 @@ const getTransactionItems = async (request, response) => {
     }
 }
 
+// Get the transaction details based on the labels and price
+const getUserTransactionDetails = async (request, response) => {
+    try {
+        const uid = request.params.uid;
+        const getUserTransactionDetailsList = await TransactionService.getUserTransactionDetails(uid);
+        let userTransactions = [];
+        getUserTransactionDetailsList.forEach((userTransaction) => {
+            let userTransactionObj = {
+                tid: userTransaction.tid,
+                uid: userTransaction.uid,
+                transaction_name: userTransaction.transaction_name,
+                label: {
+                    lid: userTransaction.label_id,
+                    label_name: userTransaction.label_name,
+                    label_color: userTransaction.label_color
+                },
+                price_share: userTransaction.price_share
+            }
+            userTransactions.push(userTransactionObj);
+        });
+        return response.send(userTransactions);
+    } catch (err) {
+        return response.status(500).send({error: "Internal error: Couldn't get user transaction details: " + err})
+    }
+}
+
+// put the user transaction label
+const updateUserTransactionLabels = async (request, response) => {
+    try {
+        console.log("New Update Label request");
+        const labelUpdates = request.body;
+        await TransactionService.updateUserTransactionLabels(labelUpdates);
+        const successMessage = "Successfully updated UserTransaction labels";       
+        return response.send({success: successMessage});
+    } catch (err) {
+        return response.status(500).send({error: "Internal error: Couldn't update user transaction labels: " + err})
+    }
+}
+
 const getTransaction = async (request, response) => {
     try {
         const tid = request.params.tid;
@@ -148,4 +187,4 @@ const unsettlePriceShare = async (request, response) => {
     }
 }
 
-module.exports = { parseReceipt, getGroupTransactions, getTransactionItems, getTransaction, createNewTransaction, getPriceShares, settlePriceShare, unsettlePriceShare };
+module.exports = { parseReceipt, getGroupTransactions, getTransactionItems, getTransaction, createNewTransaction, getPriceShares, settlePriceShare, unsettlePriceShare, getUserTransactionDetails, updateUserTransactionLabels};
