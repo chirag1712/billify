@@ -1,17 +1,24 @@
 package com.frontend.billify.models;
 
+import android.os.Build;
 import android.telephony.gsm.GsmCellLocation;
+
+import androidx.annotation.RequiresApi;
 
 import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 public class Transaction implements Serializable {
     private int tid;
     private int gid;
+
     private String t_date;
     private String t_state;
     private String receipt_img; // NOTE: receipt_img is a URL to the image
@@ -154,6 +161,20 @@ public class Transaction implements Serializable {
     public void setLabel_id(String labelName) {
         this.label_id = labelNameToLabelId.get(labelName);
         System.out.println("Label ID is: " + String.valueOf(this.label_id));
+    }
+
+    public String getReceipt_img() {
+        return receipt_img;
+    }
+
+    public String getT_date() {
+        return t_date;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String getFormattedT_date() {
+        Date transactionDate = Date.from(Instant.parse(t_date));
+        return new SimpleDateFormat("yyyy-MM-dd").format(transactionDate);
     }
 
 }

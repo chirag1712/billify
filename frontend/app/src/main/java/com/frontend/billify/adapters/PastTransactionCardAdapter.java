@@ -2,16 +2,21 @@ package com.frontend.billify.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,7 +31,10 @@ import com.frontend.billify.services.RetrofitService;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -56,18 +64,27 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
         return holder;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
-        holder.transaction_label.setText(transactions.get(position).getName());
-        holder.date.setText(transactions.get(position).getName());
+        Transaction curTransaction = transactions.get(position);
 
+        holder.transaction_label.setText(curTransaction.getName());
+
+        holder.date.setText(curTransaction.getFormattedT_date());
+
+        holder.viewReceiptBtn.setOnClickListener(view -> {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(curTransaction.getReceipt_img()));
+            context.startActivity(browserIntent);
+        });
 
         holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 if(first_click_pos != position){
-                    getUserShares(transactions.get(position).getTid(),holder.hiddenView);
+                    getUserShares(curTransaction.getTid(),holder.hiddenView);
                     first_click_pos = position;
                 }
                 else{
@@ -128,12 +145,15 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
         private TextView transaction_label, date;
         private CardView parent;
         private RelativeLayout hiddenView;
+        private Button viewReceiptBtn;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             transaction_label = itemView.findViewById(R.id.transaction_label);
             date = itemView.findViewById(R.id.transaction_date);
             hiddenView = itemView.findViewById(R.id.hidden_shares_and_buttons);
             parent = itemView.findViewById(R.id.past_transaction);
+            viewReceiptBtn = itemView.findViewById(R.id.view_receipt);
         }
     }
 
