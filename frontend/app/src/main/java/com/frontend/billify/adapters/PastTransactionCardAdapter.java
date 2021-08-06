@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,7 +32,9 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -60,13 +64,15 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
         return holder;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
         Transaction curTransaction = transactions.get(position);
 
         holder.transaction_label.setText(curTransaction.getName());
-        //holder.date.setText(new SimpleDateFormat("yyyy-MM-dd").format(curTransaction.getT_date()));
-        System.out.println(curTransaction.getT_date());
+
+        holder.date.setText(curTransaction.getFormattedT_date());
+
         holder.viewReceiptBtn.setOnClickListener(view -> {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW,
                     Uri.parse(curTransaction.getReceipt_img()));
