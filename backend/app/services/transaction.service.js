@@ -193,9 +193,15 @@ class ReceiptParser {
 
 }
 
-async function insertTransactionsAndItemsToDB(gid, transactionName, imgData, imgFileName, parsedReceiptJson) {
+async function insertTransactionsAndItemsToDB(
+    gid, transactionName, transactionLabelId, 
+    imgData, imgFileName, parsedReceiptJson
+    ) {
     try {
-        parsedReceiptJson = await insertTransactionToDB(gid, transactionName, imgData, imgFileName, parsedReceiptJson);
+        parsedReceiptJson = await insertTransactionToDB(
+            gid, transactionName, transactionLabelId,
+            imgData, imgFileName, parsedReceiptJson
+            );
     } catch(err) {
         console.log("Couldn't insert expense into DB");
         throw new Error("Couldn't insert expense into DB, could be that provided gid value was invalid");
@@ -226,7 +232,7 @@ function uploadReceiptImgToS3(params) {
 }
 
 
-async function createUserTransactionForUsersInGroup(tid, gid) {
+async function createUserTransactionForUsersInGroup(tid, gid, label_id) {
 
     /*
     Inserts a Transaction entry corresponding to tid
@@ -236,7 +242,7 @@ async function createUserTransactionForUsersInGroup(tid, gid) {
     try {
         const usersInGroup = await Group.getUsersForGroup(gid);
         const createUserTransactionPromises = usersInGroup.map(async (user) => {
-            const userTransaction = new UserTransaction(tid, user.uid);
+            const userTransaction = new UserTransaction(tid, user.uid, label_id);
             await userTransaction.createUserTransaction();
         });
         await Promise.all(createUserTransactionPromises);
@@ -245,7 +251,10 @@ async function createUserTransactionForUsersInGroup(tid, gid) {
     }
 }
 
-async function insertTransactionToDB(gid, transactionName, imgData, imgFileName, parsedReceiptJson) {
+async function insertTransactionToDB(
+    gid, transactionName, transactionLabelId,
+    imgData, imgFileName, parsedReceiptJson
+    ) {
     const transactionModel = new TransactionModel(gid);
     const imgFileExtension = imgFileName.split(".")[1];
     const groupDetails = await Group.getGroupDetails(gid);
@@ -264,7 +273,7 @@ async function insertTransactionToDB(gid, transactionName, imgData, imgFileName,
     // user edits items on their mobile app and confirms right set of items to add.
     const receiptImgS3URI = await uploadReceiptImgToS3(params);
     const transactionObj = await transactionModel.createTransaction(gid, transactionName, receiptImgS3URI);
-    await createUserTransactionForUsersInGroup(transactionObj["tid"], gid);
+    await createUserTransactionForUsersInGroup(transactionObj["tid"], gid, transactionLabelId);
     parsedReceiptJson = {
         "items": parsedReceiptJson["items"],
         "tid": transactionObj["tid"],

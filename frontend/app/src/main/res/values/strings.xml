@@ -36,6 +36,9 @@
     <!-- Upload Receipt -->
     <string name="take_photo">Take Photo</string>
     <string name="gallery">Gallery</string>
+    <string name="upload_receipt">Upload Receipt</string>
+    <string name="choose_transaction_label">Transaction Label</string>
+    <string name="choose_transaction_group">Group</string>
 
     <!-- View transactions -->
     <string name="label">Label</string>
@@ -60,9 +63,9 @@
         <item>20.00</item>
     </string-array>
 
-    <string name="item_name_key">Item Name:</string>
+    <string name="item_name_key">Item Name</string>
     <string name="item_name_value">Example Item Name</string>
-    <string name="item_price_key">Item Price:</string>
+    <string name="item_price_key">Item Price</string>
     <string name="item_price_value">Example Item Price</string>
     <string name="save_progress">Save</string>
     <string name="swipe_to_delete_item">Swipe to Delete item</string>
@@ -70,4 +73,7 @@
 
 
     <string name="success_transaction_message">Successfully created new transaction!</string>
+    <string name="transaction_name">Transaction Name: </string>
+
+    <string name="select_photo_text">Take a Photo or Select an Image and Then Click Upload</string>
 </resources>
