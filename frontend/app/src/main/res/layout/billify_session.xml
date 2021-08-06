@@ -11,12 +11,11 @@
     android:padding="10dp">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recipeItems"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/recipeItems" />
+        android:layout_height="wrap_content" />
 
-    <!--    each row of the user price share should have a settle button (DB logic for this) -->
-    <androidx.recyclerview.widget.RecyclerView
+    <ListView
         android:id="@+id/user_shares"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,6 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/user_shares"
         android:layout_centerHorizontal="true"
-        android:text="@string/save_session" />
+        android:text="@string/save_session"
+        app:backgroundTint="@color/cyan_button" />
 
 </RelativeLayout>

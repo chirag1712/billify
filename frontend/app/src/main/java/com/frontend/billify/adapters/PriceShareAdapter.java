@@ -1,23 +1,27 @@
 package com.frontend.billify.adapters;
 
+import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
+import com.frontend.billify.R;
 import com.frontend.billify.models.UserTransactionShare;
+
+import java.util.ArrayList;
 
 public class PriceShareAdapter extends ArrayAdapter<UserTransactionShare> {
     private final Context context;
-    private final ArrayList<Person> data;
+    private final ArrayList<UserTransactionShare> userPriceInfos;
     private final int layoutResourceId;
 
-    public PersonAdapter(Context context, int layoutResourceId, ArrayList<Person> data) {
-        super(context, layoutResourceId, data);
+    public PriceShareAdapter(Context context, int layoutResourceId, ArrayList<UserTransactionShare> userPriceInfos) {
+        super(context, layoutResourceId, userPriceInfos);
         this.context = context;
-        this.data = data;
+        this.userPriceInfos = userPriceInfos;
         this.layoutResourceId = layoutResourceId;
     }
 
@@ -26,41 +30,33 @@ public class PriceShareAdapter extends ArrayAdapter<UserTransactionShare> {
         View row = convertView;
         ViewHolder holder = null;
 
-        if(row == null)
-        {
-            LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+        if (row == null) {
+            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new ViewHolder();
-            holder.textView1 = (TextView)row.findViewById(R.id.text1);
-            holder.textView2 = (TextView)row.findViewById(R.id.text2);
-            ...
-            ...
-            holder.textView3 = (TextView)row.findViewById(R.id.text3);
-
+            holder.userName = (TextView) row.findViewById(R.id.price_share_username);
+            holder.priceShare = (TextView) row.findViewById(R.id.price_share);
             row.setTag(holder);
-        }
-        else
-        {
-            holder = (ViewHolder)row.getTag();
+        } else {
+            holder = (ViewHolder) row.getTag();
         }
 
-        Person person = data.get(position);
+        UserTransactionShare userPriceInfo = this.userPriceInfos.get(position);
 
-        holder.textView1.setText(person.getName());
-        holder.textView2.setText(person.getAddress());
-        ...
-        ...
-        holder.textView3.setText(person.getEtc());
+        holder.userName.setText(userPriceInfo.getUserName());
+        holder.priceShare.setText(Float.toString(userPriceInfo.getPriceShare()));
 
         return row;
     }
 
-    static class ViewHolder
-    {
-        TextView textView1;
-        TextView textView2;
-        ...
-                ...
-        TextView textView3;
+    @Override
+    public boolean isEnabled(int position) {
+        return false;
     }
+
+    static class ViewHolder {
+        TextView userName;
+        TextView priceShare;
+    }
+}

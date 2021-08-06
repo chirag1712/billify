@@ -3,30 +3,29 @@ package com.frontend.billify.activities;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
+import android.widget.ListView;
 
 import androidx.annotation.RequiresApi;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.frontend.billify.adapters.ReceiptsItemsRecViewAdapter;
-import com.frontend.billify.models.Item;
-import com.frontend.billify.models.User;
+import com.frontend.billify.R;
+import com.frontend.billify.adapters.PriceShareAdapter;
+import com.frontend.billify.models.UserTransactionShare;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
 public class UserPriceShareView {
-    private final RecyclerView view;
+    private final ListView view;
     private final Context context;
     private final Socket mSocket;
 
-    public UserPriceShareView(RecyclerView view, Context context, Socket mSocket) {
+    public UserPriceShareView(ListView view, Context context, Socket mSocket) {
         this.view = view;
         this.context = context;
         this.mSocket = mSocket;
@@ -34,16 +33,12 @@ public class UserPriceShareView {
     }
 
     private void populateView() {
-        // recycler view setup for itemized view for transaction items
-        ReceiptsItemsRecViewAdapter adapter = new ReceiptsItemsRecViewAdapter(
-                this.context, mSocket, new User(uid, userName), this.transaction.getTid()
-        );
-        ArrayList<Item> items = this.transaction.getItems();
-        adapter.setItems(items);
+        ArrayList<UserTransactionShare> userPriceShares = new ArrayList<>();
+        PriceShareAdapter adapter = new PriceShareAdapter(this.context, R.layout.user_price_share, userPriceShares);
         this.view.setAdapter(adapter);
-        this.view.setLayoutManager(new LinearLayoutManager(this.context));
-
         Activity activity = (Activity) this.context;
+
+        // ==== SOCKET EVENT LISTENERS =====
         mSocket.on("currentState", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
@@ -53,7 +48,7 @@ public class UserPriceShareView {
                     public void run() {
                         try {
                             JSONObject data = (JSONObject) ((JSONObject) args[0]).get("price_shares");
-                            System.out.println(data);
+                            populatePriceShares(adapter, userPriceShares, data);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -70,11 +65,8 @@ public class UserPriceShareView {
                     @Override
                     public void run() {
                         try {
-                            JSONObject itemUpdated = (JSONObject) args[0];
-                            int item_id = (int) itemUpdated.get("item_id");
-                            JSONArray userInfos = (JSONArray) itemUpdated.get("userInfos");
-                            System.out.println(item_id);
-                            System.out.println(userInfos);
+                            JSONObject data = (JSONObject) ((JSONObject) args[0]).get("price_shares");
+                            populatePriceShares(adapter, userPriceShares, data);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -82,5 +74,22 @@ public class UserPriceShareView {
                 });
             }
         });
+    }
+
+    private void populatePriceShares(PriceShareAdapter adapter, ArrayList<UserTransactionShare> userPriceShares, JSONObject data) throws JSONException {
+        userPriceShares.clear();
+        Iterator<String> keys = data.keys();
+
+        while(keys.hasNext()) {
+            String key = keys.next();
+            if (data.get(key) instanceof JSONObject) {
+                JSONObject userPriceShare = (JSONObject) data.get(key);
+                userPriceShares.add(new UserTransactionShare(Integer.parseInt(key),
+                        (String) userPriceShare.get("userName"),
+                        Float.parseFloat(String.valueOf(userPriceShare.get("price_share")))
+                ));
+            }
+        }
+        adapter.notifyDataSetChanged();
     }
 }
