@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
@@ -123,6 +124,8 @@ public class GroupTransactionActivity extends AppCompatActivity {
         adapter.setItems(transactions);
         pastTransactionsRecView.setAdapter(adapter);
         pastTransactionsRecView.setLayoutManager(new LinearLayoutManager(this));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://billify.s3.amazonaws.com/android%20group%202021-07-27%2020%3A10-1627416608911.jpg"));
+        startActivity(browserIntent);
     }
 }
 

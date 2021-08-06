@@ -42,7 +42,7 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
     @Override
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
         holder.transaction_label.setText(transactions.get(position).getName());
-        holder.total.setText(transactions.get(position).getTid());
+        holder.total.setText(transactions.get(position).getName());
 
 
         holder.parent.setOnClickListener(new View.OnClickListener() {
