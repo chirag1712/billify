@@ -163,7 +163,7 @@ public class PastTransactionCardAdapter extends RecyclerView.Adapter<PastTransac
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            transaction_label = itemView.findViewById(R.id.transaction_label);
+            transaction_label = itemView.findViewById(R.id.transaction_name_list_of_transaction);
             date = itemView.findViewById(R.id.transaction_date);
             hiddenView = itemView.findViewById(R.id.hidden_shares_and_buttons);
             parent = itemView.findViewById(R.id.past_transaction);

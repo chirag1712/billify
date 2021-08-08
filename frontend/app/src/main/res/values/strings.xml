@@ -77,4 +77,9 @@
 
     <string name="select_photo_text">Take a Photo or Select an Image from Gallery first</string>
     <string name="save_session">Save</string>
+
+    <string name="billify_session">Billify Session</string>
+    <string name="receipt">Receipt</string>
+    <string name="settle">Settle</string>
+    <string name="settled">Settled</string>
 </resources>
