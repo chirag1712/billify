@@ -189,6 +189,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
                                         Toast.LENGTH_SHORT).show();
                                 selectPhotoTextView.setVisibility(View.GONE);
                                 receiptImageView.setVisibility(View.VISIBLE);
+                                uploadReceiptButton.setVisibility(View.VISIBLE);
                                 Bitmap myBitmap = BitmapFactory.decodeFile(currPhotoFile.getAbsolutePath());
                                 receiptImageView.setImageBitmap(myBitmap);
                             } catch (Exception e) {
@@ -248,6 +249,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
                                         Toast.LENGTH_SHORT).show();
                                 selectPhotoTextView.setVisibility(View.GONE);
                                 receiptImageView.setVisibility(View.VISIBLE);
+                                uploadReceiptButton.setVisibility(View.VISIBLE);
                                 Bitmap myBitmap = BitmapFactory.decodeFile(currPhotoFile.getAbsolutePath());
                                 receiptImageView.setImageBitmap(myBitmap);
                             } catch (Exception e) {
