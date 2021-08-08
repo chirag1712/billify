@@ -63,12 +63,14 @@
             android:label="Upload a New Receipt"
             />
         <activity android:name=".activities.BillifySessionActivity" />
-        <activity android:name=".activities.AuthenticationActivity">
+        <activity android:name=".activities.BillifySplashScreen" android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".activities.AuthenticationActivity">
         </activity>
 
         <provider
