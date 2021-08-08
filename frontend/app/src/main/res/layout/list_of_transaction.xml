@@ -17,7 +17,7 @@
         >
 
         <TextView
-            android:id="@+id/transaction_label"
+            android:id="@+id/transaction_name_list_of_transaction"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
@@ -83,10 +83,10 @@
                 android:layout_marginRight="15dp"
                 android:textSize="15sp"
 
-
                 android:paddingRight="10dp"
                 android:textStyle="bold"/>
             <LinearLayout
+                android:id="@+id/view_transaction_buttons"
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_below="@id/total_transaction_price"
@@ -97,7 +97,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="0dp"
                     android:layout_marginRight="10dp"
-                    android:text="Billify Session"
+                    android:text="@string/billify_session"
                     app:backgroundTint="@color/cyan_button"
                     android:textSize="10sp"/>
                 <Button
@@ -106,7 +106,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="0dp"
                     android:layout_marginRight="10dp"
-                    android:text="Receipt"
+                    android:text="@string/receipt"
                     android:layout_below="@id/user_price_shares"
                     app:backgroundTint="@color/cyan_button"
                     android:textSize="10sp"/>
@@ -116,13 +116,41 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="0dp"
                     android:layout_marginRight="10dp"
-                    android:text="Settle"
-                    android:layout_below="@id/user_price_shares"
+                    android:text="@string/settle"
                     app:backgroundTint="@color/cyan_button"
                     android:textSize="10sp"/>
-            </LinearLayout>>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_below="@id/view_transaction_buttons"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                >
+
+                <View android:id="@+id/square"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:background="#3DDC84"
+                    android:visibility="visible"
+                    android:layout_gravity="center"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:text="@string/settled"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/black"
+                    />
+            </LinearLayout>
 
         </RelativeLayout>
+
+
 
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

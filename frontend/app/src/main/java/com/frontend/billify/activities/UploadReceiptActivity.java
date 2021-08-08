@@ -2,12 +2,10 @@ package com.frontend.billify.activities;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -59,11 +57,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.frontend.billify.helpers.photo.PhotoDetails.getCameraPhotoOrientation;
+
 public class UploadReceiptActivity extends AppCompatActivity {
     String currentPhotoPath;
     private File currPhotoFile;
+    private File cameraTmpPhotoFile;
     private static final int CAMERA_PIC_REQUEST = 1;
-    private static final int IMAGE_PICKER_CODE = 2;
     private static final String TAG = UploadReceiptActivity.class.getName();
     private final RetrofitService retrofitService = new RetrofitService();
     private final TransactionController transactionController = new TransactionController(retrofitService);
@@ -73,7 +73,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
     private EditText transactionNameEditText;
     private TextView selectPhotoTextView;
     private AutoCompleteTextView labelTextView;
-    private ArrayAdapter<String> labelArrayAdapter;
 
     private AutoCompleteTextView groupTextView;
     private ArrayAdapter<String> groupArrayAdapter;
@@ -162,7 +161,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
                                 Uri photoURI = UploadReceiptActivity.this.getPhotoURI(photoFile);
                                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
                                 cameraResultLauncher.launch(takePictureIntent);
-                                UploadReceiptActivity.this.currPhotoFile = photoFile;
+                                cameraTmpPhotoFile = photoFile;
                             }
                         }
 
@@ -189,8 +188,25 @@ public class UploadReceiptActivity extends AppCompatActivity {
                                         Toast.LENGTH_SHORT).show();
                                 selectPhotoTextView.setVisibility(View.GONE);
                                 receiptImageView.setVisibility(View.VISIBLE);
-                                Bitmap myBitmap = BitmapFactory.decodeFile(currPhotoFile.getAbsolutePath());
-                                receiptImageView.setImageBitmap(myBitmap);
+                                uploadReceiptButton.setVisibility(View.VISIBLE);
+                                File photoFile = null;
+                                try {
+                                    photoFile = createImageFile();
+                                } catch (IOException ex) {
+                                    // Error occurred while creating the File
+                                    ex.printStackTrace();
+                                }
+                                // Continue only if the File was successfully created
+                                if (photoFile == null) {
+                                    Toast.makeText(UploadReceiptActivity.this,
+                                            "Sorry :( Something went wrong with taking a picture",
+                                            Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                UploadReceiptActivity.this.currPhotoFile = cameraTmpPhotoFile;
+                                Bitmap photo = BitmapFactory.decodeFile(currPhotoFile.getAbsolutePath());
+                                receiptImageView.setImageBitmap(photo);
+                                receiptImageView.setRotation(getCameraPhotoOrientation(currPhotoFile));
                             } catch (Exception e) {
                                 Log.d(TAG, "onActivityResult: " + e.toString());
                             }
@@ -239,6 +255,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
                                 FileOutputStream outputStream = new FileOutputStream(currPhotoFile);
                                 // Copying
                                 copyStream(inputStream, outputStream);
+                                outputStream.flush();
                                 outputStream.close();
                                 inputStream.close();
                                 System.out.println("In upload image ");
@@ -248,8 +265,10 @@ public class UploadReceiptActivity extends AppCompatActivity {
                                         Toast.LENGTH_SHORT).show();
                                 selectPhotoTextView.setVisibility(View.GONE);
                                 receiptImageView.setVisibility(View.VISIBLE);
+                                uploadReceiptButton.setVisibility(View.VISIBLE);
                                 Bitmap myBitmap = BitmapFactory.decodeFile(currPhotoFile.getAbsolutePath());
                                 receiptImageView.setImageBitmap(myBitmap);
+                                receiptImageView.setRotation(getCameraPhotoOrientation(currPhotoFile));
                             } catch (Exception e) {
                                 Log.d(TAG, "onActivityResult: " + e.toString());
                             }
@@ -325,11 +344,11 @@ public class UploadReceiptActivity extends AppCompatActivity {
          */
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "jpg_" + timeStamp + "_";
+        String imageFileName = "png_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
+                ".png",         /* suffix */
                 storageDir      /* directory */
         );
 
@@ -456,40 +475,6 @@ public class UploadReceiptActivity extends AppCompatActivity {
                 });
     }
 
-    // capture image orientation
-
-    private int getCameraPhotoOrientation(Context context, Uri imageUri,
-                                         String imagePath) {
-        int rotate = 0;
-        try {
-            context.getContentResolver().notifyChange(imageUri, null);
-            File imageFile = new File(imagePath);
-            ExifInterface exif = new ExifInterface(imageFile.getAbsolutePath());
-            int orientation = exif.getAttributeInt(
-                    ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_NORMAL);
-
-            switch (orientation) {
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    rotate = 270;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    rotate = 180;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    rotate = 90;
-                    break;
-            }
-
-            Log.i("RotateImage", "Exif orientation: " + orientation);
-            Log.i("RotateImage", "Rotate value: " + rotate);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return rotate;
-    }
-
-
     private Transaction createNewTransactionFromParsedItems(Transaction parsedItemsTransaction) {
         /*
         parsedItemsTransaction is the response from the API that only contains parsed items.
@@ -531,4 +516,5 @@ public class UploadReceiptActivity extends AppCompatActivity {
         uploadReceiptButton.setVisibility(View.VISIBLE);
         startActivity(moveToEditAndConfirmItemsActivityIntent);
     }
+
 }

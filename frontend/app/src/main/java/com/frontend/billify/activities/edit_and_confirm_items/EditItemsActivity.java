@@ -307,7 +307,10 @@ public class EditItemsActivity extends AppCompatActivity {
                         EditItemsActivity.this,
                         HomepageActivity.class
                 );
+                moveBackToHomepageIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                moveBackToHomepageIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(moveBackToHomepageIntent);
+                finish();
             }
         }, delay);
     }

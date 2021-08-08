@@ -23,7 +23,11 @@ public class AuthenticationActivity extends AppCompatActivity implements Navigat
 
         // Auto-login
         if (Persistence.getUserId(this) != -1) {
-            startActivity(new Intent(AuthenticationActivity.this, HomepageActivity.class));
+            Intent intent = new Intent(AuthenticationActivity.this, HomepageActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         }
 
         if (savedInstanceState == null) {
