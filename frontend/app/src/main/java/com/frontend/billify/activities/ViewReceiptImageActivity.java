@@ -12,8 +12,9 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.frontend.billify.R;
-
 import java.io.File;
+
+import static com.frontend.billify.helpers.photo.PhotoDetails.getCameraPhotoOrientation;
 
 public class ViewReceiptImageActivity extends AppCompatActivity {
 
@@ -44,6 +45,7 @@ public class ViewReceiptImageActivity extends AppCompatActivity {
 
             myBitmap = BitmapFactory.decodeFile(receiptImageFile.getAbsolutePath());
             receiptImageView.setImageBitmap(myBitmap);
+            receiptImageView.setRotation(getCameraPhotoOrientation(receiptImageFile));
         }
     }
 
