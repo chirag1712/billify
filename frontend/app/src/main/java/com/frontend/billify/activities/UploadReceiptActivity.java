@@ -2,10 +2,12 @@ package com.frontend.billify.activities;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -118,6 +120,14 @@ public class UploadReceiptActivity extends AppCompatActivity {
         // Set default Label in dropdown
         labelTextView.setText(labelDropdownAdapter.getItem(0).toString(), false);
 
+        receiptImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(UploadReceiptActivity.this, ViewReceiptImageActivity.class);
+                intent.putExtra("receipt_img_file", currPhotoFile);
+                startActivity(intent);
+            }
+        });
         // Set default Transaction Name
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm");
         Date date = new Date(System.currentTimeMillis());
@@ -128,6 +138,7 @@ public class UploadReceiptActivity extends AppCompatActivity {
         addCameraButtonClickListener();
         addGalleryButtonClickListener();
         addUploadButtonClickListener();
+
     }
 
     private void addCameraButtonClickListener() {
@@ -378,16 +389,22 @@ public class UploadReceiptActivity extends AppCompatActivity {
          */
         ArrayList<String> groupNames = currUser.getGroupNames();
         currUser.initGroupNameToGidMap();
+        currUser.initGidToGroupPositionMap();
         groupTextView = findViewById(R.id.auto_complete_groups_text_view);
         groupArrayAdapter = new ArrayAdapter<>(
                 UploadReceiptActivity.this,
                 R.layout.list_group,
                 groupNames
         );
-
         groupTextView.setAdapter(groupArrayAdapter);
-        String firstGroupName = groupArrayAdapter.getItem(0).toString();
-        groupTextView.setText(firstGroupName, false);
+        String defaultGroupName = "";
+        if (getIntent().hasExtra("gid")) {
+            int gid = getIntent().getIntExtra("gid", -1);
+            defaultGroupName = groupArrayAdapter.getItem(currUser.getGroupPositionFromGid(gid)).toString();
+        } else {
+            defaultGroupName = groupArrayAdapter.getItem(0).toString();
+        }
+        groupTextView.setText(defaultGroupName, false);
     }
 
     public void uploadAndParseReceipt() {
@@ -438,6 +455,40 @@ public class UploadReceiptActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    // capture image orientation
+
+    private int getCameraPhotoOrientation(Context context, Uri imageUri,
+                                         String imagePath) {
+        int rotate = 0;
+        try {
+            context.getContentResolver().notifyChange(imageUri, null);
+            File imageFile = new File(imagePath);
+            ExifInterface exif = new ExifInterface(imageFile.getAbsolutePath());
+            int orientation = exif.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL);
+
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    rotate = 270;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    rotate = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    rotate = 90;
+                    break;
+            }
+
+            Log.i("RotateImage", "Exif orientation: " + orientation);
+            Log.i("RotateImage", "Rotate value: " + rotate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return rotate;
+    }
+
 
     private Transaction createNewTransactionFromParsedItems(Transaction parsedItemsTransaction) {
         /*

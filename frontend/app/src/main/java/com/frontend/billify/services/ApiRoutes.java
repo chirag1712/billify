@@ -1,16 +1,19 @@
 package com.frontend.billify.services;
 
-import com.frontend.billify.models.Transaction;
 import com.frontend.billify.models.CreateGroupModel;
 import com.frontend.billify.models.Group;
+import com.frontend.billify.models.SettleResponse;
+import com.frontend.billify.models.SettleTransactionModel;
+import com.frontend.billify.models.Transaction;
+import com.frontend.billify.models.TransactionSummary;
 import com.frontend.billify.models.User;
 import com.frontend.billify.models.UserTransaction;
+import com.frontend.billify.models.UserTransactionShare;
 
 import java.util.ArrayList;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -21,6 +24,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.Part;
+import retrofit2.http.Path;
 
 
 public interface ApiRoutes {
@@ -53,6 +57,15 @@ public interface ApiRoutes {
 
     @POST("api/transactions/update-user-transaction-labels")
     Call<Object> updateUserTransactionLabels(@Body ArrayList<UserTransaction> labelUpdates);
+
+    @GET("api/transactions/get-group-transactions/{gid}")
+    Call<ArrayList<Transaction>> getGroupTransactions(@Path("gid") int gid);
+
+    @GET("api/transactions/price-shares/{tid}")
+    Call<TransactionSummary> getUserTransactionShares(@Path("tid") int tid);
+
+    @POST("api/transactions/settle")
+    Call<SettleResponse> settleTransaction(@Body SettleTransactionModel settleTransactionModel);
 
     @Multipart
     @POST("api/transactions/create-transaction")

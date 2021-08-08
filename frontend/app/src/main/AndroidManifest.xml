@@ -42,19 +42,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Billify"
         tools:targetApi="n">
-        <activity android:name=".activities.view_transactions.ViewTransactionsActivity"></activity>
+        <activity
+            android:name=".activities.ViewReceiptImageActivity"
+            android:theme="@style/Theme.Billify.group_popup" />
+        <activity android:name=".activities.view_transactions.ViewTransactionsActivity" />
         <activity
             android:name=".activities.edit_and_confirm_items.AddEditItemActivity"
             android:label="Add New Item"
-            android:parentActivityName=".activities.edit_and_confirm_items.EditItemsActivity"
-            />
-        <activity android:name=".activities.edit_and_confirm_items.EditItemsActivity"
-            android:label="Edit and Confirm Parsed Items"
-            />
-        <activity android:name=".activities.CreateGroupActivity" />
-        <activity android:name=".activities.GroupTransaction" />
+            android:parentActivityName=".activities.edit_and_confirm_items.EditItemsActivity" />
         <activity
-            android:name=".activities.groupPop"
+            android:name=".activities.edit_and_confirm_items.EditItemsActivity"
+            android:label="Edit and Confirm Parsed Items" />
+        <activity android:name=".activities.CreateGroupActivity" />
+        <activity android:name=".activities.GroupTransactionActivity" />
+        <activity
+            android:name=".activities.ViewGroupActivity"
             android:theme="@style/Theme.Billify.group_popup" />
         <activity android:name=".activities.HomepageActivity" />
         <activity android:name=".activities.UploadReceiptActivity"
@@ -78,6 +80,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

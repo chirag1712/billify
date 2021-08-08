@@ -173,7 +173,7 @@ class Session {
         });
 
         Object.entries(this.tid2uid2userPriceInfo[tid]).forEach(([uidStr, userPriceInfo]) => {
-            state.price_shares[uidStr] = { userName: userPriceInfo.username, price_share: userPriceInfo.price_share };
+            state.price_shares[uidStr] = { userName: userPriceInfo.userName, price_share: userPriceInfo.price_share };
         })
         return state;
     }

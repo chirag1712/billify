@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -22,6 +21,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import com.frontend.billify.persistence.Persistence;
+
 public class HomepageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,18 +33,12 @@ public class HomepageActivity extends AppCompatActivity {
         Button add_receipt_button = findViewById(R.id.add_receipt_button);
         Button create_group_button = findViewById(R.id.create_group_button);
         Button view_transactions_button = findViewById(R.id.view_transactions_button);
-        Button join_billify_session = findViewById(R.id.join_billify_session);
         Button logoutButton = findViewById(R.id.logout_button);
-        RetrofitService retrofitService = new RetrofitService();
-        TransactionController transactionController = new TransactionController(retrofitService);
 
         view_group_button.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
-
-                startActivity(new Intent(HomepageActivity.this, groupPop.class));
-
+                startActivity(new Intent(HomepageActivity.this, ViewGroupActivity.class));
             }
         });
 
@@ -67,39 +62,6 @@ public class HomepageActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent moveToViewTransactionsScreenIntent = new Intent(HomepageActivity.this, ViewTransactionsActivity.class);
                 startActivity(moveToViewTransactionsScreenIntent);
-            }
-        });
-            
-        join_billify_session.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                transactionController.getTransaction(349).enqueue(new Callback<Transaction>() {
-                    @Override
-                    public void onResponse(Call<Transaction> call, Response<Transaction> response) {
-                        Transaction currTransaction = new Transaction(response.body());
-                        currTransaction.printItems();
-                        Intent moveToItemizedScreenIntent = new Intent(
-                                HomepageActivity.this,
-                                BillifySessionActivity.class
-                        );
-                        Bundle transactionBundle = new Bundle();
-                        transactionBundle.putSerializable("SerializedTransaction", currTransaction);
-                        moveToItemizedScreenIntent.putExtra(
-                                "TransactionBundle",
-                                transactionBundle
-                        );
-                        startActivity(moveToItemizedScreenIntent);
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<Transaction> call, Throwable t) {
-                        Toast.makeText(HomepageActivity.this,
-                                "Failed joining the billify session",
-                                Toast.LENGTH_SHORT).show();
-                        t.printStackTrace();
-                    }
-                });
             }
         });
 
