@@ -70,7 +70,10 @@ public class HomepageActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Persistence.clearLoginDetails(HomepageActivity.this);
                 Intent loginActivityIntent = new Intent(HomepageActivity.this, AuthenticationActivity.class);
+                loginActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                loginActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(loginActivityIntent);
+                finish();
             }
         });
     }
